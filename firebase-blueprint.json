@@ -1,0 +1,89 @@
+{
+  "entities": {
+    "Candidate": {
+      "title": "Candidate",
+      "description": "Candidate job application details",
+      "type": "object",
+      "properties": {
+        "ime": { "type": "string" },
+        "prezime": { "type": "string" },
+        "telefon": { "type": "string" },
+        "email": { "type": "string" },
+        "grad": { "type": "string" },
+        "vozilo": { "type": "string" },
+        "iskustvo": { "type": "string" },
+        "kada_poceti": { "type": "string" },
+        "datum_prijave": { "type": "string" },
+        "status": { "type": "string" },
+        "izvor": { "type": "string" },
+        "referral_code": { "type": "string" },
+        "napomena": { "type": "string" },
+        "created_at": { "type": "string" }
+      },
+      "required": ["ime", "prezime", "telefon", "grad", "status"]
+    },
+    "BlogPost": {
+      "title": "BlogPost",
+      "description": "Blog post details and content",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "slug": { "type": "string" },
+        "summary": { "type": "string" },
+        "content": { "type": "string" },
+        "cover_image": { "type": "string" },
+        "author": { "type": "string" },
+        "tags": { "type": "array" },
+        "read_time": { "type": "string" },
+        "created_at": { "type": "string" },
+        "views": { "type": "number" }
+      },
+      "required": ["title", "slug", "content"]
+    },
+    "SiteConfig": {
+      "title": "SiteConfig",
+      "description": "Global SEO configurations and brand guidelines",
+      "type": "object",
+      "properties": {
+        "meta_title": { "type": "string" },
+        "meta_description": { "type": "string" },
+        "ga_measurement_id": { "type": "string" },
+        "homepage_subtitle": { "type": "string" },
+        "announcement_banner": { "type": "string" },
+        "logo_style": { "type": "string" },
+        "logo_url": { "type": "string" }
+      }
+    },
+    "AdminAccount": {
+      "title": "AdminAccount",
+      "description": "Administrator account credentials and roles",
+      "type": "object",
+      "properties": {
+        "username": { "type": "string" },
+        "passcode": { "type": "string" },
+        "role": { "type": "string" },
+        "created_at": { "type": "string" },
+        "updated_at": { "type": "string" }
+      },
+      "required": ["username", "passcode", "role"]
+    }
+  },
+  "firestore": {
+    "/admins/{adminId}": {
+      "schema": "AdminAccount",
+      "description": "Database for storing secure admin accounts"
+    },
+    "/candidates/{candidateId}": {
+      "schema": "Candidate",
+      "description": "Candidate registration submissions"
+    },
+    "/blog_posts/{postId}": {
+      "schema": "BlogPost",
+      "description": "Published blog contents"
+    },
+    "/site_configs/{configId}": {
+      "schema": "SiteConfig",
+      "description": "Site preferences and SEO setups"
+    }
+  }
+}

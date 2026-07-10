@@ -1,0 +1,922 @@
+import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { 
+  Bike, 
+  MapPin, 
+  Clock, 
+  HelpCircle, 
+  Phone, 
+  CheckCircle, 
+  ArrowRight, 
+  FileText, 
+  Sparkles, 
+  ShieldCheck, 
+  ChevronDown, 
+  ChevronUp, 
+  ChevronLeft,
+  ChevronRight, 
+  HeartHandshake, 
+  Smartphone,
+  Check,
+  Compass,
+  MessageSquare,
+  Zap,
+  Car
+} from 'lucide-react';
+import ScooterIcon from './ScooterIcon';
+
+interface LandingPageProps {
+  onOpenApply: () => void;
+  onNavigateToBlog: () => void;
+}
+
+function SafeBlogImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
+  const [error, setError] = useState(false);
+
+  React.useEffect(() => {
+    setError(false);
+  }, [src]);
+
+  if (error || !src) {
+    return (
+      <div className={`${className} bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 flex flex-col items-center justify-center p-6 relative overflow-hidden text-white`}>
+        <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+        <div className="absolute -left-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-lg"></div>
+        <div className="relative z-10 flex flex-col items-center gap-2 text-center select-none">
+          <Bike className="w-8 h-8 opacity-90 animate-pulse" />
+          <span className="text-[10px] font-black uppercase tracking-wider opacity-80">Deliverix Blog</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      onError={() => setError(true)}
+      referrerPolicy="no-referrer"
+    />
+  );
+}
+
+export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPageProps) {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
+  const [siteSettings, setSiteSettings] = useState<any>(null);
+  const [latestPosts, setLatestPosts] = useState<any[]>([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [landingBlogIndex, setLandingBlogIndex] = useState(0);
+  const landingBlogRef = React.useRef<HTMLDivElement>(null);
+
+  const handleLandingBlogScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const scrollLeft = container.scrollLeft;
+    const width = container.clientWidth;
+    if (width > 0) {
+      const index = Math.round(scrollLeft / width);
+      setLandingBlogIndex(index);
+    }
+  };
+
+  const scrollLandingBlogTo = (idx: number) => {
+    if (landingBlogRef.current) {
+      const container = landingBlogRef.current;
+      const cards = container.querySelectorAll('.snap-start');
+      if (cards[idx]) {
+        cards[idx].scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'start'
+        });
+      }
+    }
+  };
+
+  React.useEffect(() => {
+    if (siteSettings?.hero_right_mode !== 'slider') return;
+    const slidesCount = siteSettings?.hero_slider_images?.length || 0;
+    if (slidesCount <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrentSlide(prev => (prev + 1) % slidesCount);
+    }, 4500);
+
+    return () => clearInterval(timer);
+  }, [siteSettings, siteSettings?.hero_slider_images]);
+
+  React.useEffect(() => {
+    // Učitaj SEO i podešavanja sajta
+    fetch('/api/marketing/seo')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.settings) {
+          setSiteSettings(data.settings);
+          if (data.settings.meta_title) {
+            document.title = data.settings.meta_title;
+          } else {
+            document.title = "Postani Wolt i Glovo Dostavljač Beograd | Posao Dostave - Deliverix";
+          }
+        }
+      })
+      .catch(err => console.error('Greška pri učitavanju SEO podešavanja:', err));
+
+    // Učitaj najnovija 3 blog posta
+    fetch('/api/blog-posts')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.posts) {
+          setLatestPosts(data.posts.slice(0, 3));
+        }
+      })
+      .catch(err => console.error('Greška pri učitavanju blog postova za landing:', err));
+  }, []);
+
+  const toggleFaq = (idx: number) => {
+    setOpenFaq(openFaq === idx ? null : idx);
+  };
+
+  const slides = siteSettings?.hero_slider_slides && siteSettings.hero_slider_slides.length > 0
+    ? siteSettings.hero_slider_slides
+    : (siteSettings?.hero_slider_images || []).map((img: string) => ({
+        image: img,
+        badge_title: siteSettings?.hero_badge_title || 'Dostupno odmah',
+        badge_text: siteSettings?.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'
+      }));
+
+  const activeSlide = siteSettings?.hero_right_mode === 'slider' && slides.length > 0
+    ? slides[currentSlide % slides.length]
+    : {
+        badge_title: siteSettings?.hero_badge_title || 'Dostupno odmah',
+        badge_text: siteSettings?.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'
+      };
+
+  const iconMap: Record<string, any> = {
+    Smartphone: Smartphone,
+    Bike: Bike,
+    FileText: FileText,
+    Clock: Clock,
+    MapPin: MapPin,
+    ShieldCheck: ShieldCheck,
+    ScooterIcon: ScooterIcon,
+    Car: Car
+  };
+
+  const steps = siteSettings?.steps && siteSettings.steps.length > 0
+    ? siteSettings.steps
+    : [
+        {
+          number: '01',
+          title: 'Brza Prijava',
+          desc: 'Popuni jednostavan formular na našem sajtu za manje od 60 sekundi. Bez komplikovane dokumentacije na samom početku.'
+        },
+        {
+          number: '02',
+          title: 'Kratak Telefonski Poziv',
+          desc: 'Pozvaćemo te da odgovorimo na sva tvoja pitanja, objasnimo ti sistem zarade, opreme i ugovora, i prilagodimo sve tvojim željama.'
+        },
+        {
+          number: '03',
+          title: 'Početak Rada',
+          desc: 'Povezujemo te sa zvaničnom partnerskom agencijom, pomažemo ti oko aktivacije naloga i preuzimanja opreme. Spreman si za prvu dostavu!'
+        }
+      ];
+
+  const requirements = siteSettings?.requirements && siteSettings.requirements.length > 0
+    ? siteSettings.requirements.map((req: any) => ({
+        title: req.title,
+        desc: req.desc,
+        icon: iconMap[req.icon] || Smartphone
+      }))
+    : [
+        {
+          title: 'Pametni telefon',
+          desc: 'Android ili iPhone sa internetom kako bi mogao da koristiš Wolt Partner aplikaciju za dostave.',
+          icon: Smartphone
+        },
+        {
+          title: 'Prevozno sredstvo',
+          desc: 'Bicikl (sopstveni ili električni), skuter / motor ili automobil. Sam biraš sa čim želiš da radiš.',
+          icon: Bike
+        },
+        {
+          title: 'Lični dokumenti',
+          desc: 'Važeća lična karta (moraš imati najmanje 18 godina) i vozačka dozvola ukoliko voziš motorno vozilo.',
+          icon: FileText
+        }
+      ];
+
+  const rentItems = siteSettings?.rent_items && siteSettings.rent_items.length > 0
+    ? siteSettings.rent_items.map((item: any) => ({
+        title: item.title,
+        desc: item.desc,
+        icon: iconMap[item.icon] || Bike,
+        badge: item.badge,
+        enabled: item.enabled !== false,
+        available: item.available !== false
+      }))
+    : [
+        {
+          title: 'Električni bicikl',
+          desc: 'Mesečni najam za 25.000 RSD sa uračunatim servisima i stanicom za punjenje baterija.',
+          icon: Bike,
+          badge: 'Najtraženije',
+          enabled: siteSettings?.rent_bike_enabled !== false,
+          available: true
+        },
+        {
+          title: 'Skuter / Motor',
+          desc: 'Brzina i efikasnost na dužim distancama. Povoljni paketi sa uključenim servisiranjem.',
+          icon: ScooterIcon,
+          badge: 'Najbrže',
+          enabled: siteSettings?.rent_scooter_enabled !== false,
+          available: true
+        },
+        {
+          title: 'Dostavni Automobil',
+          desc: 'Udobnost tokom cele godine bez obzira na vremenske prilike. Idealno za veće porudžbine.',
+          icon: Car,
+          badge: 'Za sve vremenske uslove',
+          enabled: siteSettings?.rent_car_enabled !== false,
+          available: false
+        }
+      ];
+
+  const faqs = siteSettings?.faqs && siteSettings.faqs.length > 0
+    ? siteSettings.faqs
+    : [
+        {
+          q: 'U kojim gradovima mogu da radim?',
+          a: 'Primarni fokus nam je Beograd, ali prijave prihvatamo i za druge veće gradove u Srbiji u kojima su dostupne platforme.'
+        },
+        {
+          q: 'Za koje platforme radi Deliverix?',
+          a: 'Trenutno vršimo regrutaciju i obuku za Wolt dostavu, a uskoro pokrećemo saradnju i sa Glovo platformom. Možete se prijaviti odmah i osigurati svoje mesto.'
+        },
+        {
+          q: 'Da li moram da imam svoje vozilo?',
+          a: 'Ne morate. Ukoliko nemate sopstveno vozilo, preko naših partnerskih agencija možemo vam pomoći da iznajmite skuter, automobil ili električni bicikl pod odličnim uslovima.'
+        },
+        {
+          q: 'Kada i kako se vrši isplata?',
+          a: 'Isplate su redovne i tačne (svakih 15 dana), direktno na vaš račun, uz kompletan pregled ostvarenih bonusa i bakšiša.'
+        }
+      ];
+
+  const targetAudienceItems = siteSettings?.target_audience_items && siteSettings.target_audience_items.length > 0
+    ? siteSettings.target_audience_items
+    : [
+        'Osobe koje žele odličnu zaradu i stabilan prihod uz potpunu kontrolu nad svojim vremenom',
+        'Studente koji žele da rade samo vikendom ili par sati dnevno',
+        'Zaposlene koji traže dodatni izvor prihoda nakon radnog vremena',
+        'Osobe bez ikakvog prethodnog iskustva u dostavi ili prodaji'
+      ];
+
+  const whyApplyItems = siteSettings?.why_apply_items && siteSettings.why_apply_items.length > 0
+    ? siteSettings.why_apply_items
+    : [
+        { title: 'Sloboda izbora modela', desc: 'Biraš model saradnje i dinamiku rada koji najviše odgovaraju tvojim ličnim potrebama.' },
+        { title: 'Najbolja provizija', desc: 'Spajamo te sa agencijama koje nude najpovoljnije uslove i najmanji procenat.' },
+        { title: 'Brza podrška', desc: 'Naš mentorski tim ti pomaže oko aplikacije i rešavanja bilo kakvih problema na terenu.' },
+        { title: 'Brz start i obuka', desc: 'Pomažemo ti u brzom pokretanju naloga i pružamo besplatne savete pre prve dostave.' }
+      ];
+
+  return (
+    <div className="space-y-10 sm:space-y-12 pb-16" id="landing-page-root">
+      
+      {/* Obaveštenje sa vrha (Samo ako postoji) */}
+      {siteSettings?.announcement_banner && (
+        <div className="bg-amber-50 border border-amber-150 text-amber-900 px-4 py-3 rounded-2xl flex items-center justify-center gap-2 text-xs sm:text-sm font-bold shadow-sm">
+          <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+          <span>{siteSettings?.announcement_banner}</span>
+        </div>
+      )}
+
+      {/* Hero Sekcija - Dve kolone */}
+      {siteSettings?.hero_enabled !== false && (
+        <section className="relative overflow-hidden pt-4 pb-4 lg:pt-8 lg:pb-10" id="section-hero">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          
+          {/* Tekst Hero Sekcije (Leva strana) */}
+          <div className="lg:col-span-7 space-y-5 text-left flex flex-col items-start">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-sky-50 text-sky-800 rounded-full text-xs font-bold uppercase tracking-wider border border-sky-100">
+              <Sparkles className="w-3.5 h-3.5 text-sky-500" />
+              <span>Platforma za buduće dostavljače</span>
+            </div>
+            
+            <h1 className="text-3xl sm:text-4xl lg:text-5.5xl font-black text-gray-900 tracking-tight leading-[1.12] text-left">
+              {siteSettings?.hero_title ? (
+                <span>{siteSettings.hero_title}</span>
+              ) : (
+                <>Postani <span className="text-sky-500 underline decoration-sky-300 decoration-wavy decoration-3">Dostavljač u Beogradu</span> i Ostalim Gradovima Srbije</>
+              )}
+            </h1>
+
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-700 tracking-tight text-left text-sky-600">
+              {siteSettings?.hero_platform_title || "Posao za Wolt i Glovo Dostavljače (Zarada do 150.000 RSD)"}
+            </h2>
+            
+            <p className="text-sm sm:text-base text-gray-500 leading-snug sm:leading-relaxed max-w-xl text-left">
+              {siteSettings?.homepage_subtitle || "Odlična zarada, fleksibilno vreme i podrška mentora. Prijavi se za samo 2 minuta i kreni sa radom!"}
+            </p>
+
+            {/* Isticanje Partnerskih Platformi (Celina C - 3.1) */}
+            <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-50 border border-gray-150 rounded-2xl max-w-lg w-full">
+              <button
+                type="button"
+                onClick={() => setActivePlatformTab('wolt')}
+                className={`flex-1 p-3.5 rounded-xl transition-all cursor-pointer text-left flex flex-col justify-between border ${
+                  activePlatformTab === 'wolt'
+                    ? 'bg-sky-500 text-white border-sky-500 shadow-lg shadow-sky-500/20'
+                    : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50/50'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-sm font-black uppercase tracking-wider">Wolt</span>
+                  <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${activePlatformTab === 'wolt' ? 'bg-white text-sky-600' : 'bg-emerald-100 text-emerald-800 animate-pulse'}`}>
+                    Aktivno / Prijavi se
+                  </span>
+                </div>
+                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'wolt' ? 'text-sky-100' : 'text-gray-500'}`}>
+                  Isplate na 15 dana. Fleksibilno vreme.
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActivePlatformTab('glovo')}
+                className={`flex-1 p-3.5 rounded-xl transition-all cursor-pointer text-left flex flex-col justify-between border ${
+                  activePlatformTab === 'glovo'
+                    ? 'bg-amber-500 text-white border-amber-500 shadow-lg shadow-amber-500/20'
+                    : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50/50'
+                }`}
+              >
+                <div className="flex items-center justify-between w-full gap-2">
+                  <span className="text-sm font-black uppercase tracking-wider">Glovo</span>
+                  <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${activePlatformTab === 'glovo' ? 'bg-white text-amber-700' : 'bg-amber-100 text-amber-800'}`}>
+                    Uskoro / Rezerviši mesto
+                  </span>
+                </div>
+                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'glovo' ? 'text-amber-100' : 'text-gray-500'}`}>
+                  Uskoro krećemo! Prijavi se i osiguraj mesto.
+                </p>
+              </button>
+            </div>
+
+            {/* Ključne stavke odmah vidljive */}
+            <div className="grid grid-cols-2 gap-2 text-left w-full max-w-lg">
+              {[
+                activePlatformTab === 'wolt' ? 'Fleksibilno radno vreme' : 'Radno vreme na zakazivanje',
+                'Redovne isplate',
+                'Sopstveno/iznajmljeno vozilo',
+                'Besplatna podrška za start'
+              ].map((text, idx) => (
+                <div key={idx} className="flex items-center gap-2 bg-gray-50 border border-gray-150/50 p-2.5 rounded-xl">
+                  <div className="w-4.5 h-4.5 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center shrink-0">
+                    <Check className="w-2.5 h-2.5 stroke-[3]" />
+                  </div>
+                  <span className="text-xs font-semibold text-gray-700">
+                    {text}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA dugmad */}
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
+              <button
+                id="hero-apply-btn"
+                onClick={onOpenApply}
+                className="flex-1 px-6 py-3.5 bg-sky-500 hover:bg-sky-600 text-white text-sm font-black rounded-xl shadow-lg shadow-sky-500/20 text-center active:translate-y-0.5 transition flex items-center justify-center gap-2 cursor-pointer"
+              >
+                Započni prijavu odmah <ArrowRight className="w-4 h-4" />
+              </button>
+              <a
+                id="hero-learn-more-btn"
+                href={
+                  siteSettings?.steps_enabled !== false 
+                    ? "#kako-funkcionise" 
+                    : siteSettings?.requirements_enabled !== false 
+                    ? "#sta-je-potrebno" 
+                    : siteSettings?.rent_enabled === true 
+                    ? "#renta-vozila" 
+                    : "#kontakt"
+                }
+                className="px-6 py-3.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 text-sm font-bold rounded-xl text-center transition flex items-center justify-center"
+              >
+                Kako funkcioniše?
+              </a>
+            </div>
+          </div>
+
+          {/* Vizuelni desni deo (Slika dostavljača / Slajder) */}
+          <div className="lg:col-span-5 relative flex justify-center items-center">
+            <div className="relative w-full max-w-sm lg:max-w-none">
+              {/* Ukrasni pozadinski elementi */}
+              <div className="absolute -inset-1.5 bg-gradient-to-r from-sky-400 to-sky-300 rounded-3xl blur-md opacity-30 transition duration-1000"></div>
+              
+              <div className="relative bg-white p-3 rounded-3xl border border-gray-100 shadow-2xl overflow-hidden aspect-square group">
+                {/* Slajder prikaz */}
+                {siteSettings?.hero_right_mode === 'slider' && slides.length > 0 ? (
+                  <div className="w-full h-full relative overflow-hidden rounded-2xl bg-gray-50">
+                    {slides.map((slide: any, idx: number) => (
+                      <motion.img
+                        key={idx}
+                        src={slide.image}
+                        alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
+                        className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                        initial={{ opacity: 0, scale: 1.05 }}
+                        animate={{ 
+                          opacity: currentSlide === idx ? 1 : 0,
+                          scale: currentSlide === idx ? 1 : 1.05,
+                          zIndex: currentSlide === idx ? 10 : 0
+                        }}
+                        transition={{ duration: 0.8, ease: 'easeInOut' }}
+                        referrerPolicy="no-referrer"
+                      />
+                    ))}
+
+                    {/* Navigacioni tasteri levo / desno (prikazuju se na hover) */}
+                    {slides.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
+                          title="Prethodna slika"
+                        >
+                          <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
+                          title="Sledeća slika"
+                        >
+                          <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+
+                        {/* Indikatori u vidu tačkica */}
+                        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 bg-black/30 backdrop-blur-xs px-2.5 py-1 rounded-full">
+                          {slides.map((_: any, idx: number) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              onClick={() => setCurrentSlide(idx)}
+                              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${currentSlide === idx ? 'bg-white w-3.5' : 'bg-white/50'}`}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  /* Standardna pojedinačna slika */
+                  <img
+                    src={siteSettings?.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.jpg'}
+                    alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
+                    className="w-full h-full object-cover rounded-2xl"
+                    referrerPolicy="no-referrer"
+                  />
+                )}
+                
+                {/* Float tag sa informacijom o besplatnoj podršci */}
+                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl border border-gray-150 shadow-xl flex items-center gap-3 z-20">
+                  <div className="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
+                    <Check className="w-5 h-5 stroke-[3]" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-sky-600 leading-none mb-1 truncate">
+                      {activeSlide?.badge_title || 'Dostupno odmah'}
+                    </p>
+                    <p className="text-xs font-black text-gray-800 leading-none truncate">
+                      {activeSlide?.badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      )}
+
+      {/* 100% Besplatno - Zašto kandidati biraju nas? Sekcija (Razvučeno celom širinom - Kompaktnija verzija) */}
+      {siteSettings?.why_choose_us_enabled !== false && (
+        <section className="bg-gradient-to-tr from-sky-500 to-sky-600 rounded-3xl p-6 sm:p-10 text-white shadow-2xl shadow-sky-500/10 space-y-6" id="zasto-nas-biraju">
+        <div className="max-w-4xl mx-auto text-center space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 text-white rounded-full text-xs font-black uppercase tracking-wider border border-white/10">
+            <Bike className="w-4 h-4 shrink-0" />
+            <span>100% Besplatno</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+            {siteSettings?.why_choose_us_title || "Zašto kandidati biraju nas?"}
+          </h2>
+          <p className="text-xs sm:text-base text-sky-50 leading-relaxed max-w-3xl mx-auto font-medium">
+            {siteSettings?.why_choose_us_subtitle || "Naša usluga posredovanja, podrške i savetovanja je potpuno besplatna za sve kandidate. Nemamo nikakve skrivene naknade, članarine niti uzimamo procenat od tvoje zarade."}
+          </p>
+        </div>
+
+        <div className="border-t border-white/20 pt-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            {(siteSettings?.why_choose_us_items && siteSettings.why_choose_us_items.length > 0
+              ? siteSettings.why_choose_us_items
+              : [
+                'Besplatna obuka i priprema za start',
+                '0 RSD troškova za našu podršku',
+                'Povezivanje sa najpouzdanijim partnerima',
+                'Dostupni smo ti za sva pitanja – uvek besplatno'
+              ]
+            ).map((item: string, idx: number) => (
+              <div key={idx} className="bg-white/10 backdrop-blur-xs p-3.5 rounded-xl border border-white/10 flex items-center gap-3">
+                <div className="w-5.5 h-5.5 bg-white text-sky-600 rounded-full flex items-center justify-center shrink-0 shadow-xs">
+                  <Check className="w-3 h-3 stroke-[3]" />
+                </div>
+                <span className="text-xs sm:text-sm font-semibold text-white antialiased">{item}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
+
+
+
+      {/* Kako funkcioniše proces */}
+      {siteSettings?.steps_enabled !== false && (
+        <section id="kako-funkcionise" className="space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{siteSettings?.steps_title || "Kako funkcioniše proces?"}</h2>
+            <p className="text-gray-600">{siteSettings?.steps_subtitle || "Od prijave do tvoje prve isplate deli te samo nekoliko jednostavnih koraka"}</p>
+          </div>
+
+          <div className={`grid gap-8 ${
+            steps.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 
+            steps.length === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 
+            steps.length > 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' :
+            'grid-cols-1 md:grid-cols-3'
+          }`}>
+            {steps.map((step, idx) => (
+              <div key={idx} className="bg-white p-8 rounded-2xl shadow-xs border border-gray-100 relative space-y-4 hover:border-sky-300 transition-all duration-300 group">
+                <span className="text-5xl font-black text-sky-100 group-hover:text-sky-200 transition-colors absolute top-4 right-6">{step.number || `0${idx + 1}`}</span>
+                <h3 className="text-xl font-bold text-gray-900 pt-4">{step.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Šta ti je potrebno */}
+      {siteSettings?.requirements_enabled !== false && (
+        <section id="sta-je-potrebno" className="bg-gray-50/50 rounded-3xl p-8 sm:p-12 border border-gray-100 space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">{siteSettings?.requirements_title || "Uslovi za Rad i Prijava za Deliverix Flotu"}</h2>
+            <p className="text-gray-600">{siteSettings?.requirements_subtitle || "Uslovi su minimalni i dostupni svima koji žele pošteno da zarade"}</p>
+          </div>
+
+          <div className={`grid gap-8 ${
+            requirements.length === 2 ? 'grid-cols-1 md:grid-cols-2' : 
+            requirements.length === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 
+            requirements.length > 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' :
+            'grid-cols-1 md:grid-cols-3'
+          }`}>
+            {requirements.map((req, idx) => {
+              const ReqIcon = req.icon;
+              return (
+                <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center border border-sky-100">
+                    <ReqIcon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">{req.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{req.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Sekcija: Nemaš Vozilo? Nema Problema! (Celina C - 3.2 i H3 2.2) */}
+      {siteSettings?.rent_enabled === true && (
+        <section id="renta-vozila" className="bg-sky-50/40 rounded-3xl p-8 sm:p-12 border border-sky-100/60 space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider border border-amber-100">
+              <Zap className="w-3.5 h-3.5 text-amber-500" />
+              <span>Nemaš Vozilo? Nema Problema!</span>
+            </div>
+            
+            <h3 className="text-xl sm:text-3xl font-black text-gray-900 tracking-tight">
+              {siteSettings?.rent_section_title || "Nemate sopstveno vozilo? Obezbeđujemo povoljnu rentu!"}
+            </h3>
+            
+            <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+              {siteSettings?.rent_section_text || "Nemaš sopstveni auto, skuter ili električni bicikl? Deliverix sarađuje sa vodećim agencijama za rentiranje vozila. Pomažemo ti da obezbediš pouzdano vozilo po povlašćenim cenama i odmah počneš sa radom."}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                onClick={onOpenApply}
+                className="px-6 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl shadow-lg shadow-sky-500/25 transition flex items-center justify-center gap-2 cursor-pointer text-sm"
+              >
+                Iznajmi vozilo i počni <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 grid grid-cols-1 gap-4">
+            {rentItems.filter(v => v.enabled).map((v, i) => {
+              const Icon = v.icon;
+              return (
+                <div key={i} className={`bg-white p-4.5 rounded-2xl border flex items-start gap-4 shadow-xs hover:shadow-md transition ${
+                  v.available ? 'border-gray-100' : 'border-gray-200 bg-gray-50/50 opacity-90'
+                }`}>
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
+                    v.available ? 'bg-sky-50 text-sky-500 border-sky-100' : 'bg-gray-100 text-gray-400 border-gray-250'
+                  }`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-1 flex-1">
+                    <div className="flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="font-bold text-gray-900 text-sm sm:text-base">{v.title}</h4>
+                        {v.badge && (
+                          <span className="text-[9px] font-extrabold bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full uppercase tracking-wider border border-amber-100 shrink-0">
+                            {v.badge}
+                          </span>
+                        )}
+                      </div>
+                      
+                      {/* Availability badge */}
+                      <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 border flex items-center gap-1 ${
+                        v.available 
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
+                          : 'bg-rose-50 text-rose-600 border-rose-100'
+                      }`}>
+                        <span className={`w-1.5 h-1.5 rounded-full ${v.available ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+                        {v.available ? 'Dostupno' : 'Zauzeto'}
+                      </span>
+                    </div>
+                    <p className="text-gray-500 text-xs leading-relaxed">{v.desc}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* Ko može da radi (Fokus na jednostavnost i ljude bez iskustva) */}
+      {siteSettings?.target_audience_enabled !== false && (
+        <section id="ko-moze-da-radi" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-5 space-y-6">
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+              {siteSettings?.target_audience_title || "Za koga je ovaj posao?"}
+            </h2>
+            <p className="text-gray-600 leading-relaxed">
+              {siteSettings?.target_audience_desc || "Dostava hrane i pošiljaka je idealna za sve koji cene slobodu i samostalnost u radu. Naš stručni tim ti pruža sigurnost, besplatne savete i brze odgovore u svakom trenutku."}
+            </p>
+
+            <div className="space-y-3.5">
+              {targetAudienceItems.map((text: string, idx: number) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="w-5 h-5 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center shrink-0 mt-0.5">
+                    <Check className="w-3 h-3 stroke-[3]" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-700">{text}</p>
+                </div>
+              ))}
+            </div>
+
+            <button
+              id="ko-moze-apply-btn"
+              onClick={onOpenApply}
+              className="px-6 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center gap-2 cursor-pointer text-sm"
+            >
+              Započni prijavu odmah (Traje 1 min) <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div className="lg:col-span-7 bg-white border border-gray-100 p-8 rounded-3xl shadow-xs space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <HeartHandshake className="w-5 h-5 text-sky-500" /> {siteSettings?.why_apply_title || "Zašto se prijaviti preko nas?"}
+            </h3>
+            <p className="text-sm text-gray-500">
+              {siteSettings?.why_apply_desc || "Kao nezavisna platforma za podršku, pomažemo ti da pronađeš partnersku agenciju koja nudi najbolje uslove za tvoj profil. To za tebe znači:"}
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+              {whyApplyItems.map((item: any, idx: number) => (
+                <div key={idx} className="p-4 bg-gray-50 rounded-xl space-y-1">
+                  <h4 className="font-bold text-sm text-gray-900">{item.title}</h4>
+                  <p className="text-xs text-gray-500">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Najnovije sa Bloga */}
+      {siteSettings?.blog_enabled !== false && latestPosts.length > 0 && (
+        <section id="najnovije-sa-bloga" className="space-y-10 py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-100 pb-5">
+            <div className="space-y-2">
+              <span className="text-xs font-black text-sky-500 uppercase tracking-widest block">Korisni saveti & novosti</span>
+              <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Najnovije sa našeg bloga</h2>
+              <p className="text-sm text-gray-500 max-w-xl">
+                Pročitaj stručne savete, vodiče i stvarna iskustva dostavljača kako bi maksimizovao svoju zaradu.
+              </p>
+            </div>
+            <button
+              id="view-all-blog-posts-teaser-btn"
+              onClick={onNavigateToBlog}
+              className="text-sm font-black text-sky-500 hover:text-sky-600 transition flex items-center gap-1.5 cursor-pointer shrink-0"
+            >
+              Poseti naš blog <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          <div 
+            ref={landingBlogRef}
+            onScroll={handleLandingBlogScroll}
+            className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          >
+            {latestPosts.map((post) => (
+              <div
+                key={post.id}
+                onClick={onNavigateToBlog}
+                className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-gray-200/80 transition duration-300 flex flex-col cursor-pointer group snap-start shrink-0 w-[85%] sm:w-[60%] md:w-full"
+              >
+                {/* Slika */}
+                <div className="h-48 overflow-hidden bg-gray-100 relative shrink-0">
+                  <SafeBlogImage
+                    src={post.cover_image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  />
+                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-black text-gray-600 shadow-xs uppercase tracking-wider">
+                    {post.read_time} čitanja
+                  </div>
+                </div>
+
+                {/* Sadržaj kartice */}
+                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-2">
+                    {/* Tagovi */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {post.tags?.map((tag: string) => (
+                        <span key={tag} className="px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md text-[10px] font-bold">
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
+                    {/* Naslov */}
+                    <h3 className="font-extrabold text-gray-900 group-hover:text-sky-500 transition line-clamp-2 leading-snug">
+                      {post.title}
+                    </h3>
+                    {/* Kratak opis */}
+                    <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+                      {post.summary}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-bold">
+                    <span>{post.author}</span>
+                    <span className="text-sky-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0 font-extrabold">
+                      Pročitaj više <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Mobilni indikatori i kontrole */}
+          {latestPosts.length > 1 && (
+            <div className="flex md:hidden flex-col items-center gap-4 pt-2">
+              {/* Dots */}
+              <div className="flex items-center gap-2">
+                {latestPosts.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => scrollLandingBlogTo(idx)}
+                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${landingBlogIndex === idx ? 'w-6 bg-sky-500' : 'w-2 bg-gray-200 hover:bg-gray-300'}`}
+                    aria-label={`Prikaži članak ${idx + 1}`}
+                  />
+                ))}
+              </div>
+              
+              {/* Navigacija */}
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => scrollLandingBlogTo(Math.max(0, landingBlogIndex - 1))}
+                  disabled={landingBlogIndex === 0}
+                  className="w-10 h-10 flex items-center justify-center bg-white border border-gray-150 rounded-full shadow-xs active:scale-95 text-gray-600 disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                  aria-label="Prethodni članak"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => scrollLandingBlogTo(Math.min(latestPosts.length - 1, landingBlogIndex + 1))}
+                  disabled={landingBlogIndex === latestPosts.length - 1}
+                  className="w-10 h-10 flex items-center justify-center bg-white border border-gray-150 rounded-full shadow-xs active:scale-95 text-gray-600 disabled:opacity-40 disabled:pointer-events-none transition cursor-pointer"
+                  aria-label="Sledeći članak"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Česta Pitanja (FAQ) */}
+      {siteSettings?.faq_enabled !== false && (
+        <section id="faq" className="space-y-12">
+          <div className="text-center max-w-2xl mx-auto space-y-3">
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Česta Pitanja (FAQ)</h2>
+            <p className="text-gray-600">Sve što te interesuje na jednom mestu, jasno i transparentno</p>
+          </div>
+
+          <div className="max-w-3xl mx-auto space-y-3" id="faq-list">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div 
+                  key={idx} 
+                  className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden transition-colors"
+                  id={`faq-item-${idx}`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggleFaq(idx)}
+                    className="w-full px-6 py-4 text-left font-bold text-gray-900 flex justify-between items-center hover:bg-gray-50/50 cursor-pointer transition text-sm sm:text-base"
+                  >
+                    <span>{faq.q}</span>
+                    {isOpen ? <ChevronUp className="w-5 h-5 text-sky-500 shrink-0" /> : <ChevronDown className="w-5 h-5 text-gray-400 shrink-0" />}
+                  </button>
+                  
+                  {isOpen && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      className="px-6 pb-5 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-50"
+                    >
+                      {faq.a}
+                    </motion.div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Kontakt / Poziv na akciju */}
+      {siteSettings?.footer_cta_enabled !== false && (
+        <section id="kontakt" className="bg-sky-500 rounded-3xl text-white p-8 sm:p-12 text-center space-y-8 relative overflow-hidden">
+          {/* Dekorativni krugovi */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-20 -mb-20 pointer-events-none"></div>
+
+          <div className="max-w-2xl mx-auto space-y-4">
+            <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
+              {siteSettings?.footer_cta_title || "Započni svoju dostavljačku karijeru danas"}
+            </h2>
+            <p className="text-sky-100 text-sm sm:text-base">
+              {siteSettings?.footer_cta_desc || "Nemoj odlagati priliku za odličnu zaradu i potpunu slobodu. Registracija te ništa ne košta i ne obavezuje te ni na šta. Pomažemo ti oko celog procesa besplatno."}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              id="cta-footer-apply-btn"
+              onClick={onOpenApply}
+              className="px-8 py-4 bg-white hover:bg-gray-50 text-sky-600 font-black rounded-2xl shadow-lg shadow-sky-950/20 transition cursor-pointer flex items-center gap-2"
+            >
+              Započni prijavu odmah (Traje 1 min) <ArrowRight className="w-5 h-5" />
+            </button>
+            
+            <a
+              href={`tel:${(siteSettings?.support_phone || "+381 60 123 4567").replace(/\s+/g, '')}`}
+              className="flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs sm:text-sm font-semibold backdrop-blur-xs transition cursor-pointer"
+            >
+              <Phone className="w-4 h-4 text-sky-200" />
+              <span>Podrška: {siteSettings?.support_phone || "+381 60 123 4567"}</span>
+            </a>
+          </div>
+
+          <p className="text-[11px] text-sky-100/80">
+            {siteSettings?.footer_disclaimer || "Napomena: Mi nismo deo ni jedne dostavne mreže (Wolt, Glovo, itd.) već nezavisni posrednik za podršku, informacije i brzu regrutaciju u Srbiji. Sve informacije su neutralne i tačne."}
+          </p>
+        </section>
+      )}
+
+    </div>
+  );
+}

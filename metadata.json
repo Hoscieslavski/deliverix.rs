@@ -1,0 +1,8 @@
+{
+  "name": "deliverix.rs",
+  "description": "Nezavisni portal za podršku i brzu prijavu novih dostavljača u Srbiji.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
