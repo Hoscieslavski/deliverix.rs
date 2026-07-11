@@ -33,6 +33,7 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp, firebaseConfig.firestoreDatabaseId || '(default)');
 
 const app = express();
+app.set('trust proxy', true);
 const PORT = Number(process.env.PORT || 3000);
 
 // 301 Redirect sa www.deliverix.rs na deliverix.rs (rešava "www and non-www" SEO upozorenje)
@@ -40,7 +41,7 @@ app.use((req, res, next) => {
   const host = req.headers.host;
   if (host && host.startsWith('www.')) {
     const newHost = host.slice(4);
-    return res.redirect(301, `${req.protocol}://${newHost}${req.originalUrl}`);
+    return res.redirect(301, `https://${newHost}${req.originalUrl}`);
   }
   next();
 });
@@ -157,6 +158,31 @@ const superAdminAuthMiddleware = async (req: express.Request, res: express.Respo
     next();
   } else {
     res.status(403).json({ error: 'Samo Super Admin ima pristup ovoj opciji.' });
+  }
+};
+
+// Funkcija za upisivanje u Dnevnik aktivnosti (Audit Log)
+const addAuditLog = async (passcode: string | undefined, action: string, details: string) => {
+  try {
+    let username = 'Sistem / Anonimno';
+    let role = 'Nepoznato';
+    if (passcode) {
+      const res = await verifyAdminPasscode(passcode);
+      if (res.success) {
+        username = res.username || 'admin';
+        role = res.role || 'Nepoznato';
+      }
+    }
+    const auditLogsCol = collection(db, 'audit_logs');
+    await addDoc(auditLogsCol, {
+      username,
+      role,
+      action,
+      details,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    console.error('Greška pri kreiranju audit loga:', err);
   }
 };
 
@@ -316,6 +342,8 @@ app.post('/api/admin/change-credentials', async (req, res) => {
       updated_at: new Date().toISOString()
     }, { merge: true });
 
+    await addAuditLog(currentPasscode, 'Izmena sopstvenih kredencijala', `Admin je promenio korisničko ime u "${newUsername.trim()}".`);
+
     return res.json({ 
       success: true, 
       message: 'Kredencijali su uspešno promenjeni. Prijavite se ponovo sa novim podacima.',
@@ -382,6 +410,9 @@ app.post('/api/admin/accounts', superAdminAuthMiddleware, async (req, res) => {
     const docId = `admin_${Date.now()}`;
     await setDoc(doc(db, 'admins', docId), newAdmin);
 
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Kreiranje admin naloga', `Kreiran je nalog sa korisničkim imenom "${username.trim()}" i ulogom "${role}".`);
+
     res.status(201).json({ success: true, account: { id: docId, ...newAdmin }, message: 'Nalog uspešno kreiran.' });
   } catch (error) {
     console.error('Greška pri kreiranju admin naloga:', error);
@@ -421,6 +452,9 @@ app.patch('/api/admin/accounts/:id', superAdminAuthMiddleware, async (req, res) 
 
     await updateDoc(adminDocRef, updates);
 
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Izmena admin naloga', `Ažuriran je nalog sa ID-jem "${id}". Izmenjena polja: ${Object.keys(updates).join(', ')}.`);
+
     res.json({ success: true, message: 'Nalog uspešno ažuriran.' });
   } catch (error) {
     console.error('Greška pri ažuriranju admin naloga:', error);
@@ -437,6 +471,10 @@ app.delete('/api/admin/accounts/:id', superAdminAuthMiddleware, async (req, res)
     }
 
     await deleteDoc(doc(db, 'admins', id));
+    
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Brisanje admin naloga', `Obrisan je nalog sa ID-jem "${id}".`);
+
     res.json({ success: true, message: 'Nalog uspešno obrisan.' });
   } catch (error) {
     console.error('Greška pri brisanju admin naloga:', error);
@@ -510,7 +548,7 @@ app.get('/api/candidates', adminAuthMiddleware, async (req, res) => {
 app.patch('/api/candidates/:id', adminAuthMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, napomena } = req.body;
+    const { status, napomena, email } = req.body;
 
     const candidateDocRef = doc(db, 'candidates', id);
     const docSnap = await getDoc(candidateDocRef);
@@ -522,12 +560,26 @@ app.patch('/api/candidates/:id', adminAuthMiddleware, async (req, res) => {
     const updates: any = {};
     if (status !== undefined) updates.status = status;
     if (napomena !== undefined) updates.napomena = napomena.trim();
+    if (email !== undefined) updates.email = email.trim();
     updates.last_updated_at = new Date().toISOString();
 
     await updateDoc(candidateDocRef, updates);
 
-    // Ako je status promenjen, šaljemo obaveštenje (SMS / WhatsApp struktura)
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
     const currentData = docSnap.data();
+    let changeDetails = `Kandidat: ${currentData.ime} (${currentData.telefon}). `;
+    if (status !== undefined && status !== currentData.status) {
+      changeDetails += `Status: ${currentData.status || 'Novi'} -> ${status}. `;
+    }
+    if (napomena !== undefined && napomena.trim() !== (currentData.napomena || '').trim()) {
+      changeDetails += `Dodata/izmenjena napomena. `;
+    }
+    if (email !== undefined && email.trim() !== (currentData.email || '').trim()) {
+      changeDetails += `Email: ${currentData.email || 'Nema'} -> ${email.trim()}. `;
+    }
+    await addAuditLog(currentPasscode, 'Ažuriranje kandidata', changeDetails);
+
+    // Ako je status promenjen, šaljemo obaveštenje (SMS / WhatsApp struktura)
     if (status !== undefined && status !== currentData.status) {
       const message = `Zdravo ${currentData.ime}, status tvoje prijave za dostavljača je promenjen u: ${getStatusLabel(status)}. Prati status uživo na svom nalogu!`;
       await sendNotification('sms', currentData.telefon, message);
@@ -876,6 +928,10 @@ app.post('/api/blog-posts', marketingAuthMiddleware, async (req, res) => {
     };
 
     await setDoc(doc(db, 'blog_posts', finalSlug), newPost);
+    
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Kreiranje blog posta', `Kreiran je blog post sa naslovom "${title}" i slugom "${finalSlug}".`);
+
     res.json({ success: true, post: { id: finalSlug, ...newPost } });
   } catch (error) {
     console.error('Greška pri kreiranju blog posta:', error);
@@ -890,6 +946,10 @@ app.patch('/api/blog-posts/:id', marketingAuthMiddleware, async (req, res) => {
     const updateData = req.body;
     const docRef = doc(db, 'blog_posts', id);
     await updateDoc(docRef, updateData);
+    
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Izmena blog posta', `Ažuriran je blog post sa ID-jem/slugom "${id}".`);
+
     res.json({ success: true, message: 'Blog post uspešno ažuriran.' });
   } catch (error) {
     console.error('Greška pri ažuriranju blog posta:', error);
@@ -902,6 +962,10 @@ app.delete('/api/blog-posts/:id', marketingAuthMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     await deleteDoc(doc(db, 'blog_posts', id));
+    
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Brisanje blog posta', `Obrisan je blog post sa ID-jem/slugom "${id}".`);
+
     res.json({ success: true, message: 'Blog post uspešno obrisan.' });
   } catch (error) {
     console.error('Greška pri brisanju blog posta:', error);
@@ -918,6 +982,34 @@ app.get('/robots.txt', (req, res) => {
 Allow: /
 Disallow: /admin
 Disallow: /api/
+
+# Blokiranje AI botova od skrejpovanja sadržaja za trening modela
+User-agent: GPTBot
+Disallow: /
+
+User-agent: ChatGPT-User
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: Anthropic-AI
+Disallow: /
+
+User-agent: Claude-Web
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: OAI-SearchBot
+Disallow: /
 
 Sitemap: ${protocol}://${host}/sitemap.xml`);
 });
@@ -1130,10 +1222,181 @@ app.post('/api/marketing/seo', marketingAuthMiddleware, async (req, res) => {
   try {
     const settings = req.body;
     await setDoc(doc(db, 'site_configs', 'settings'), settings);
+
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Izmena SEO i podešavanja sajta', 'Ažurirana su SEO podešavanja, Hero sekcija, sekcije ili česta pitanja.');
+
     res.json({ success: true, message: 'SEO i podešavanja sajta su uspešno sačuvani.' });
   } catch (error) {
     console.error('Greška pri čuvanju SEO podešavanja:', error);
     res.status(500).json({ error: 'Greška pri čuvanju SEO podešavanja.' });
+  }
+});
+
+// G2. Preuzimanje Dnevnika Aktivnosti (Zaštićena ruta - Super Admin)
+app.get('/api/admin/audit-logs', superAdminAuthMiddleware, async (req, res) => {
+  try {
+    const logsCol = collection(db, 'audit_logs');
+    const q = query(logsCol, orderBy('timestamp', 'desc'));
+    const snapshot = await getDocs(q);
+    const logs: any[] = [];
+    snapshot.forEach((doc) => {
+      logs.push({ id: doc.id, ...doc.data() });
+    });
+    res.json({ success: true, logs });
+  } catch (error) {
+    console.error('Greška pri učitavanju audit logova:', error);
+    res.status(500).json({ error: 'Greška pri učitavanju dnevnika aktivnosti.' });
+  }
+});
+
+// G3. Preuzimanje SMTP Email Podešavanja (Zaštićena ruta - Super Admin)
+app.get('/api/admin/mail-config', superAdminAuthMiddleware, async (req, res) => {
+  try {
+    const configRef = doc(db, 'site_configs', 'mail_settings');
+    const docSnap = await getDoc(configRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      res.json({
+        success: true,
+        smtp_email: data.smtp_email || '',
+        sender_name: data.sender_name || '',
+        sender_alias: data.sender_alias || '',
+        has_password: !!data.smtp_password
+      });
+    } else {
+      res.json({
+        success: true,
+        smtp_email: '',
+        sender_name: '',
+        sender_alias: '',
+        has_password: false
+      });
+    }
+  } catch (error) {
+    console.error('Greška pri dohvatanju mail podešavanja:', error);
+    res.status(500).json({ error: 'Greška pri učitavanju email podešavanja.' });
+  }
+});
+
+// G4. Čuvanje SMTP Email Podešavanja (Zaštićena ruta - Super Admin)
+app.post('/api/admin/mail-config', superAdminAuthMiddleware, async (req, res) => {
+  try {
+    const { smtp_email, smtp_password, sender_name, sender_alias } = req.body;
+    const configRef = doc(db, 'site_configs', 'mail_settings');
+    const docSnap = await getDoc(configRef);
+    
+    const updates: any = {
+      smtp_email: smtp_email?.trim() || '',
+      sender_name: sender_name?.trim() || '',
+      sender_alias: sender_alias?.trim() || ''
+    };
+    
+    // Ako je uneta nova lozinka, sačuvaj je, inače zadrži staru
+    if (smtp_password && smtp_password.trim() !== '') {
+      updates.smtp_password = smtp_password.trim();
+    } else if (docSnap.exists()) {
+      const oldData = docSnap.data();
+      if (oldData.smtp_password) {
+        updates.smtp_password = oldData.smtp_password;
+      }
+    }
+    
+    await setDoc(configRef, updates);
+
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Izmena SMTP podešavanja', `Ažurirana su SMTP podešavanja za email adresu "${smtp_email}".`);
+
+    res.json({ success: true, message: 'Email podešavanja su uspešno sačuvana.' });
+  } catch (error) {
+    console.error('Greška pri čuvanju mail podešavanja:', error);
+    res.status(500).json({ error: 'Greška pri čuvanju email podešavanja.' });
+  }
+});
+
+// G5. Slanje email-a kandidatu (Zaštićena ruta - Super Admin)
+app.post('/api/admin/send-candidate-email', superAdminAuthMiddleware, async (req, res) => {
+  try {
+    const { candidateId, to, subject, body } = req.body;
+    if (!to || !subject || !body) {
+      return res.status(400).json({ error: 'Sva polja (Primalac, Naslov, Sadržaj) su obavezna.' });
+    }
+
+    // 1. Učitavanje SMTP konfiguracije
+    const configRef = doc(db, 'site_configs', 'mail_settings');
+    const configSnap = await getDoc(configRef);
+    if (!configSnap.exists()) {
+      return res.status(400).json({ error: 'SMTP podešavanja nisu konfigurisana. Molimo podesite Gmail SMTP nalog u Podešavanjima.' });
+    }
+
+    const configData = configSnap.data();
+    if (!configData.smtp_email || !configData.smtp_password) {
+      return res.status(400).json({ error: 'SMTP podešavanja su nepotpuna. Molimo podesite Gmail adresu i lozinku aplikacije.' });
+    }
+
+    // 2. Slanje email-a pomoću nodemailer-a
+    const nodemailer = await import('nodemailer');
+    const createTransport = nodemailer.createTransport || (nodemailer as any).default?.createTransport;
+    
+    if (!createTransport) {
+      return res.status(500).json({ error: 'Nodemailer instanca nije mogla biti inicijalizovana.' });
+    }
+
+    const transporter = createTransport({
+      service: 'gmail',
+      auth: {
+        user: configData.smtp_email,
+        pass: configData.smtp_password
+      }
+    });
+
+    const fromHeader = configData.sender_name 
+      ? `"${configData.sender_name}" <${configData.sender_alias || configData.smtp_email}>`
+      : configData.smtp_email;
+
+    await transporter.sendMail({
+      from: fromHeader,
+      to: to.trim(),
+      subject: subject.trim(),
+      text: body,
+      replyTo: configData.sender_alias || configData.smtp_email
+    });
+
+    // 3. Ako imamo candidateId, ažuriramo kandidata:
+    // - Ako je status bio NEW, stavljamo CONTACTED
+    // - Dodajemo napomenu o uspešnom slanju
+    if (candidateId) {
+      const candidateDocRef = doc(db, 'candidates', candidateId);
+      const candSnap = await getDoc(candidateDocRef);
+      if (candSnap.exists()) {
+        const candData = candSnap.data();
+        const updates: any = {};
+        
+        // Status prelaz
+        if (candData.status === 'NEW') {
+          updates.status = 'CONTACTED';
+        }
+        
+        // Dopisivanje beleške
+        const dateStr = new Date().toLocaleDateString('sr-RS', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeStr = new Date().toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
+        const logLine = `\n[SISTEM - ${dateStr} u ${timeStr}] Poslat email na ${to} sa naslovom "${subject}".`;
+        
+        const currentNapomena = candData.napomena || '';
+        updates.napomena = currentNapomena ? `${currentNapomena}${logLine}` : logLine.trim();
+        updates.last_updated_at = new Date().toISOString();
+        
+        await updateDoc(candidateDocRef, updates);
+      }
+    }
+
+    res.json({ success: true, message: 'Email je uspešno poslat!' });
+    
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Slanje email-a', `Poslat je email na adresu "${to}" sa naslovom "${subject}".`);
+  } catch (error: any) {
+    console.error('Greška pri slanju email-a:', error);
+    res.status(500).json({ error: `Greška pri slanju email-a: ${error.message || error}` });
   }
 });
 
@@ -1190,6 +1453,9 @@ app.post('/api/marketing/upload-logo', marketingAuthMiddleware, async (req, res)
     fs.writeFileSync(filePath, buffer);
 
     // Vraćamo base64 string direktno kako bi se trajno sačuvao u Firestore bazi i preživeo restarte kontejnera
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Upload logotipa', `Otpremljen je novi ${type === 'footer' ? 'footer logo' : 'zaglavlje logo'}.`);
+
     res.json({ success: true, logoUrl: logoData });
   } catch (error) {
     console.error('Greška pri uploadu logotipa:', error);

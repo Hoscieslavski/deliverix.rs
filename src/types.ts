@@ -25,6 +25,7 @@ export interface Candidate {
   status: CandidateStatus;
   
   // Praćenje i automatizacija
+  email?: string;
   izvor: string; // npr. 'direct', 'facebook_ads', 'referral', etc.
   referral_code?: string;
   napomena?: string;

@@ -40,7 +40,9 @@ import {
   Edit,
   Sparkles,
   Upload,
-  Image
+  Image,
+  ClipboardList,
+  RotateCw
 } from 'lucide-react';
 import ScooterIcon from './ScooterIcon';
 import { Candidate, CandidateStatus, DashboardStats } from '../types';
@@ -65,8 +67,39 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
 
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [adminRole, setAdminRole] = useState<'super_admin' | 'candidate_admin' | 'marketing_admin' | null>(null);
-  const [activeAdminTab, setActiveAdminTab] = useState<'candidates' | 'sajt_seo' | 'marketing_analitika' | 'admins'>('candidates');
+  const [activeAdminTab, setActiveAdminTab] = useState<'candidates' | 'seo_and_blog' | 'design' | 'marketing_analitika' | 'access_management'>('candidates');
   const [activeMarketingSubTab, setActiveMarketingSubTab] = useState<'analytics' | 'blog' | 'seo' | 'link-gen' | 'account'>('analytics');
+  
+  // Novi subtabovi za visoku organizovanost
+  const [candidateSubTab, setCandidateSubTab] = useState<'all' | 'active' | 'completed' | 'stats'>('all');
+  const [seoSubTab, setSeoSubTab] = useState<'seo' | 'blog'>('seo');
+  const [designSubTab, setDesignSubTab] = useState<'hero' | 'sections' | 'faq'>('hero');
+  const [accessSubTab, setAccessSubTab] = useState<'users' | 'teams' | 'email' | 'audit'>('users');
+
+  // Dnevnik aktivnosti (Audit Log) stanje
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [loadingAuditLogs, setLoadingAuditLogs] = useState(false);
+  const [auditLogsError, setAuditLogsError] = useState<string | null>(null);
+
+  const fetchAuditLogs = async (code = passcode) => {
+    setLoadingAuditLogs(true);
+    setAuditLogsError(null);
+    try {
+      const response = await fetch('/api/admin/audit-logs', {
+        headers: { 'x-admin-passcode': code }
+      });
+      const data = await response.json();
+      if (data.success) {
+        setAuditLogs(data.logs || []);
+      } else {
+        setAuditLogsError(data.error || 'Greška pri učitavanju dnevnika aktivnosti.');
+      }
+    } catch (err) {
+      setAuditLogsError('Došlo je do mrežne greške pri učitavanju dnevnika.');
+    } finally {
+      setLoadingAuditLogs(false);
+    }
+  };
   
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -160,6 +193,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
   // Detalji o kandidatu / Selektovan kandidat za izmenu napomene
   const [selectedCandidate, setSelectedCandidate] = useState<Candidate | null>(null);
   const [noteText, setNoteText] = useState('');
+  const [candidateEmailInput, setCandidateEmailInput] = useState('');
   const [updatingCandidateId, setUpdatingCandidateId] = useState<string | null>(null);
 
   // Upravljanje admin nalozima (Samo za Super Admin)
@@ -176,6 +210,30 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
   const [saveAccountLoading, setSaveAccountLoading] = useState(false);
   const [saveAccountError, setSaveAccountError] = useState<string | null>(null);
   const [isSelfSettingsModalOpen, setIsSelfSettingsModalOpen] = useState(false);
+
+  // Email SMTP i slanje države
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'account' | 'email'>('account');
+  const [mailConfig, setMailConfig] = useState({
+    smtp_email: '',
+    sender_name: '',
+    sender_alias: '',
+    has_password: false
+  });
+  const [mailConfigPassword, setMailConfigPassword] = useState('');
+  const [saveMailLoading, setSaveMailLoading] = useState(false);
+  const [saveMailError, setSaveMailError] = useState<string | null>(null);
+  const [saveMailSuccess, setSaveMailSuccess] = useState<string | null>(null);
+
+  // Modal za slanje email-a
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
+  const [emailCandidate, setEmailCandidate] = useState<Candidate | null>(null);
+  const [emailTo, setEmailTo] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [emailCandidateSaveEmail, setEmailCandidateSaveEmail] = useState(true); // da li da ažuriramo kandidatov email u bazi
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [sendEmailError, setSendEmailError] = useState<string | null>(null);
+  const [sendEmailSuccess, setSendEmailSuccess] = useState<string | null>(null);
 
   // Link generator
   const [genSource, setGenSource] = useState('facebook');
@@ -201,6 +259,135 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
       setAccountsError('Greška u komunikaciji sa serverom.');
     } finally {
       setAccountsLoading(false);
+    }
+  };
+
+  const fetchMailConfig = async (code = passcode) => {
+    if (!code) return;
+    try {
+      const response = await fetch('/api/admin/mail-config', {
+        headers: { 'x-admin-passcode': code }
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setMailConfig({
+          smtp_email: data.smtp_email || '',
+          sender_name: data.sender_name || '',
+          sender_alias: data.sender_alias || '',
+          has_password: data.has_password || false
+        });
+      }
+    } catch (err) {
+      console.error('Greška pri dohvatanju email podešavanja:', err);
+    }
+  };
+
+  const handleSaveMailConfig = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaveMailLoading(true);
+    setSaveMailError(null);
+    setSaveMailSuccess(null);
+    try {
+      const response = await fetch('/api/admin/mail-config', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-passcode': passcode
+        },
+        body: JSON.stringify({
+          smtp_email: mailConfig.smtp_email,
+          smtp_password: mailConfigPassword,
+          sender_name: mailConfig.sender_name,
+          sender_alias: mailConfig.sender_alias
+        })
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSaveMailSuccess('Email podešavanja su uspešno sačuvana!');
+        setMailConfigPassword(''); // očisti lozinku nakon čuvanja
+        fetchMailConfig(passcode); // osveži status
+      } else {
+        setSaveMailError(data.error || 'Greška pri čuvanju email podešavanja.');
+      }
+    } catch (err) {
+      setSaveMailError('Sistemska greška pri čuvanju email podešavanja.');
+    } finally {
+      setSaveMailLoading(false);
+    }
+  };
+
+  const handleSendEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailTo || !emailSubject || !emailBody) {
+      setSendEmailError('Sva polja su obavezna.');
+      return;
+    }
+    setIsSendingEmail(true);
+    setSendEmailError(null);
+    setSendEmailSuccess(null);
+    try {
+      const response = await fetch('/api/admin/send-candidate-email', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-admin-passcode': passcode
+        },
+        body: JSON.stringify({
+          candidateId: emailCandidate?.id,
+          to: emailTo,
+          subject: emailSubject,
+          body: emailBody
+        })
+      });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setSendEmailSuccess('Email je uspešno poslat kandidatu!');
+        
+        // Ako je označeno "Ažuriraj email u profilu", pošalji i PATCH zahtev za email
+        if (emailCandidate && emailCandidateSaveEmail && emailTo !== emailCandidate.email) {
+          await fetch(`/api/candidates/${emailCandidate.id}`, {
+            method: 'PATCH',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-admin-passcode': passcode
+            },
+            body: JSON.stringify({
+              email: emailTo
+            })
+          });
+        }
+        
+        // Lokalno osvežavanje stanja kandidata
+        const updatedList = candidates.map(c => {
+          if (c.id === emailCandidate?.id) {
+            const dateStr = new Date().toLocaleDateString('sr-RS', { day: '2-digit', month: '2-digit', year: 'numeric' });
+            const timeStr = new Date().toLocaleTimeString('sr-RS', { hour: '2-digit', minute: '2-digit' });
+            const logLine = `\n[SISTEM - ${dateStr} u ${timeStr}] Poslat email na ${emailTo} sa naslovom "${emailSubject}".`;
+            const currentNapomena = c.napomena || '';
+            return {
+              ...c,
+              email: emailCandidateSaveEmail ? emailTo : (c.email || ''),
+              status: c.status === CandidateStatus.NEW ? CandidateStatus.CONTACTED : c.status,
+              napomena: currentNapomena ? `${currentNapomena}${logLine}` : logLine.trim()
+            };
+          }
+          return c;
+        });
+        setCandidates(updatedList);
+        calculateStats(updatedList);
+
+        setTimeout(() => {
+          setIsEmailModalOpen(false);
+          setEmailCandidate(null);
+          setSendEmailSuccess(null);
+        }, 1500);
+      } else {
+        setSendEmailError(data.error || 'Greška pri slanju email-a.');
+      }
+    } catch (err) {
+      setSendEmailError('Sistemska greška pri slanju email-a.');
+    } finally {
+      setIsSendingEmail(false);
     }
   };
 
@@ -244,7 +431,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
 
         // Postavi podrazumevani tab na osnovu uloge
         if (data.role === 'marketing_admin') {
-          setActiveAdminTab('sajt_seo');
+          setActiveAdminTab('seo_and_blog');
         } else {
           setActiveAdminTab('candidates');
         }
@@ -260,6 +447,8 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
         }
         if (data.role === 'super_admin') {
           fetchAdminAccounts(codeToVerify);
+          fetchMailConfig(codeToVerify);
+          fetchAuditLogs(codeToVerify);
         }
       } else {
         setError(data.error || 'Pogrešna lozinka.');
@@ -541,7 +730,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     });
   };
 
-  const updateCandidate = async (id: string, newStatus?: CandidateStatus, newNapomena?: string) => {
+  const updateCandidate = async (id: string, newStatus?: CandidateStatus, newNapomena?: string, newEmail?: string) => {
     setUpdatingCandidateId(id);
     try {
       const response = await fetch(`/api/candidates/${id}`, {
@@ -552,7 +741,8 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
         },
         body: JSON.stringify({
           status: newStatus,
-          napomena: newNapomena
+          napomena: newNapomena,
+          email: newEmail
         })
       });
 
@@ -564,7 +754,8 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
             return {
               ...c,
               ...(newStatus !== undefined && { status: newStatus }),
-              ...(newNapomena !== undefined && { napomena: newNapomena })
+              ...(newNapomena !== undefined && { napomena: newNapomena }),
+              ...(newEmail !== undefined && { email: newEmail })
             };
           }
           return c;
@@ -576,7 +767,8 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
           setSelectedCandidate({
             ...selectedCandidate,
             ...(newStatus !== undefined && { status: newStatus }),
-            ...(newNapomena !== undefined && { napomena: newNapomena })
+            ...(newNapomena !== undefined && { napomena: newNapomena }),
+            ...(newEmail !== undefined && { email: newEmail })
           });
         }
       } else {
@@ -1014,6 +1206,22 @@ Srdačan pozdrav,
 Postani Dostavljač Podrška`;
   };
 
+  const getCandidateEmailTemplate = (candidate: Candidate) => {
+    const subject = `Prijava za posao dostavljača - ${candidate.ime}`;
+    const body = `Zdravo ${candidate.ime},
+
+Hvala na prijavi za posao dostavljača u gradu ${candidate.grad} (${candidate.vozilo}).
+
+Mi smo nezavisni portal Postani Dostavljač i obezbedićemo ti besplatno vođenje kroz ceo proces, podršku pri registraciji i povezivanje sa partnerskom agencijom radi početka rada.
+
+Napiši nam kada ti odgovara da se čujemo danas na kratko, ili nam odgovori na ovaj mail sa potvrdom.
+
+Srdačan pozdrav,
+Postani Dostavljač Podrška`;
+
+    return { subject, body };
+  };
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     alert('Sadržaj je kopiran u privremenu memoriju (clipboard).');
@@ -1062,7 +1270,24 @@ Postani Dostavljač Podrška`;
     const matchesVehicle = vehicleFilter ? c.vozilo === vehicleFilter : true;
     const matchesStatus = statusFilter ? c.status === statusFilter : true;
 
-    return matchesSearch && matchesCity && matchesVehicle && matchesStatus;
+    // Subtab filtriranje
+    let matchesSubTab = true;
+    if (candidateSubTab === 'active') {
+      matchesSubTab = [
+        CandidateStatus.NEW,
+        CandidateStatus.CONTACTED,
+        CandidateStatus.DOCUMENTS_PENDING,
+        CandidateStatus.SENT_TO_PARTNER,
+        CandidateStatus.REGISTRATION
+      ].includes(c.status);
+    } else if (candidateSubTab === 'completed') {
+      matchesSubTab = [
+        CandidateStatus.ACTIVE,
+        CandidateStatus.INACTIVE
+      ].includes(c.status);
+    }
+
+    return matchesSearch && matchesCity && matchesVehicle && matchesStatus && matchesSubTab;
   });
 
   // Jedinstveni gradovi iz kandidata radi filtriranja
@@ -1212,7 +1437,7 @@ Postani Dostavljač Podrška`;
               onClick={() => setActiveAdminTab('candidates')}
               className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
                 activeAdminTab === 'candidates'
-                  ? 'bg-sky-500 text-white'
+                  ? 'bg-sky-500 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
@@ -1221,16 +1446,29 @@ Postani Dostavljač Podrška`;
           )}
           <button
             onClick={() => {
-              setActiveAdminTab('sajt_seo');
-              setActiveMarketingSubTab('seo');
+              setActiveAdminTab('seo_and_blog');
+              setSeoSubTab('seo');
             }}
             className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
-              activeAdminTab === 'sajt_seo'
-                ? 'bg-sky-500 text-white'
+              activeAdminTab === 'seo_and_blog'
+                ? 'bg-sky-500 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
-            <Globe className="w-4 h-4" /> SEO & Izgled sajta
+            <Globe className="w-4 h-4" /> SEO
+          </button>
+          <button
+            onClick={() => {
+              setActiveAdminTab('design');
+              setDesignSubTab('hero');
+            }}
+            className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
+              activeAdminTab === 'design'
+                ? 'bg-sky-500 text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-800'
+            }`}
+          >
+            <Sparkles className="w-4 h-4" /> Dizajn
           </button>
           <button
             onClick={() => {
@@ -1239,7 +1477,7 @@ Postani Dostavljač Podrška`;
             }}
             className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
               activeAdminTab === 'marketing_analitika'
-                ? 'bg-sky-500 text-white'
+                ? 'bg-sky-500 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -1247,14 +1485,17 @@ Postani Dostavljač Podrška`;
           </button>
           {adminRole === 'super_admin' && (
             <button
-              onClick={() => setActiveAdminTab('admins')}
+              onClick={() => {
+                setActiveAdminTab('access_management');
+                setAccessSubTab('users');
+              }}
               className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
-                activeAdminTab === 'admins'
-                  ? 'bg-sky-500 text-white'
+                activeAdminTab === 'access_management'
+                  ? 'bg-sky-500 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
-              <ShieldCheck className="w-4 h-4" /> Upravljanje Adminima
+              <ShieldCheck className="w-4 h-4" /> Upravljanje Pristupom
             </button>
           )}
         </div>
@@ -1295,8 +1536,165 @@ Postani Dostavljač Podrška`;
             })}
           </div>
 
-          {/* Srednji panel: Filteri */}
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+          {/* Organizator kandidata subtabovi */}
+          <div className="flex bg-gray-100 p-1.5 rounded-2xl border border-gray-200 mt-6 gap-2 w-full shadow-xs">
+            {[
+              { id: 'all', label: 'Sve Prijave', count: candidates.length, icon: Users },
+              { id: 'active', label: 'Aktivni Tok (Novi -> Registracija)', count: candidates.filter(c => ['NEW', 'CONTACTED', 'DOCUMENTS_PENDING', 'SENT_TO_PARTNER', 'REGISTRATION'].includes(c.status)).length, icon: UserCheck },
+              { id: 'completed', label: 'Završeni (Aktivni & Neaktivni)', count: candidates.filter(c => ['ACTIVE', 'INACTIVE'].includes(c.status)).length, icon: UserX },
+              { id: 'stats', label: 'Statistika i Analitika', count: null, icon: TrendingUp }
+            ].map((subTab) => {
+              const SubTabIcon = subTab.icon;
+              return (
+                <button
+                  key={subTab.id}
+                  onClick={() => {
+                    setCandidateSubTab(subTab.id as any);
+                    setStatusFilter('');
+                  }}
+                  className={`flex-1 py-3 text-xs sm:text-sm font-extrabold rounded-xl transition cursor-pointer flex items-center justify-center gap-2 ${
+                    candidateSubTab === subTab.id
+                      ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                      : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
+                  }`}
+                >
+                  <SubTabIcon className="w-4 h-4" />
+                  <span>{subTab.label}</span>
+                  {subTab.count !== null && (
+                    <span className="px-2.5 py-0.5 text-xs font-black bg-gray-200 rounded-full text-gray-800">
+                      {subTab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {candidateSubTab === 'stats' ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 animate-fade-in animate-duration-300 w-full" id="candidate-stats-dashboard">
+              {/* Card 1: Stopa uspešnosti */}
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+                <div>
+                  <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider">Stopa uspeha zapošljavanja</h4>
+                  <p className="text-xs text-gray-400 mt-1">Procenat kandidata koji su uspešno postali aktivni dostavljači.</p>
+                </div>
+                <div className="my-6 text-center">
+                  <span className="text-5xl font-black text-emerald-500 font-sans">
+                    {candidates.length > 0 ? ((stats.activeCount / candidates.length) * 100).toFixed(1) : 0}%
+                  </span>
+                  <div className="w-full bg-gray-100 h-3 rounded-full mt-4 overflow-hidden">
+                    <div 
+                      className="bg-emerald-500 h-full rounded-full transition-all duration-500" 
+                      style={{ width: `${candidates.length > 0 ? ((stats.activeCount / candidates.length) * 100).toFixed(1) : 0}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-between text-xs text-gray-500 border-t border-gray-50 pt-3">
+                  <span>Ukupno prijava: <strong>{candidates.length}</strong></span>
+                  <span>Aktivni dostavljači: <strong>{stats.activeCount}</strong></span>
+                </div>
+              </div>
+
+              {/* Card 2: Vozila */}
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-4">Prijave po tipu vozila</h4>
+                <div className="space-y-4">
+                  {[
+                    { label: 'Automobil', count: candidates.filter(c => c.vozilo === 'automobil').length, color: 'bg-blue-500', icon: Car },
+                    { label: 'Skuter', count: candidates.filter(c => c.vozilo === 'skuter').length, color: 'bg-amber-500', icon: ScooterIcon || Bike },
+                    { label: 'Bicikl', count: candidates.filter(c => c.vozilo === 'bicikl').length, color: 'bg-emerald-500', icon: Bike }
+                  ].map((v, i) => {
+                    const pct = candidates.length > 0 ? ((v.count / candidates.length) * 100).toFixed(1) : 0;
+                    return (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between text-sm font-bold text-gray-700">
+                          <span className="flex items-center gap-2">
+                            {v.label}
+                          </span>
+                          <span>{v.count} ({pct}%)</span>
+                        </div>
+                        <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${v.color}`} style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Card 3: Gradovi */}
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm md:col-span-2">
+                <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-4">Geografska raspodela (Gradovi)</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {uniqueCities.map((city, idx) => {
+                    const count = candidates.filter(c => c.grad === city).length;
+                    const pct = candidates.length > 0 ? ((count / candidates.length) * 100).toFixed(1) : 0;
+                    return (
+                      <div key={idx} className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col justify-between">
+                        <div className="flex justify-between items-start mb-2">
+                          <span className="font-bold text-gray-800 text-sm">{city}</span>
+                          <span className="bg-sky-50 text-sky-700 text-xs font-bold px-2 py-0.5 rounded-md">{count} prijava</span>
+                        </div>
+                        <div>
+                          <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                            <div className="bg-sky-500 h-full rounded-full" style={{ width: `${pct}%` }} />
+                          </div>
+                          <p className="text-[10px] text-gray-400 mt-1">{pct}% od ukupnog broja</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Card 4: Radno iskustvo i izvori */}
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-4">Prethodno iskustvo dostavljača</h4>
+                <div className="flex gap-4 items-center justify-around h-32">
+                  <div className="text-center">
+                    <span className="text-4xl font-extrabold text-sky-500 block">
+                      {candidates.filter(c => c.iskustvo === 'da').length}
+                    </span>
+                    <span className="text-xs text-gray-500 font-medium">Sa iskustvom (DA)</span>
+                  </div>
+                  <div className="h-12 w-px bg-gray-200" />
+                  <div className="text-center">
+                    <span className="text-4xl font-extrabold text-gray-400 block">
+                      {candidates.filter(c => c.iskustvo === 'ne').length}
+                    </span>
+                    <span className="text-xs text-gray-500 font-medium">Bez iskustva (NE)</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 5: Izvor prijave (Kanal) */}
+              <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-4">Izvori prijava</h4>
+                <div className="space-y-3">
+                  {[
+                    { label: 'Direktno na sajtu', count: candidates.filter(c => !c.referral_code).length, color: 'bg-indigo-500' },
+                    { label: 'Referral kod (Preko preporuke)', count: candidates.filter(c => c.referral_code).length, color: 'bg-emerald-500' }
+                  ].map((src, i) => {
+                    const pct = candidates.length > 0 ? ((src.count / candidates.length) * 100).toFixed(1) : 0;
+                    return (
+                      <div key={i} className="space-y-1">
+                        <div className="flex justify-between text-xs font-bold text-gray-600">
+                          <span>{src.label}</span>
+                          <span>{src.count} ({pct}%)</span>
+                        </div>
+                        <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full ${src.color}`} style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <>
+              {/* Srednji panel: Filteri */}
+              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4 w-full">
             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
               <Filter className="w-5 h-5 text-sky-500" /> Pretraga i filtriranje kandidata
             </h3>
@@ -1423,6 +1821,14 @@ Postani Dostavljač Podrška`;
                       <td className="py-4 px-6">
                         <div className="font-bold text-gray-900">{candidate.ime}</div>
                         <div className="text-xs text-gray-500 font-mono mt-0.5">{candidate.telefon}</div>
+                        {candidate.email ? (
+                          <div className="text-[11px] text-sky-600 font-mono mt-0.5 break-all max-w-[200px] flex items-center gap-1">
+                            <Mail className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
+                            {candidate.email}
+                          </div>
+                        ) : (
+                          <div className="text-[10px] text-gray-400 italic mt-0.5">Nema email</div>
+                        )}
                       </td>
 
                       {/* Grad i Vozilo */}
@@ -1520,19 +1926,26 @@ Postani Dostavljač Podrška`;
                         </a>
 
                         {/* Email dugme */}
-                        <button
-                          id={`btn-mail-candidate-${candidate.id}`}
-                          onClick={() => {
-                            copyToClipboard(getEmailCopy(candidate));
-                            if (candidate.status === CandidateStatus.NEW) {
-                              updateCandidate(candidate.id, CandidateStatus.CONTACTED);
-                            }
-                          }}
-                          className="inline-flex p-2 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-xl border border-sky-100 transition"
-                          title="Kopiraj Email šablon"
-                        >
-                          <Mail className="w-4 h-4" />
-                        </button>
+                        {adminRole === 'super_admin' && (
+                          <button
+                            id={`btn-mail-candidate-${candidate.id}`}
+                            onClick={() => {
+                              const { subject, body } = getCandidateEmailTemplate(candidate);
+                              setEmailCandidate(candidate);
+                              setEmailTo(candidate.email || '');
+                              setEmailSubject(subject);
+                              setEmailBody(body);
+                              setEmailCandidateSaveEmail(true);
+                              setIsEmailModalOpen(true);
+                              setSendEmailError(null);
+                              setSendEmailSuccess(null);
+                            }}
+                            className="inline-flex p-2 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-xl border border-sky-100 transition"
+                            title="Pošalji Email sa sajta"
+                          >
+                            <Mail className="w-4 h-4" />
+                          </button>
+                        )}
 
                         {/* Napomene / Uređivanje */}
                         <button
@@ -1540,6 +1953,7 @@ Postani Dostavljač Podrška`;
                           onClick={() => {
                             setSelectedCandidate(candidate);
                             setNoteText(candidate.napomena || '');
+                            setCandidateEmailInput(candidate.email || '');
                           }}
                           className={`inline-flex px-3 py-2 text-xs font-bold rounded-xl border transition cursor-pointer ${
                             candidate.napomena 
@@ -1558,141 +1972,34 @@ Postani Dostavljač Podrška`;
           </div>
         )}
       </div>
+      </>
+      )}
     </>
   )}
 
-  {/* UPRAVLJANJE ADMINIMA VIEW (Samo za Super Admin) */}
-  {activeAdminTab === 'admins' && adminRole === 'super_admin' && (
-    <div className="space-y-6 animate-fade-in" id="admins-panel-root">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-        <div>
-          <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-sky-500" /> Upravljački Nalozi (Uloge i pristupi)
-          </h2>
-          <p className="text-gray-500 text-xs sm:text-sm mt-1">
-            Kreirajte i upravljajte nalozima za marketing, administraciju kandidata ili dodajte nove Super Admin-e.
-          </p>
-        </div>
-        <button
-          onClick={handleOpenCreateAccount}
-          className="px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10"
-        >
-          <Plus className="w-4 h-4" /> Kreiraj novi nalog
-        </button>
-      </div>
-
-      {accountsError && (
-        <div className="bg-rose-50 text-rose-800 p-4 rounded-xl text-sm font-semibold border border-rose-100">
-          {accountsError}
-        </div>
-      )}
-
-      {accountsLoading ? (
-        <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
-                  <th className="py-4 px-6">Korisničko Ime</th>
-                  <th className="py-4 px-6">Lozinka / Pristupni kod</th>
-                  <th className="py-4 px-6">Uloga (Role)</th>
-                  <th className="py-4 px-6">Kreiran</th>
-                  <th className="py-4 px-6 text-right">Akcije</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {adminAccounts.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} className="py-8 text-center text-gray-400 text-sm font-medium">
-                      Nema dodatnih administratorskih naloga u bazi. Podrazumevani nalog je uvek dostupan.
-                    </td>
-                  </tr>
-                ) : (
-                  adminAccounts.map((acc) => (
-                    <tr key={acc.id} className="hover:bg-gray-50/50 transition">
-                      <td className="py-4 px-6 font-bold text-gray-900">{acc.username}</td>
-                      <td className="py-4 px-6 font-mono text-sm text-gray-600">{acc.passcode}</td>
-                      <td className="py-4 px-6">
-                        {acc.role === 'super_admin' ? (
-                          <span className="bg-purple-50 text-purple-700 text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-purple-100">
-                            Super Admin
-                          </span>
-                        ) : acc.role === 'marketing_admin' ? (
-                          <span className="bg-orange-50 text-orange-700 text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-orange-100">
-                            Marketing
-                          </span>
-                        ) : (
-                          <span className="bg-blue-50 text-blue-700 text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-blue-100">
-                            Administrator
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-4 px-6 text-xs text-gray-500">
-                        {acc.created_at ? new Date(acc.created_at).toLocaleDateString('sr-RS', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric'
-                        }) : '-'}
-                      </td>
-                      <td className="py-4 px-6 text-right space-x-2">
-                        <button
-                          onClick={() => handleOpenEditAccount(acc)}
-                          className="inline-flex p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl border border-gray-100 transition cursor-pointer"
-                          title="Izmeni nalog"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteAdminAccount(acc.id)}
-                          disabled={acc.id === 'default_super_admin'}
-                          className={`inline-flex p-2 rounded-xl border transition ${
-                            acc.id === 'default_super_admin'
-                              ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed'
-                              : 'bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-100 cursor-pointer'
-                          }`}
-                          title="Obriši nalog"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
-  )}
-
-  {/* MARKETING & SEO VIEWS */}
-  {(activeAdminTab === 'sajt_seo' || activeAdminTab === 'marketing_analitika') && (adminRole === 'super_admin' || adminRole === 'marketing_admin') && (
-    <div className="space-y-6 animate-fade-in" id="marketing-panel-root">
+  {/* UPRAVLJANJE PRISTUPOM VIEW (Samo za Super Admin) */}
+  {activeAdminTab === 'access_management' && adminRole === 'super_admin' && (
+    <div className="space-y-6 animate-fade-in w-full" id="access-management-root">
       
-      {/* Sub Tabovi za marketing i SEO */}
+      {/* Sub-tabs za Upravljanje Pristupom */}
       <div className="flex flex-wrap gap-2 p-1.5 bg-gray-100 rounded-2xl w-full border border-gray-200 shadow-xs">
-        {(activeAdminTab === 'sajt_seo' ? [
-          { id: 'seo', label: 'Opšta & SEO', icon: Globe },
-          { id: 'hero', label: 'Hero Sekcija', icon: Sparkles },
-          { id: 'homepage-sections', label: 'Delovi Sajta', icon: Compass },
-          { id: 'faq', label: 'Česta Pitanja (FAQ)', icon: HelpCircle },
-          { id: 'blog', label: 'Uređivanje Bloga', icon: Newspaper }
-        ] : [
-          { id: 'analytics', label: 'Google Analitika', icon: BarChart3 },
-          { id: 'link-gen', label: 'Generator Linkova', icon: ExternalLink }
-        ]).map(subTab => {
+        {[
+          { id: 'users', label: 'Korisnici', icon: ShieldCheck },
+          { id: 'teams', label: 'Timovi', icon: Users },
+          { id: 'email', label: 'Podešavanja za mail', icon: Mail },
+          { id: 'audit', label: 'Dnevnik aktivnosti (Audit Log)', icon: ClipboardList }
+        ].map(subTab => {
           const Icon = subTab.icon;
           return (
             <button
               key={subTab.id}
-              onClick={() => setActiveMarketingSubTab(subTab.id as any)}
-              className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-bold transition cursor-pointer ${
-                activeMarketingSubTab === subTab.id
+              onClick={() => {
+                setAccessSubTab(subTab.id as any);
+                setSaveMailError(null);
+                setSaveMailSuccess(null);
+              }}
+              className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
+                accessSubTab === subTab.id
                   ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
                   : 'text-gray-500 hover:text-gray-900'
               }`}
@@ -1703,6 +2010,469 @@ Postani Dostavljač Podrška`;
           );
         })}
       </div>
+
+      {/* 1. KORISNICI */}
+      {accessSubTab === 'users' && (
+        <>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+            <div>
+              <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
+                <ShieldCheck className="w-6 h-6 text-sky-500" /> Korisnički Nalozi (Uloge i pristupi)
+              </h2>
+              <p className="text-gray-500 text-xs sm:text-sm mt-1">
+                Kreirajte i upravljajte nalozima za marketing, administraciju kandidata ili dodajte nove Super Admin-e.
+              </p>
+            </div>
+            <button
+              onClick={handleOpenCreateAccount}
+              className="px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10"
+            >
+              <Plus className="w-4 h-4" /> Kreiraj novi nalog
+            </button>
+          </div>
+
+          {accountsError && (
+            <div className="bg-rose-50 text-rose-800 p-4 rounded-xl text-sm font-semibold border border-rose-100">
+              {accountsError}
+            </div>
+          )}
+
+          {accountsLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+            </div>
+          ) : (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                      <th className="py-4 px-6">Korisničko Ime</th>
+                      <th className="py-4 px-6">Lozinka / Pristupni kod</th>
+                      <th className="py-4 px-6">Uloga (Role)</th>
+                      <th className="py-4 px-6">Kreiran</th>
+                      <th className="py-4 px-6 text-right">Akcije</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {adminAccounts.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center text-gray-400 text-sm font-medium">
+                          Nema dodatnih administratorskih naloga u bazi. Podrazumevani nalog je uvek dostupan.
+                        </td>
+                      </tr>
+                    ) : (
+                      adminAccounts.map((acc) => (
+                        <tr key={acc.id} className="hover:bg-gray-50/50 transition">
+                          <td className="py-4 px-6 font-bold text-gray-900 flex items-center gap-2">
+                            {acc.username}
+                            {acc.id === 'default_super_admin' && (
+                              <span className="bg-amber-100 text-amber-800 text-[9px] px-2 py-0.5 rounded-full font-black">SISTEMSKI</span>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 font-mono text-sm text-gray-600">{acc.passcode}</td>
+                          <td className="py-4 px-6">
+                            {acc.role === 'super_admin' ? (
+                              <span className="bg-purple-50 text-purple-700 text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-purple-100">
+                                Super Admin
+                              </span>
+                            ) : acc.role === 'marketing_admin' ? (
+                              <span className="bg-orange-50 text-orange-700 text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-orange-100">
+                                Marketing
+                              </span>
+                            ) : (
+                              <span className="bg-blue-50 text-blue-700 text-xs font-black px-2.5 py-1 rounded-full uppercase tracking-wider border border-blue-100">
+                                Administrator
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-4 px-6 text-xs text-gray-500">
+                            {acc.created_at ? new Date(acc.created_at).toLocaleDateString('sr-RS', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric'
+                            }) : '-'}
+                          </td>
+                          <td className="py-4 px-6 text-right space-x-2">
+                            <button
+                              onClick={() => handleOpenEditAccount(acc)}
+                              className="inline-flex p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-xl border border-gray-100 transition cursor-pointer"
+                              title="Izmeni nalog"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAdminAccount(acc.id)}
+                              disabled={acc.id === 'default_super_admin'}
+                              className={`inline-flex p-2 rounded-xl border transition ${
+                                acc.id === 'default_super_admin'
+                                  ? 'bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed'
+                                  : 'bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-100 cursor-pointer'
+                              }`}
+                              title="Obriši nalog"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* 2. TIMOVI */}
+      {accessSubTab === 'teams' && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in w-full" id="teams-subtab-view">
+          {[
+            {
+              name: 'Super Admin Tim',
+              desc: 'Najviši nivo pristupa. Upravljanje pristupom, konfiguracija e-maila, uvid u dnevnike aktivnosti i puna prava nad svim podacima.',
+              role: 'super_admin',
+              color: 'border-purple-100 bg-purple-50/20 text-purple-700',
+              icon: ShieldCheck,
+              users: adminAccounts.filter(a => a.role === 'super_admin')
+            },
+            {
+              name: 'Kandidati & Operacije',
+              desc: 'Fokus na regrutaciju. Kompletan rad sa prijavama kandidata, ažuriranje statusa, upisivanje napomena i slanje e-mailova kandidatima.',
+              role: 'candidate_admin',
+              color: 'border-sky-100 bg-sky-50/20 text-sky-700',
+              icon: Users,
+              users: adminAccounts.filter(a => a.role === 'candidate_admin')
+            },
+            {
+              name: 'Marketing & Dizajn',
+              desc: 'Fokus na vidljivost. Uređivanje SEO metapodataka, ažuriranje Hero slajdova i sadržaja na sajtu, pisanje blog članaka i analitika.',
+              role: 'marketing_admin',
+              color: 'border-amber-100 bg-amber-50/20 text-amber-700',
+              icon: TrendingUp,
+              users: adminAccounts.filter(a => a.role === 'marketing_admin')
+            }
+          ].map((team, idx) => {
+            const TeamIcon = team.icon;
+            return (
+              <div key={idx} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col justify-between">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className={`px-3 py-1.5 rounded-xl text-xs font-black border ${team.color} flex items-center gap-1.5`}>
+                      <TeamIcon className="w-4 h-4" />
+                      {team.name}
+                    </span>
+                    <span className="text-xs text-gray-400 font-bold">{team.users.length} član(a)</span>
+                  </div>
+                  <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                    {team.desc}
+                  </p>
+                  
+                  <div className="space-y-2 border-t border-gray-50 pt-4">
+                    <h4 className="text-[11px] font-black text-gray-400 uppercase tracking-wider">Članovi tima:</h4>
+                    {team.users.length === 0 ? (
+                      <p className="text-xs text-gray-400 italic">Trenutno nema korisnika u ovom timu.</p>
+                    ) : (
+                      <div className="space-y-1.5">
+                        {team.users.map((user) => (
+                          <div key={user.id} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-xl border border-gray-100">
+                            <span className="text-xs font-bold text-gray-800">{user.username}</span>
+                            <span className="text-[10px] text-gray-400 font-medium">Aktivan</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* 3. MAIL CONFIGURATION */}
+      {accessSubTab === 'email' && (
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6 w-full animate-fade-in" id="mail-subtab-view">
+          <div>
+            <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+              <Mail className="w-5 h-5 text-sky-500" /> Integracija i Podešavanje SMTP Mail-a
+            </h3>
+            <p className="text-xs text-gray-400 mt-1">Povežite vaš poslovni email nalog kako biste slali email poruke direktno kandidatima sa panela.</p>
+          </div>
+
+          {saveMailSuccess && (
+            <div className="bg-emerald-50 text-emerald-800 p-3.5 rounded-xl text-sm font-semibold border border-emerald-100 flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-600" />
+              <span>{saveMailSuccess}</span>
+            </div>
+          )}
+
+          {saveMailError && (
+            <div className="bg-rose-50 text-rose-800 p-3.5 rounded-xl text-sm font-semibold border border-rose-100 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-600" />
+              <span>{saveMailError}</span>
+            </div>
+          )}
+
+          <div className="bg-sky-50 text-sky-800 p-4 rounded-xl text-xs border border-sky-100 space-y-2 leading-relaxed font-medium">
+            <p className="font-bold flex items-center gap-1.5 text-sky-950">
+              <Sparkles className="w-4 h-4 text-sky-600" /> Kako funkcioniše slanje u ime info@deliverix.rs?
+            </p>
+            <p>Da biste slali email-ove kandidatima pod brendom <strong className="text-sky-950 font-mono text-[11px]">info@deliverix.rs</strong>, iskoristite Gmail SMTP sa lozinkom aplikacije:</p>
+            <ol className="list-decimal pl-4 space-y-1 text-sky-900">
+              <li>Uključite <strong>Verifikaciju u 2 koraka</strong> na vašem Google nalogu.</li>
+              <li>Generišite 16-cifrenu <strong>Lozinku za aplikacije</strong> (App Password).</li>
+              <li>Unesite te podatke dole kako bi sistem automatski koristio bezbednu vezu za slanje.</li>
+            </ol>
+          </div>
+
+          <form onSubmit={handleSaveMailConfig} className="space-y-4 max-w-4xl">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Vaša Gmail adresa</label>
+                <input
+                  type="email"
+                  required
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  placeholder="npr. daniel.hoscieslavski@gmail.com"
+                  value={mailConfig.smtp_email}
+                  onChange={e => setMailConfig({ ...mailConfig, smtp_email: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Lozinka aplikacije (App Password)</label>
+                <input
+                  type="password"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                  placeholder={mailConfig.has_password ? "•••••••••••••••• (Sačuvana lozinka)" : "Unesite 16-cifrenu šifru aplikacije"}
+                  value={mailConfigPassword}
+                  onChange={e => setMailConfigPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Ime pošiljaoca</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  placeholder="npr. Deliverix Podrška"
+                  value={mailConfig.sender_name}
+                  onChange={e => setMailConfig({ ...mailConfig, sender_name: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Email pošiljaoca (Alias)</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium font-mono"
+                  placeholder="npr. info@deliverix.rs"
+                  value={mailConfig.sender_alias}
+                  onChange={e => setMailConfig({ ...mailConfig, sender_alias: e.target.value })}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 justify-end pt-3 border-t border-gray-100">
+              <button
+                type="submit"
+                disabled={saveMailLoading}
+                className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10 disabled:opacity-50"
+              >
+                {saveMailLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sačuvaj podešavanja mail-a'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* 4. DNEVNIK AKTIVNOSTI (AUDIT LOG) */}
+      {accessSubTab === 'audit' && (
+        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 w-full animate-fade-in" id="audit-subtab-view">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-50 pb-4">
+            <div>
+              <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                <ClipboardList className="w-5 h-5 text-sky-500" /> Dnevnik Aktivnosti (Audit Log)
+              </h3>
+              <p className="text-xs text-gray-400 mt-1">Hronološki zapis svih izmena i akcija koje su administratori izvršili u sistemu.</p>
+            </div>
+            <button
+              onClick={() => fetchAuditLogs()}
+              disabled={loadingAuditLogs}
+              className="px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
+            >
+              {loadingAuditLogs ? (
+                <Loader2 className="w-4 h-4 animate-spin text-sky-500" />
+              ) : (
+                <RotateCw className="w-4 h-4 text-gray-500" />
+              )}
+              Osveži zapisnik
+            </button>
+          </div>
+
+          {auditLogsError && (
+            <div className="bg-rose-50 text-rose-800 p-4 rounded-xl text-sm font-semibold border border-rose-100">
+              {auditLogsError}
+            </div>
+          )}
+
+          <div className="overflow-x-auto rounded-xl border border-gray-100">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-100 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
+                  <th className="py-3.5 px-6">Administrator</th>
+                  <th className="py-3.5 px-4">Akcija</th>
+                  <th className="py-3.5 px-6">Detalji izmene</th>
+                  <th className="py-3.5 px-6">Vreme akcije</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 text-sm text-gray-700">
+                {auditLogs.length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-12 text-center text-gray-400 text-sm font-medium">
+                      <ClipboardList className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+                      Nema zabeleženih aktivnosti u sistemu.
+                    </td>
+                  </tr>
+                ) : (
+                  auditLogs.map((log, idx) => {
+                    // Detektuj tip akcije za stil bedža
+                    const isDelete = log.action.toLowerCase().includes('obrisan') || log.action.toLowerCase().includes('brisanje') || log.action.toLowerCase().includes('delete');
+                    const isCreate = log.action.toLowerCase().includes('kreiran') || log.action.toLowerCase().includes('novi') || log.action.toLowerCase().includes('dodat');
+                    const isEdit = !isDelete && !isCreate;
+
+                    return (
+                      <tr key={log.id || idx} className="hover:bg-gray-50/50 transition">
+                        <td className="py-4 px-6">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-gray-900">{log.username}</span>
+                            <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wider mt-0.5">{log.role || 'Super Admin'}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={`px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase border tracking-wider ${
+                            isDelete 
+                              ? 'bg-rose-50 text-rose-700 border-rose-100'
+                              : isCreate
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-100'
+                              : 'bg-amber-50 text-amber-700 border-amber-100'
+                          }`}>
+                            {log.action}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-xs text-gray-600 max-w-md break-words font-medium leading-relaxed">
+                          {log.details || '-'}
+                        </td>
+                        <td className="py-4 px-6 text-xs text-gray-400 font-medium whitespace-nowrap">
+                          {log.timestamp ? new Date(log.timestamp).toLocaleString('sr-RS', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                          }) : '-'}
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* SEO, DIZAJN & MARKETING VIEWS */}
+  {(activeAdminTab === 'seo_and_blog' || activeAdminTab === 'design' || activeAdminTab === 'marketing_analitika') && (adminRole === 'super_admin' || adminRole === 'marketing_admin') && (
+    <div className="space-y-6 animate-fade-in w-full" id="marketing-panel-root">
+      
+      {/* Sub Tabovi za SEO */}
+      {activeAdminTab === 'seo_and_blog' && (
+        <div className="flex flex-wrap gap-2 p-1.5 bg-gray-100 rounded-2xl w-full border border-gray-200 shadow-xs">
+          {[
+            { id: 'seo', label: 'Opšta & SEO podešavanja', icon: Globe },
+            { id: 'blog', label: 'Uređivanje Bloga', icon: Newspaper }
+          ].map(subTab => {
+            const Icon = subTab.icon;
+            return (
+              <button
+                key={subTab.id}
+                onClick={() => setSeoSubTab(subTab.id as any)}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
+                  seoSubTab === subTab.id
+                    ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{subTab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Sub Tabovi za DIZAJN */}
+      {activeAdminTab === 'design' && (
+        <div className="flex flex-wrap gap-2 p-1.5 bg-gray-100 rounded-2xl w-full border border-gray-200 shadow-xs">
+          {[
+            { id: 'hero', label: 'Hero Sekcija', icon: Sparkles },
+            { id: 'sections', label: 'Delovi Sajta', icon: Compass },
+            { id: 'faq', label: 'Česta Pitanja (FAQ)', icon: HelpCircle }
+          ].map(subTab => {
+            const Icon = subTab.icon;
+            return (
+              <button
+                key={subTab.id}
+                onClick={() => setDesignSubTab(subTab.id as any)}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
+                  designSubTab === subTab.id
+                    ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{subTab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Sub Tabovi za MARKETING */}
+      {activeAdminTab === 'marketing_analitika' && (
+        <div className="flex flex-wrap gap-2 p-1.5 bg-gray-100 rounded-2xl w-full border border-gray-200 shadow-xs">
+          {[
+            { id: 'analytics', label: 'Google & Facebook Analitika', icon: BarChart3 },
+            { id: 'link-gen', label: 'Generator Linkova', icon: ExternalLink }
+          ].map(subTab => {
+            const Icon = subTab.icon;
+            return (
+              <button
+                key={subTab.id}
+                onClick={() => setActiveMarketingSubTab(subTab.id as any)}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
+                  activeMarketingSubTab === subTab.id
+                    ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                    : 'text-gray-500 hover:text-gray-900'
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{subTab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Sub Tab Sadržaj */}
       {activeAdminTab === 'marketing_analitika' && activeMarketingSubTab === 'analytics' && (
@@ -1896,19 +2666,43 @@ Postani Dostavljač Podrška`;
         </div>
       )}
 
-      {activeAdminTab === 'sajt_seo' && activeMarketingSubTab === 'seo' && (
-        <SeoTabForm
-          siteSettings={siteSettings}
-          setSiteSettings={setSiteSettings}
-          onSave={handleSaveSeoSettings}
-          isUploadingLogo={isUploadingLogo}
-          isUploadingFooterLogo={isUploadingFooterLogo}
-          handleLogoUpload={handleLogoUpload}
-          handleFooterLogoUpload={handleFooterLogoUpload}
-        />
+      {activeAdminTab === 'seo_and_blog' && seoSubTab === 'seo' && (
+        <div className="space-y-6 w-full">
+          <SeoTabForm
+            siteSettings={siteSettings}
+            setSiteSettings={setSiteSettings}
+            onSave={handleSaveSeoSettings}
+            isUploadingLogo={isUploadingLogo}
+            isUploadingFooterLogo={isUploadingFooterLogo}
+            handleLogoUpload={handleLogoUpload}
+            handleFooterLogoUpload={handleFooterLogoUpload}
+          />
+
+          {/* Google SERP Preview Card */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4" id="google-serp-preview">
+            <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <Globe className="w-4 h-4 text-sky-500" /> Google Search Preview (Izgled u pretrazi)
+            </h4>
+            <p className="text-xs text-gray-400 leading-relaxed">
+              Ovako će vaš sajt izgledati kada ga korisnici pronađu putem Google pretrage. Dobar naslov i opis privlače više kandidata.
+            </p>
+            <div className="bg-gray-50 p-5 rounded-xl border border-gray-100 max-w-2xl font-sans space-y-1">
+              <div className="flex items-center gap-1.5 text-xs text-gray-600">
+                <span className="bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded text-[10px] font-semibold">Adresa</span>
+                <span className="font-mono text-gray-500 text-[11px]">https://www.deliverix.rs</span>
+              </div>
+              <h5 className="text-xl text-blue-800 hover:underline cursor-pointer font-medium leading-snug">
+                {siteSettings.meta_title || 'Deliverix.rs | Postani dostavljač - Wolt, Glovo, Mister D'}
+              </h5>
+              <p className="text-xs text-gray-600 leading-relaxed">
+                {siteSettings.meta_description || 'Prijavi se za posao dostavljača na Wolt, Glovo ili Mister D platformi. Odlična zarada, fleksibilno radno vreme i podrška 24/7.'}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
-      {activeAdminTab === 'sajt_seo' && activeMarketingSubTab === 'hero' && (
+      {activeAdminTab === 'design' && designSubTab === 'hero' && (
         <HeroTabForm
           siteSettings={siteSettings}
           setSiteSettings={setSiteSettings}
@@ -1922,7 +2716,7 @@ Postani Dostavljač Podrška`;
         />
       )}
 
-      {activeAdminTab === 'sajt_seo' && activeMarketingSubTab === 'homepage-sections' && (
+      {activeAdminTab === 'design' && designSubTab === 'sections' && (
         <HomepageSectionsTabForm
           siteSettings={siteSettings}
           setSiteSettings={setSiteSettings}
@@ -1930,7 +2724,7 @@ Postani Dostavljač Podrška`;
         />
       )}
 
-      {activeAdminTab === 'sajt_seo' && activeMarketingSubTab === 'faq' && (
+      {activeAdminTab === 'design' && designSubTab === 'faq' && (
         <FaqTabForm
           siteSettings={siteSettings}
           setSiteSettings={setSiteSettings}
@@ -1938,7 +2732,7 @@ Postani Dostavljač Podrška`;
         />
       )}
 
-      {activeAdminTab === 'sajt_seo' && activeMarketingSubTab === 'blog' && (
+      {activeAdminTab === 'seo_and_blog' && seoSubTab === 'blog' && (
         <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm" id="marketing-subtab-blog">
           <div className="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
             <div>
@@ -2264,6 +3058,17 @@ Postani Dostavljač Podrška`;
             </div>
 
             <div className="space-y-2">
+              <label className="text-xs font-bold text-gray-500 uppercase">Email adresa kandidata</label>
+              <input
+                type="email"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm text-gray-900 placeholder-gray-400 font-mono"
+                placeholder="npr. ime@primer.com"
+                value={candidateEmailInput}
+                onChange={(e) => setCandidateEmailInput(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
               <label className="text-xs font-bold text-gray-500 uppercase">Interna zabeleška</label>
               <textarea
                 id="notes-textarea"
@@ -2288,14 +3093,166 @@ Postani Dostavljač Podrška`;
                 id="notes-save-btn"
                 type="button"
                 onClick={() => {
-                  updateCandidate(selectedCandidate.id, undefined, noteText);
+                  updateCandidate(selectedCandidate.id, undefined, noteText, candidateEmailInput);
                   setSelectedCandidate(null);
                 }}
                 className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-500/15 transition cursor-pointer"
               >
-                Sačuvaj napomenu
+                Sačuvaj izmene
               </button>
             </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Modal za slanje email-a */}
+      {isEmailModalOpen && emailCandidate && (
+        <div className="fixed inset-0 bg-gray-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in" id="send-email-modal">
+          <motion.div
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="bg-white rounded-2xl shadow-xl max-w-xl w-full p-6 border border-gray-100 space-y-4"
+          >
+            <div className="flex justify-between items-start border-b border-gray-100 pb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                  <Mail className="w-5 h-5 text-sky-500" /> Pošalji Email Kandidatu
+                </h3>
+                <p className="text-xs text-gray-400">Kandidat: <strong className="text-gray-700">{emailCandidate.ime}</strong> ({emailCandidate.telefon})</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEmailModalOpen(false);
+                  setEmailCandidate(null);
+                }}
+                className="p-1.5 hover:bg-gray-100 rounded-xl transition cursor-pointer"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+
+            {sendEmailSuccess && (
+              <div className="bg-emerald-50 text-emerald-800 p-3.5 rounded-xl text-sm font-semibold border border-emerald-100 flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 text-emerald-600" />
+                <span>{sendEmailSuccess}</span>
+              </div>
+            )}
+
+            {sendEmailError && (
+              <div className="bg-rose-50 text-rose-800 p-3.5 rounded-xl text-sm font-semibold border border-rose-100 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-rose-600" />
+                <span>{sendEmailError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleSendEmail} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Primalac (Email)</label>
+                <input
+                  type="email"
+                  required
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                  placeholder="npr. klijent@primer.com"
+                  value={emailTo}
+                  onChange={e => setEmailTo(e.target.value)}
+                />
+                {!emailCandidate.email && (
+                  <div className="bg-amber-50 text-amber-800 p-2.5 rounded-lg text-xs border border-amber-100 space-y-1 mt-1 font-medium">
+                    <p className="flex items-center gap-1.5 text-amber-700">
+                      <AlertCircle className="w-3.5 h-3.5 text-amber-600" />
+                      Kandidat trenutno nema sačuvanu email adresu u bazi!
+                    </p>
+                    <label className="flex items-center gap-2 text-amber-900 cursor-pointer pt-1 select-none">
+                      <input
+                        type="checkbox"
+                        className="rounded border-amber-300 text-amber-600 focus:ring-amber-500 h-3.5 w-3.5"
+                        checked={emailCandidateSaveEmail}
+                        onChange={e => setEmailCandidateSaveEmail(e.target.checked)}
+                      />
+                      Sačuvaj unetu adresu u profilu ovog kandidata
+                    </label>
+                  </div>
+                )}
+                {emailCandidate.email && emailTo !== emailCandidate.email && (
+                  <div className="bg-sky-50 text-sky-800 p-2.5 rounded-lg text-xs border border-sky-100 space-y-1 mt-1 font-medium">
+                    <label className="flex items-center gap-2 text-sky-900 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        className="rounded border-sky-300 text-sky-600 focus:ring-sky-500 h-3.5 w-3.5"
+                        checked={emailCandidateSaveEmail}
+                        onChange={e => setEmailCandidateSaveEmail(e.target.checked)}
+                      />
+                      Ažuriraj email u profilu sa novom adresom ({emailTo})
+                    </label>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Naslov (Subject)</label>
+                <input
+                  type="text"
+                  required
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  placeholder="Naslov email poruke"
+                  value={emailSubject}
+                  onChange={e => setEmailSubject(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Sadržaj Email-a (Samo običan tekst)</label>
+                <textarea
+                  required
+                  rows={8}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  placeholder="Ovde ide sadržaj šablona..."
+                  value={emailBody}
+                  onChange={e => setEmailBody(e.target.value)}
+                />
+              </div>
+
+              {!mailConfig.smtp_email && (
+                <div className="bg-rose-50 text-rose-800 p-3 rounded-xl text-xs border border-rose-100 font-medium">
+                  <strong>⚠️ Pažnja:</strong> Email SMTP server nije konfigurisan u podešavanjima naloga. Kliknite na ikonicu zupčanika (Gore Desno) da biste povezali svoj Gmail nalog. Ipak možete kopirati tekst kako biste poslali ručno.
+                </div>
+              )}
+
+              <div className="flex gap-2 justify-end pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const fullText = `Subject: ${emailSubject}\n\n${emailBody}`;
+                    navigator.clipboard.writeText(fullText);
+                    alert('Sadržaj je kopiran u privremenu memoriju (clipboard)!');
+                    if (emailCandidate.status === 'NEW') {
+                      updateCandidate(emailCandidate.id, 'CONTACTED' as any);
+                    }
+                    setIsEmailModalOpen(false);
+                    setEmailCandidate(null);
+                  }}
+                  className="px-4 py-2.5 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold rounded-xl text-xs transition cursor-pointer flex items-center gap-1.5 border border-gray-200"
+                >
+                  <Copy className="w-3.5 h-3.5" /> Kopiraj u Clipboard
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSendingEmail || !mailConfig.smtp_email}
+                  className={`px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs shadow-md shadow-sky-500/15 transition cursor-pointer flex items-center gap-1.5`}
+                >
+                  {isSendingEmail ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Šaljem email...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" /> Pošalji Email
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </motion.div>
         </div>
       )}
@@ -2404,75 +3361,211 @@ Postani Dostavljač Podrška`;
             <div className="flex justify-between items-start border-b border-gray-100 pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-                  <Lock className="w-5 h-5 text-sky-500" /> Podešavanje Mog Naloga
+                  <Settings className="w-5 h-5 text-sky-500" /> Podešavanje Mog Naloga
                 </h3>
-                <p className="text-xs text-gray-400">Promenite svoje korisničko ime i pristupnu lozinku.</p>
+                <p className="text-xs text-gray-400">Podesite pristupne parametre i integraciju za email.</p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsSelfSettingsModalOpen(false)}
-                className="p-1.5 hover:bg-gray-100 rounded-xl transition"
+                className="p-1.5 hover:bg-gray-100 rounded-xl transition cursor-pointer"
               >
                 <X className="w-5 h-5 text-gray-400" />
               </button>
             </div>
 
-            {changeSuccess && (
-              <div className="bg-emerald-50 text-emerald-800 p-3.5 rounded-xl text-sm font-semibold border border-emerald-100 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-600" />
-                <span>{changeSuccess}</span>
-              </div>
-            )}
-
-            {changeError && (
-              <div className="bg-rose-50 text-rose-800 p-3.5 rounded-xl text-sm font-semibold border border-rose-100 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-rose-600" />
-                <span>{changeError}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleChangeCredentials} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Korisničko ime</label>
-                <input
-                  type="text"
-                  required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
-                  placeholder="npr. admin"
-                  value={newUsername}
-                  onChange={e => setNewUsername(e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Nova Lozinka</label>
-                <input
-                  type="password"
-                  required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
-                  placeholder="••••••••"
-                  value={newPassword}
-                  onChange={e => setNewPassword(e.target.value)}
-                />
-                <p className="text-[10px] text-gray-400">Lozinka mora imati najmanje 6 karaktera.</p>
-              </div>
-
-              <div className="flex gap-2 justify-end pt-3 border-t border-gray-100">
+            {/* Tabovi unutar podešavanja (Samo za Super Admina) */}
+            {adminRole === 'super_admin' && (
+              <div className="flex border-b border-gray-100 gap-4">
                 <button
                   type="button"
-                  onClick={() => setIsSelfSettingsModalOpen(false)}
-                  className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                  onClick={() => setActiveSettingsTab('account')}
+                  className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer ${
+                    activeSettingsTab === 'account'
+                      ? 'border-sky-500 text-sky-600'
+                      : 'border-transparent text-gray-400 hover:text-gray-600'
+                  }`}
                 >
-                  Otkaži
+                  Kredencijali Naloga
                 </button>
                 <button
-                  type="submit"
-                  disabled={changeLoading}
-                  className="px-5 py-2.5 bg-sky-50 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10 disabled:opacity-50"
+                  type="button"
+                  onClick={() => {
+                    setActiveSettingsTab('email');
+                    setSaveMailError(null);
+                    setSaveMailSuccess(null);
+                  }}
+                  className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer ${
+                    activeSettingsTab === 'email'
+                      ? 'border-sky-500 text-sky-600'
+                      : 'border-transparent text-gray-400 hover:text-gray-600'
+                  }`}
                 >
-                  {changeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sačuvaj izmene'}
+                  Slanje Email-a (Gmail SMTP)
                 </button>
               </div>
-            </form>
+            )}
+
+            {adminRole !== 'super_admin' || activeSettingsTab === 'account' ? (
+              <>
+                {changeSuccess && (
+                  <div className="bg-emerald-50 text-emerald-800 p-3.5 rounded-xl text-sm font-semibold border border-emerald-100 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <span>{changeSuccess}</span>
+                  </div>
+                )}
+
+                {changeError && (
+                  <div className="bg-rose-50 text-rose-800 p-3.5 rounded-xl text-sm font-semibold border border-rose-100 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-600" />
+                    <span>{changeError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleChangeCredentials} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Korisničko ime</label>
+                    <input
+                      type="text"
+                      required
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                      placeholder="npr. admin"
+                      value={newUsername}
+                      onChange={e => setNewUsername(e.target.value)}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Nova Lozinka</label>
+                    <input
+                      type="password"
+                      required
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                      placeholder="••••••••"
+                      value={newPassword}
+                      onChange={e => setNewPassword(e.target.value)}
+                    />
+                    <p className="text-[10px] text-gray-400">Lozinka mora imati najmanje 6 karaktera.</p>
+                  </div>
+
+                  <div className="flex gap-2 justify-end pt-3 border-t border-gray-100">
+                    <button
+                      type="button"
+                      onClick={() => setIsSelfSettingsModalOpen(false)}
+                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                    >
+                      Otkaži
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={changeLoading}
+                      className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10 disabled:opacity-50"
+                    >
+                      {changeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sačuvaj izmene'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              <>
+                {saveMailSuccess && (
+                  <div className="bg-emerald-50 text-emerald-800 p-3.5 rounded-xl text-sm font-semibold border border-emerald-100 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    <span>{saveMailSuccess}</span>
+                  </div>
+                )}
+
+                {saveMailError && (
+                  <div className="bg-rose-50 text-rose-800 p-3.5 rounded-xl text-sm font-semibold border border-rose-100 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-600" />
+                    <span>{saveMailError}</span>
+                  </div>
+                )}
+
+                <div className="bg-sky-50 text-sky-800 p-3.5 rounded-xl text-xs border border-sky-100 space-y-1.5 leading-relaxed font-medium">
+                  <p className="font-bold flex items-center gap-1.5 text-sky-950">
+                    <Sparkles className="w-4 h-4 text-sky-600" /> Kako podesiti Gmail slanje?
+                  </p>
+                  <p>Da biste slali email-ove sa sajta u ime adrese <strong className="text-sky-950 font-mono text-[11px]">info@deliverix.rs</strong>, povežite svoj Gmail nalog:</p>
+                  <ol className="list-decimal pl-4 space-y-1 text-sky-900">
+                    <li>Idite na podešavanja vašeg Google naloga (<a href="https://myaccount.google.com" target="_blank" rel="noreferrer" className="underline font-bold hover:text-sky-950">myaccount.google.com</a>)</li>
+                    <li>Uključite <strong>Verifikaciju u 2 koraka</strong> u sekciji "Sigurnost"</li>
+                    <li>U pretrazi naloga potražite <strong>Lozinke za aplikacije</strong> (App Passwords) i kreirajte novu (npr. unesite naziv "Sajt Deliverix")</li>
+                    <li>Kopirajte generisanu šifru od 16 karaktera i unesite je u polje ispod</li>
+                  </ol>
+                </div>
+
+                <form onSubmit={handleSaveMailConfig} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Vaša Gmail adresa</label>
+                      <input
+                        type="email"
+                        required
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                        placeholder="npr. daniel.hoscieslavski@gmail.com"
+                        value={mailConfig.smtp_email}
+                        onChange={e => setMailConfig({ ...mailConfig, smtp_email: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Lozinka aplikacije (App Password)</label>
+                      <input
+                        type="password"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                        placeholder={mailConfig.has_password ? "•••••••••••••••• (Sačuvana lozinka)" : "Unesite 16-cifrenu šifru aplikacije"}
+                        value={mailConfigPassword}
+                        onChange={e => setMailConfigPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Ime pošiljaoca</label>
+                      <input
+                        type="text"
+                        required
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                        placeholder="npr. Deliverix Podrška"
+                        value={mailConfig.sender_name}
+                        onChange={e => setMailConfig({ ...mailConfig, sender_name: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Email pošiljaoca (Alias)</label>
+                      <input
+                        type="text"
+                        required
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium font-mono"
+                        placeholder="npr. info@deliverix.rs"
+                        value={mailConfig.sender_alias}
+                        onChange={e => setMailConfig({ ...mailConfig, sender_alias: e.target.value })}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2 justify-end pt-3 border-t border-gray-100">
+                    <button
+                      type="button"
+                      onClick={() => setIsSelfSettingsModalOpen(false)}
+                      className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition cursor-pointer"
+                    >
+                      Zatvori
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={saveMailLoading}
+                      className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10 disabled:opacity-50"
+                    >
+                      {saveMailLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sačuvaj podešavanja'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </motion.div>
         </div>
       )}

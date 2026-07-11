@@ -124,8 +124,8 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
             </p>
             <div className="bg-gray-50 rounded-2xl p-4 inline-flex items-center gap-3 border border-gray-100">
               <Mail className="w-5 h-5 text-gray-400" />
-              <a href="mailto:daniel.hoscieslavski@gmail.com" className="font-mono text-xs sm:text-sm text-sky-600 hover:underline">
-                daniel.hoscieslavski@gmail.com
+              <a href="mailto:info@deliverix.rs" className="font-mono text-xs sm:text-sm text-sky-600 hover:underline">
+                info@deliverix.rs
               </a>
             </div>
           </div>
