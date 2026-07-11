@@ -65,6 +65,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
   const [siteSettings, setSiteSettings] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [landingBlogIndex, setLandingBlogIndex] = useState(0);
@@ -108,6 +109,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
 
   React.useEffect(() => {
     // Učitaj SEO i podešavanja sajta
+    setIsLoading(true);
     fetch('/api/marketing/seo')
       .then(res => res.json())
       .then(data => {
@@ -120,7 +122,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
           }
         }
       })
-      .catch(err => console.error('Greška pri učitavanju SEO podešavanja:', err));
+      .catch(err => console.error('Greška pri učitavanju SEO podešavanja:', err))
+      .finally(() => {
+        setIsLoading(false);
+      });
 
     // Učitaj najnovija 3 blog posta
     fetch('/api/blog-posts')
@@ -281,6 +286,17 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
         { title: 'Brza podrška', desc: 'Naš mentorski tim ti pomaže oko aplikacije i rešavanja bilo kakvih problema na terenu.' },
         { title: 'Brz start i obuka', desc: 'Pomažemo ti u brzom pokretanju naloga i pružamo besplatne savete pre prve dostave.' }
       ];
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] py-20 animate-fade-in" id="landing-loading">
+        <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
+        <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">
+          Učitavanje...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10 sm:space-y-12 pb-16" id="landing-page-root">
