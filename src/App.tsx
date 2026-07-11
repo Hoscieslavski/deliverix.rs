@@ -88,8 +88,11 @@ export default function App() {
     return (localStorage.getItem('deliverix_footer_logo_blend_mode') as any) || 'normal';
   });
 
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+
   // Učitavanje logotipa i SEO podešavanja sa servera
   useEffect(() => {
+    setIsInitialLoading(true);
     fetch('/api/marketing/seo')
       .then(res => res.json())
       .then(data => {
@@ -168,7 +171,10 @@ export default function App() {
           }
         }
       })
-      .catch(err => console.error('Greška pri učitavanju globalnih podešavanja logotipa/SEO:', err));
+      .catch(err => console.error('Greška pri učitavanju globalnih podešavanja logotipa/SEO:', err))
+      .finally(() => {
+        setIsInitialLoading(false);
+      });
   }, []);
 
   // Sačuvaj trenutni prikaz u localStorage na promenu
@@ -262,6 +268,19 @@ export default function App() {
     // Dobijanje APP_URL ako je potrebno
     setAppUrl(window.location.origin);
   }, []);
+
+  if (isInitialLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-white" id="global-loading">
+        <div className="relative flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
+        </div>
+        <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">
+          Učitavanje...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/20 text-gray-900 font-sans selection:bg-sky-500 selection:text-white relative overflow-x-hidden" id="main-application-root">
