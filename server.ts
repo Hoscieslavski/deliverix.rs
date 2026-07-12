@@ -1594,13 +1594,20 @@ app.get('/api/marketing/analytics', marketingAuthMiddleware, async (req, res) =>
 // --- VITE ILI STATIČKI FAJLOVI ---
 
 // Funkcija za dinamičko ubacivanje SEO tagova na serverskoj strani (SSR)
-async function serveIndexWithSEO(req: any, res: any, indexPath: string) {
+async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloadedHtml?: string) {
   try {
-    if (!fs.existsSync(indexPath)) {
+    // Automatski osiguraj da su blog postovi inicijalizovani u bazi
+    try {
+      await seedBlogPostsIfNeeded();
+    } catch (seedErr) {
+      console.error('Greška pri auto-seedu u SSR:', seedErr);
+    }
+
+    if (!preloadedHtml && !fs.existsSync(indexPath)) {
       return res.status(404).send('Index fajl nije pronađen.');
     }
 
-    let html = fs.readFileSync(indexPath, 'utf8');
+    let html = preloadedHtml || fs.readFileSync(indexPath, 'utf8');
 
     // Podrazumevane SEO vrednosti (optimizovane i skraćene prema SEO standardima)
     let meta_title = "Wolt i Glovo Dostavljač Beograd | Deliverix";
@@ -1814,6 +1821,29 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: 'spa',
     });
+    
+    // Presretanje HTML zahteva u razvoju radi dinamičkog SEO renderovanja
+    app.use(async (req, res, next) => {
+      const url = req.originalUrl || req.url;
+      if (!url.startsWith('/api/') && !url.includes('.')) {
+        try {
+          const indexPath = path.resolve(process.cwd(), 'index.html');
+          let html = fs.readFileSync(indexPath, 'utf8');
+          // Neka Vite injektuje HMR skripte i transformiše HTML
+          html = await vite.transformIndexHtml(url, html);
+          
+          // Primeni naš visoko-performansni SEO render engine
+          await serveIndexWithSEO(req, res, indexPath, html);
+          return;
+        } catch (e) {
+          vite.ssrFixStacktrace(e as Error);
+          next(e);
+          return;
+        }
+      }
+      next();
+    });
+
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
