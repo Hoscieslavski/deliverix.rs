@@ -1605,33 +1605,56 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string) {
     // Podrazumevane SEO vrednosti (optimizovane i skraćene prema SEO standardima)
     let meta_title = "Wolt i Glovo Dostavljač Beograd | Deliverix";
     let meta_description = "Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!";
+    let hasCustomSeo = false;
+    let blogPostData: any = null;
+    let siteSettingsData: any = null;
 
-    const now = Date.now();
-    if (seoCache && (now - seoCache.timestamp < SEO_CACHE_DURATION)) {
-      meta_title = seoCache.meta_title;
-      meta_description = seoCache.meta_description;
-    } else {
-      try {
-        const docRef = doc(db, 'site_configs', 'settings');
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          if (data.meta_title) meta_title = data.meta_title;
-          if (data.meta_description) meta_description = data.meta_description;
-        }
-        // Sačuvaj u keš
-        seoCache = {
-          meta_title,
-          meta_description,
-          timestamp: now
-        };
-      } catch (dbErr) {
-        console.error('Greška pri dohvatanju SEO podešavanja za SSR:', dbErr);
+    const urlPath = req.path || '/';
+    let isBlogPost = false;
+    let blogSlug = '';
+
+    // Provera da li je u pitanju pojedinačna stranica bloga
+    if (urlPath.startsWith('/blog/') && urlPath.length > 6) {
+      blogSlug = urlPath.substring(6);
+      if (blogSlug && blogSlug !== 'all' && !blogSlug.includes('.')) {
+        isBlogPost = true;
       }
+    }
+
+    // 1. Dohvatanje podešavanja i eventualno blog posta iz baze
+    try {
+      // Uvek dohvati globalna podešavanja (zbog FAQ i opštih meta tagova)
+      const settingsRef = doc(db, 'site_configs', 'settings');
+      const settingsSnap = await getDoc(settingsRef);
+      if (settingsSnap.exists()) {
+        siteSettingsData = settingsSnap.data();
+        if (!isBlogPost) {
+          if (siteSettingsData.meta_title) meta_title = siteSettingsData.meta_title;
+          if (siteSettingsData.meta_description) meta_description = siteSettingsData.meta_description;
+        }
+      }
+
+      // Ako je blog post, dohvati specifične podatke za taj članak
+      if (isBlogPost) {
+        const postRef = doc(db, 'blog_posts', blogSlug);
+        const postSnap = await getDoc(postRef);
+        if (postSnap.exists()) {
+          blogPostData = postSnap.data();
+          if (blogPostData) {
+            meta_title = `${blogPostData.title} | Deliverix Blog`;
+            meta_description = blogPostData.excerpt || 
+              (blogPostData.content ? blogPostData.content.replace(/<[^>]*>/g, '').substring(0, 155) + '...' : meta_description);
+            hasCustomSeo = true;
+          }
+        }
+      }
+    } catch (dbErr) {
+      console.error('Greška pri dohvatanju SEO podataka iz baze:', dbErr);
     }
 
     // Bezbedno eskapovanje za HTML atribute
     const escapeHtmlAttr = (str: string) => {
+      if (!str) return '';
       return str
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;')
@@ -1642,17 +1665,140 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string) {
     const escapedTitle = escapeHtmlAttr(meta_title);
     const escapedDesc = escapeHtmlAttr(meta_description);
 
-    // Zamenjuje <title>
+    // 2. Dinamičko generisanje i ubacivanje JSON-LD Schema Markup-a
+    let schemas: string[] = [];
+
+    // A. Breadcrumb Schema (Uvek korisna za strukturu)
+    const breadcrumbList: any[] = [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Početna",
+        "item": "https://deliverix.rs"
+      }
+    ];
+
+    if (isBlogPost && blogPostData) {
+      breadcrumbList.push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": "https://deliverix.rs/blog"
+      });
+      breadcrumbList.push({
+        "@type": "ListItem",
+        "position": 3,
+        "name": blogPostData.title,
+        "item": `https://deliverix.rs/blog/${blogSlug}`
+      });
+    } else if (urlPath === '/blog') {
+      breadcrumbList.push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": "https://deliverix.rs/blog"
+      });
+    } else if (urlPath === '/privacy-policy') {
+      breadcrumbList.push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Politika privatnosti",
+        "item": "https://deliverix.rs/privacy-policy"
+      });
+    } else if (urlPath === '/terms-of-service') {
+      breadcrumbList.push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Uslovi korišćenja",
+        "item": "https://deliverix.rs/terms-of-service"
+      });
+    }
+
+    schemas.push(JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": breadcrumbList
+    }));
+
+    // B. Blog-Specific Schema (Samo za članke)
+    if (isBlogPost && blogPostData) {
+      schemas.push(JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": `https://deliverix.rs/blog/${blogSlug}`
+        },
+        "headline": blogPostData.title,
+        "description": blogPostData.excerpt || meta_description,
+        "image": blogPostData.coverUrl || "https://deliverix.rs/logo.png",
+        "datePublished": blogPostData.createdAt || new Date().toISOString(),
+        "dateModified": blogPostData.updatedAt || blogPostData.createdAt || new Date().toISOString(),
+        "author": {
+          "@type": "Organization",
+          "name": blogPostData.author || "Deliverix"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Deliverix",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://deliverix.rs/logo.png"
+          }
+        }
+      }));
+    }
+
+    // C. FAQ Schema (Za početnu stranu ako postoje pitanja)
+    if (!isBlogPost && siteSettingsData && siteSettingsData.faqs && Array.isArray(siteSettingsData.faqs) && siteSettingsData.faqs.length > 0) {
+      schemas.push(JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": siteSettingsData.faqs.map((faq: any) => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.a
+          }
+        }))
+      }));
+    }
+
+    // Spoji sve šeme u HTML scripts
+    const schemaHtml = schemas.map(s => `<script type="application/ld+json">${s}</script>`).join('\n');
+    html = html.replace('</head>', `${schemaHtml}\n</head>`);
+
+    // 3. Ubacivanje Canonical taga (Maksimalna SEO higijena)
+    const canonicalUrl = `https://deliverix.rs${urlPath === '/' ? '' : urlPath}`;
+    const canonicalTag = `<link rel="canonical" href="${canonicalUrl}" />`;
+    html = html.replace('</head>', `${canonicalTag}\n</head>`);
+
+    // 4. Zamena standardnih meta tagova
     html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapedTitle}</title>`);
-
-    // Zamenjuje meta name="description"
     html = html.replace(/<meta\s+name="description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta name="description" content="${escapedDesc}" />`);
-
-    // Zamenjuje og:title, og:description, twitter:title, twitter:description
     html = html.replace(/<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`);
     html = html.replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="og:description" content="${escapedDesc}" />`);
     html = html.replace(/<meta\s+property="twitter:title"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`);
     html = html.replace(/<meta\s+property="twitter:description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDesc}" />`);
+
+    // 5. Hidratacija celokupnog koda blog posta za pretraživače (Dynamic Pre-rendering / No-JS fallback)
+    // Ovo obezbeđuje da Google indeksira kompletan tekst svakog bloga i rešava "Low word count" problem!
+    if (isBlogPost && blogPostData) {
+      const blogArticleHtml = `
+        <article id="seo-dynamic-blog-container" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;" aria-hidden="true">
+          <header>
+            <h1>${blogPostData.title}</h1>
+            <p>Objavio: <strong>${blogPostData.author || 'Deliverix'}</strong> | Datum: <time datetime="${blogPostData.createdAt || ''}">${blogPostData.createdAt || ''}</time></p>
+            <p class="lead">${blogPostData.excerpt || ''}</p>
+          </header>
+          <section>
+            ${blogPostData.content || ''}
+          </section>
+        </article>
+      `;
+      html = html.replace('<body>', `<body>\n${blogArticleHtml}`);
+    }
 
     res.setHeader('Content-Type', 'text/html');
     res.send(html);
