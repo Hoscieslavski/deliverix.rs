@@ -25,5 +25,10 @@ service cloud.firestore {
     match /site_configs/{configId} {
       allow read, write: if true;
     }
+
+    // Allow read/write access to audit logs for admin logging and viewing
+    match /audit_logs/{logId} {
+      allow read, write: if true;
+    }
   }
 }

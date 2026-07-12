@@ -1097,6 +1097,20 @@ app.get('/api/marketing/seo', async (req, res) => {
       hero_badge_text: "Pomoć oko zaposlenja je 100% besplatna!",
       hero_image_alt: "Dostavljač hrane - Wolt Glovo Srbija",
       hero_enabled: true,
+      about_enabled: true,
+      about_title: "Šta je Deliverix?",
+      about_intro: "Deliverix je nezavisna platforma za prijavu dostavljača u Srbiji koja povezuje kandidate sa proverenim partnerskim agencijama za rad na dostavnim platformama kao što su Wolt i Glovo.",
+      about_paragraph1: "Umesto da samostalno tražiš oglase, kontaktiraš više agencija i prolaziš kroz različite procedure, dovoljno je da ostaviš jednu prijavu. Na osnovu tvoje lokacije, raspoloživosti i željenog načina rada, pomažemo ti da pronađeš odgovarajuću saradnju.",
+      about_paragraph2: "Naša podrška je potpuno besplatna i vodi te kroz ceo proces — od prve prijave do aktivacije naloga i početka rada.",
+      about_tags: [
+        "posao dostavljača",
+        "prijava za dostavljača",
+        "dostavljač Wolt",
+        "dostavljač Glovo",
+        "posao kurira",
+        "dostava hrane",
+        "dostavljač Srbija"
+      ],
       why_choose_us_enabled: true,
       steps_enabled: true,
       requirements_enabled: true,
@@ -1197,6 +1211,48 @@ app.get('/api/marketing/seo', async (req, res) => {
         { title: "Najbolja provizija", desc: "Spajamo te sa agencijama koje nude najpovoljnije uslove i najmanji procenat." },
         { title: "Brza podrška", desc: "Naš mentorski tim ti pomaže oko aplikacije i rešavanja bilo kakvih problema na terenu." },
         { title: "Brz start i obuka", desc: "Pomažemo ti u brzom pokretanju naloga i pružamo besplatne savete pre prve dostave." }
+      ],
+      faqs: [
+        {
+          q: 'Da li je Deliverix besplatan?',
+          a: 'Da! Deliverix platforma je 100% besplatna za sve kandidate. Pomoć oko prijave, savetovanje, obuka i spajanje sa proverenim partnerskim agencijama vas ne košta apsolutno ništa. Nemamo nikakve skrivene troškove niti uzimamo procenat od vaše zarade.'
+        },
+        {
+          q: 'Da li Deliverix zapošljava?',
+          a: 'Deliverix je nezavisna platforma za podršku, informisanje i regrutaciju, a ne direktni poslodavac. Mi vas besplatno povezujemo sa zvaničnim i pouzdanim partnerskim agencijama (flotama) koje su licencirane za rad sa Wolt i Glovo platformama u Srbiji.'
+        },
+        {
+          q: 'Da li ste vi Wolt ili Glovo?',
+          a: 'Ne, mi nismo Wolt niti Glovo. Deliverix je nezavisna platforma koja pomaže budućim dostavljačima da brzo i jednostavno prođu kroz proceduru prijave i započnu rad kod proverenih partnerskih agencija (flota) za Wolt, Glovo i druge dostavne platforme.'
+        },
+        {
+          q: 'Koliko mogu da zaradim kao dostavljač?',
+          a: 'Zarada direktno zavisi od broja radnih sati, izabranog prevoznog sredstva i ostvarenih bonusa. Aktivni dostavljači koji rade puno radno vreme mogu ostvariti zaradu od 100.000 do preko 150.000 RSD mesečno. Takođe, sav bakšiš koji dobijete od kupaca ostaje 100% vama.'
+        },
+        {
+          q: 'Koliko traje proces prijave?',
+          a: 'Sama prijava na našem sajtu traje manje od 2 minuta. Nakon što popunite formular, naš mentorski tim će vas kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) kako bismo odgovorili na vaša pitanja i dogovorili sledeće korake.'
+        },
+        {
+          q: 'Kada mogu da počnem sa radom?',
+          a: 'Nakon razgovora sa našim mentorom i spajanja sa agencijom, proces aktivacije naloga i preuzimanja opreme obično traje između 24 i 48 sati. To znači da već za dan ili dva možete biti na ulicama i praviti svoje prve isporuke.'
+        },
+        {
+          q: 'Da li mogu da radim samo vikendom ili nekoliko sati dnevno?',
+          a: 'Apsolutno! Fleksibilnost je najveća prednost ovog posla. Sami birate kada se uključujete na aplikaciju i koliko radite. Možete raditi samo vikendom, nekoliko sati posle podne kao dodatni posao, ili puno radno vreme – izbor je isključivo vaš.'
+        },
+        {
+          q: 'Šta ako nemam sopstveno vozilo za dostavu?',
+          a: 'To uopšte nije problem. Preko naših partnerskih agencija obezbeđujemo mogućnost povoljnog najma električnih bickala (e-bike), skutera ili automobila po povlašćenim uslovima sa uključenim servisima, tako da možete početi odmah.'
+        },
+        {
+          q: 'Kako i kada funkcionišu isplate?',
+          a: 'Isplate se vrše redovno i na vreme, svake dve nedelje (na svakih 15 dana) direktno na vaš tekući račun. Uz svaku isplatu dobijate detaljan i transparentan obračun odrađenih dostava, bonusa i bakšiša.'
+        },
+        {
+          q: 'U kojim gradovima u Srbiji mogu da radim?',
+          a: 'Primarni fokus nam je na Beograd i Novi Sad gde je potražnja za dostavljačima najveća, ali prijave prihvatamo i za sve ostale veće gradove u Srbiji u kojima su dostupne Wolt i Glovo dostavne usluge.'
+        }
       ],
       footer_cta_title: "Započni svoju dostavljačku karijeru danas",
       footer_cta_desc: "Nemoj odlagati priliku za odličnu zaradu i potpunu slobodu. Registracija te ništa ne košta i ne obavezuje te ni na šta. Pomažemo ti oko celog procesa besplatno.",

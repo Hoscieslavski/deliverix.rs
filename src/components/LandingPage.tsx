@@ -102,7 +102,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
 
     const timer = setInterval(() => {
       setCurrentSlide(prev => (prev + 1) % slidesCount);
-    }, 4500);
+    }, 7000);
 
     return () => clearInterval(timer);
   }, [siteSettings, siteSettings?.hero_slider_images]);
@@ -252,20 +252,44 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
     ? siteSettings.faqs
     : [
         {
-          q: 'U kojim gradovima mogu da radim?',
-          a: 'Primarni fokus nam je Beograd, ali prijave prihvatamo i za druge veće gradove u Srbiji u kojima su dostupne platforme.'
+          q: 'Da li je Deliverix besplatan?',
+          a: 'Da! Deliverix platforma je 100% besplatna za sve kandidate. Pomoć oko prijave, savetovanje, obuka i spajanje sa proverenim partnerskim agencijama vas ne košta apsolutno ništa. Nemamo nikakve skrivene troškove niti uzimamo procenat od vaše zarade.'
         },
         {
-          q: 'Za koje platforme radi Deliverix?',
-          a: 'Trenutno vršimo regrutaciju i obuku za Wolt dostavu, a uskoro pokrećemo saradnju i sa Glovo platformom. Možete se prijaviti odmah i osigurati svoje mesto.'
+          q: 'Da li Deliverix zapošljava?',
+          a: 'Deliverix je nezavisna platforma za podršku, informisanje i regrutaciju, a ne direktni poslodavac. Mi vas besplatno povezujemo sa zvaničnim i pouzdanim partnerskim agencijama (flotama) koje su licencirane za rad sa Wolt i Glovo platformama u Srbiji.'
         },
         {
-          q: 'Da li moram da imam svoje vozilo?',
-          a: 'Ne morate. Ukoliko nemate sopstveno vozilo, preko naših partnerskih agencija možemo vam pomoći da iznajmite skuter, automobil ili električni bicikl pod odličnim uslovima.'
+          q: 'Da li ste vi Wolt ili Glovo?',
+          a: 'Ne, mi nismo Wolt niti Glovo. Deliverix je nezavisna platforma koja pomaže budućim dostavljačima da brzo i jednostavno prođu kroz proceduru prijave i započnu rad kod proverenih partnerskih agencija (flota) za Wolt, Glovo i druge dostavne platforme.'
         },
         {
-          q: 'Kada i kako se vrši isplata?',
-          a: 'Isplate su redovne i tačne (svakih 15 dana), direktno na vaš račun, uz kompletan pregled ostvarenih bonusa i bakšiša.'
+          q: 'Koliko mogu da zaradim kao dostavljač?',
+          a: 'Zarada direktno zavisi od broja radnih sati, izabranog prevoznog sredstva i ostvarenih bonusa. Aktivni dostavljači koji rade puno radno vreme mogu ostvariti zaradu od 100.000 do preko 150.000 RSD mesečno. Takođe, sav bakšiš koji dobijete od kupaca ostaje 100% vama.'
+        },
+        {
+          q: 'Koliko traje proces prijave?',
+          a: 'Sama prijava na našem sajtu traje manje od 2 minuta. Nakon što popunite formular, naš mentorski tim će vas kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) kako bismo odgovorili na vaša pitanja i dogovorili sledeće korake.'
+        },
+        {
+          q: 'Kada mogu da počnem sa radom?',
+          a: 'Nakon razgovora sa našim mentorom i spajanja sa agencijom, proces aktivacije naloga i preuzimanja opreme obično traje između 24 i 48 sati. To znači da već za dan ili dva možete biti na ulicama i praviti svoje prve isporuke.'
+        },
+        {
+          q: 'Da li mogu da radim samo vikendom ili nekoliko sati dnevno?',
+          a: 'Apsolutno! Fleksibilnost je najveća prednost ovog posla. Sami birate kada se uključujete na aplikaciju i koliko radite. Možete raditi samo vikendom, nekoliko sati posle podne kao dodatni posao, ili puno radno vreme – izbor je isključivo vaš.'
+        },
+        {
+          q: 'Šta ako nemam sopstveno vozilo za dostavu?',
+          a: 'To uopšte nije problem. Preko naših partnerskih agencija obezbeđujemo mogućnost povoljnog najma električnih bickala (e-bike), skutera ili automobila po povlašćenim uslovima sa uključenim servisima, tako da možete početi odmah.'
+        },
+        {
+          q: 'Kako i kada funkcionišu isplate?',
+          a: 'Isplate se vrše redovno i na vreme, svake dve nedelje (na svakih 15 dana) direktno na vaš tekući račun. Uz svaku isplatu dobijate detaljan i transparentan obračun odrađenih dostava, bonusa i bakšiša.'
+        },
+        {
+          q: 'U kojim gradovima u Srbiji mogu da radim?',
+          a: 'Primarni fokus nam je na Beograd i Novi Sad gde je potražnja za dostavljačima najveća, ali prijave prihvatamo i za sve ostale veće gradove u Srbiji u kojima su dostupne Wolt i Glovo dostavne usluge.'
         }
       ];
 
@@ -281,10 +305,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
   const whyApplyItems = siteSettings?.why_apply_items && siteSettings.why_apply_items.length > 0
     ? siteSettings.why_apply_items
     : [
-        { title: 'Sloboda izbora modela', desc: 'Biraš model saradnje i dinamiku rada koji najviše odgovaraju tvojim ličnim potrebama.' },
-        { title: 'Najbolja provizija', desc: 'Spajamo te sa agencijama koje nude najpovoljnije uslove i najmanji procenat.' },
-        { title: 'Brza podrška', desc: 'Naš mentorski tim ti pomaže oko aplikacije i rešavanja bilo kakvih problema na terenu.' },
-        { title: 'Brz start i obuka', desc: 'Pomažemo ti u brzom pokretanju naloga i pružamo besplatne savete pre prve dostave.' }
+        { title: 'Jedna prijava umesto više formulara', desc: 'Popunjavaš samo jedan obrazac, a mi odrađujemo sve ostalo sa partnerskim agencijama.' },
+        { title: 'Besplatna pomoć tokom cele prijave', desc: 'Naš tim te savetuje i vodi kroz sve korake bez ikakvih skrivenih troškova.' },
+        { title: 'Saveti oko izbora agencije', desc: 'Preporučujemo ti isključivo proverene partnere sa najmanjom provizijom.' },
+        { title: 'Pomoć oko aktivacije naloga', desc: 'Ubrzavamo proces odobrenja na platformama Wolt i Glovo.' },
+        { title: 'Informacije o zaradi i opremi', desc: 'Saznaj unapred sve detalje o bonusima, opremi, isplatama i dokumentaciji.' },
+        { title: 'Mentor za sva pitanja', desc: 'Dobijaš svog mentora kome možeš da postavljaš pitanja u bilo koje doba dana.' },
+        { title: 'Brži početak rada', desc: 'Skraćujemo vreme čekanja kako bi počeo da zarađuješ već u roku od 24-48 sati.' }
       ];
 
   if (isLoading) {
@@ -318,24 +345,41 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
           <div className="lg:col-span-7 space-y-5 text-left flex flex-col items-start">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-sky-50 text-sky-800 rounded-full text-xs font-bold uppercase tracking-wider border border-sky-100">
               <Sparkles className="w-3.5 h-3.5 text-sky-500" />
-              <span>Platforma za buduće dostavljače</span>
+              <span>Pronađi posao dostavljača uz Deliverix</span>
             </div>
             
             <h1 className="text-3xl sm:text-4xl lg:text-5.5xl font-black text-gray-900 tracking-tight leading-[1.12] text-left">
               {siteSettings?.hero_title ? (
                 <span>{siteSettings.hero_title}</span>
               ) : (
-                <>Postani <span className="text-sky-500 underline decoration-sky-300 decoration-wavy decoration-3">Dostavljač u Beogradu</span> i Ostalim Gradovima Srbije</>
+                <>Pronađi <span className="text-sky-500 underline decoration-sky-300 decoration-wavy decoration-3">posao dostavljača</span> uz Deliverix</>
               )}
             </h1>
 
             <h2 className="text-lg sm:text-xl font-extrabold text-gray-700 tracking-tight text-left text-sky-600">
-              {siteSettings?.hero_platform_title || "Posao za Wolt i Glovo Dostavljače (Zarada do 150.000 RSD)"}
+              {siteSettings?.hero_platform_title || "Besplatno povezivanje sa proverenim partnerskim agencijama u Srbiji"}
             </h2>
             
             <p className="text-sm sm:text-base text-gray-500 leading-snug sm:leading-relaxed max-w-xl text-left">
-              {siteSettings?.homepage_subtitle || "Odlična zarada, fleksibilno vreme i podrška mentora. Prijavi se za samo 2 minuta i kreni sa radom!"}
+              {siteSettings?.homepage_subtitle || "Deliverix je nezavisna platforma koja besplatno povezuje buduće dostavljače sa proverenim partnerskim agencijama za Wolt, Glovo i druge dostavne platforme u Srbiji."}
             </p>
+
+            {/* Ključne stavke u Hero sekciji (Celina 1) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl w-full pt-1">
+              {[
+                "Prijava traje 2 minuta",
+                "Besplatna podrška",
+                "Pomažemo do prve dostave",
+                "Beograd i Novi Sad"
+              ].map((bullet, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <Check className="w-3.5 h-3.5 stroke-[3]" />
+                  </div>
+                  <span className="text-xs sm:text-sm font-bold text-gray-700">{bullet}</span>
+                </div>
+              ))}
+            </div>
 
             {/* Isticanje Partnerskih Platformi (Celina C - 3.1) */}
             <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-50 border border-gray-150 rounded-2xl max-w-lg w-full">
@@ -429,87 +473,99 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
           {/* Vizuelni desni deo (Slika dostavljača / Slajder) */}
           <div className="lg:col-span-5 relative flex justify-center items-center">
             <div className="relative w-full max-w-sm lg:max-w-none">
-              {/* Ukrasni pozadinski elementi */}
-              <div className="absolute -inset-1.5 bg-gradient-to-r from-sky-400 to-sky-300 rounded-3xl blur-md opacity-30 transition duration-1000"></div>
+              {/* Ukrasni pozadinski elementi (Ambijentalno blago svetlo) */}
+              <div className="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-sky-200/20 blur-3xl -z-10 animate-pulse duration-[8000ms]"></div>
+              <div className="absolute -left-10 -top-10 w-48 h-48 rounded-full bg-blue-100/15 blur-2xl -z-10"></div>
               
-              <div className="relative bg-white p-3 rounded-3xl border border-gray-100 shadow-2xl overflow-hidden aspect-square group">
-                {/* Slajder prikaz */}
-                {siteSettings?.hero_right_mode === 'slider' && slides.length > 0 ? (
-                  <div className="w-full h-full relative overflow-hidden rounded-2xl bg-gray-50">
-                    {slides.map((slide: any, idx: number) => (
-                      <motion.img
-                        key={idx}
-                        src={slide.image}
-                        alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
-                        className="absolute inset-0 w-full h-full object-cover rounded-2xl"
-                        initial={{ opacity: 0, scale: 1.05 }}
-                        animate={{ 
-                          opacity: currentSlide === idx ? 1 : 0,
-                          scale: currentSlide === idx ? 1 : 1.05,
-                          zIndex: currentSlide === idx ? 10 : 0
-                        }}
-                        transition={{ duration: 0.8, ease: 'easeInOut' }}
-                        referrerPolicy="no-referrer"
-                      />
-                    ))}
+              <div className="relative bg-white p-2.5 rounded-[2rem] border border-gray-150/80 shadow-2xl overflow-hidden aspect-square group">
+                <div className="w-full h-full relative overflow-hidden rounded-[1.75rem] bg-gray-50">
+                  {/* Slajder / Slika prikaz */}
+                  {siteSettings?.hero_right_mode === 'slider' && slides.length > 0 ? (
+                    <>
+                      {slides.map((slide: any, idx: number) => (
+                        <motion.img
+                          key={idx}
+                          src={slide.image}
+                          alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
+                          className="absolute inset-0 w-full h-full object-cover rounded-[1.75rem]"
+                          initial={{ opacity: 0, scale: 1.05 }}
+                          animate={{ 
+                            opacity: currentSlide === idx ? 1 : 0,
+                            scale: currentSlide === idx ? 1 : 1.05,
+                            zIndex: currentSlide === idx ? 10 : 0
+                          }}
+                          transition={{ duration: 0.8, ease: 'easeInOut' }}
+                          referrerPolicy="no-referrer"
+                        />
+                      ))}
 
-                    {/* Navigacioni tasteri levo / desno (prikazuju se na hover) */}
-                    {slides.length > 1 && (
-                      <>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
-                          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
-                          title="Prethodna slika"
-                        >
-                          <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
-                          title="Sledeća slika"
-                        >
-                          <ChevronRight className="w-4 h-4 stroke-[2.5]" />
-                        </button>
+                      {/* Navigacioni tasteri levo / desno (prikazuju se na hover) */}
+                      {slides.length > 1 && (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
+                            title="Prethodna slika"
+                          >
+                            <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
+                            title="Sledeća slika"
+                          >
+                            <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                          </button>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    /* Standardna pojedinačna slika */
+                    <img
+                      src={siteSettings?.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.jpg'}
+                      alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
+                      className="w-full h-full object-cover rounded-[1.75rem]"
+                      referrerPolicy="no-referrer"
+                    />
+                  )}
 
-                        {/* Indikatori u vidu tačkica */}
-                        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 bg-black/30 backdrop-blur-xs px-2.5 py-1 rounded-full">
-                          {slides.map((_: any, idx: number) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              onClick={() => setCurrentSlide(idx)}
-                              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${currentSlide === idx ? 'bg-white w-3.5' : 'bg-white/50'}`}
-                            />
-                          ))}
-                        </div>
-                      </>
+                  {/* Moderni statusni tag - zajednički za oba moda */}
+                  <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-1.5 shadow-lg">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0"></span>
+                    <span className="text-[10px] font-black text-white uppercase tracking-wider">
+                      {activeSlide?.badge_title || 'Besplatna Podrška'}
+                    </span>
+                  </div>
+
+                  {/* Suptilan i elegantan overlay na dnu slike koji eliminiše osećaj reklame */}
+                  <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-5 sm:p-6 pt-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4 z-20">
+                    <div className="min-w-0 text-left">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-sky-400">
+                        Započni posao lakše
+                      </p>
+                      <p className="text-xs sm:text-sm font-bold text-white mt-1 leading-snug">
+                        {activeSlide?.badge_text || 'Pomažemo ti od prijave do prve dostave.'}
+                      </p>
+                    </div>
+                    
+                    {/* Indikatori u vidu tačkica integrisani u desni ugao (samo ako je slider) */}
+                    {siteSettings?.hero_right_mode === 'slider' && slides.length > 1 && (
+                      <div className="flex gap-1 shrink-0 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-lg border border-white/5 self-start sm:self-auto">
+                        {slides.map((_: any, idx: number) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setCurrentSlide(idx)}
+                            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${currentSlide === idx ? 'bg-white w-3 rounded-full' : 'bg-white/40'}`}
+                            aria-label={`Slajd ${idx + 1}`}
+                          />
+                        ))}
+                      </div>
                     )}
                   </div>
-                ) : (
-                  /* Standardna pojedinačna slika */
-                  <img
-                    src={siteSettings?.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.jpg'}
-                    alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
-                    className="w-full h-full object-cover rounded-2xl"
-                    referrerPolicy="no-referrer"
-                  />
-                )}
-                
-                {/* Float tag sa informacijom o besplatnoj podršci */}
-                <div className="absolute bottom-6 left-6 right-6 bg-white/95 backdrop-blur-md p-3.5 rounded-2xl border border-gray-150 shadow-xl flex items-center gap-3 z-20">
-                  <div className="w-9 h-9 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center shrink-0">
-                    <Check className="w-5 h-5 stroke-[3]" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[10px] font-extrabold uppercase tracking-wider text-sky-600 leading-none mb-1 truncate">
-                      {activeSlide?.badge_title || 'Dostupno odmah'}
-                    </p>
-                    <p className="text-xs font-black text-gray-800 leading-none truncate">
-                      {activeSlide?.badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'}
-                    </p>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -519,7 +575,133 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
       </section>
       )}
 
-      {/* 100% Besplatno - Zašto kandidati biraju nas? Sekcija (Razvučeno celom širinom - Kompaktnija verzija) */}
+      {/* Sekcija: Šta je Deliverix? (Celina 2) */}
+      {siteSettings?.about_enabled !== false && (
+      <section className="bg-white border border-slate-100/90 p-8 sm:p-12 rounded-[2rem] space-y-8 shadow-xl relative overflow-hidden" id="section-sta-je-deliverix">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="space-y-6">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50/60 text-sky-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-sky-100/50">
+            <Compass className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+            <span>Saznajte ko smo mi i šta radimo</span>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* Leva strana - Naslov i istaknuti uvod */}
+            <div className="lg:col-span-5 space-y-4">
+              <h2 className="text-2xl sm:text-3.5xl font-black text-gray-900 tracking-tight leading-tight">
+                {siteSettings?.about_title || 'Šta je Deliverix?'}
+              </h2>
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed font-bold">
+                {siteSettings?.about_intro || 'Deliverix je nezavisna platforma za prijavu dostavljača u Srbiji koja povezuje kandidate sa proverenim partnerskim agencijama za rad na dostavnim platformama kao što su Wolt i Glovo.'}
+              </p>
+            </div>
+            
+            {/* Desna strana - Detaljniji opis i tagovi */}
+            <div className="lg:col-span-7 space-y-5">
+              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+                {siteSettings?.about_paragraph1 || 'Umesto da samostalno tražiš oglase, kontaktiraš više agencija i prolaziš kroz različite procedure, dovoljno je da ostaviš jednu prijavu. Na osnovu tvoje lokacije, raspoloživosti i željenog načina rada, pomažemo ti da pronađeš odgovarajuću saradnju.'}
+              </p>
+              <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">
+                {siteSettings?.about_paragraph2 || 'Naša podrška je potpuno besplatna i vodi te kroz ceo proces — od prve prijave do aktivacije naloga i početka rada.'}
+              </p>
+              
+              {/* Popularne pretrage u podnožju desne strane */}
+              <div className="pt-4 border-t border-slate-100/50 flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-2">Popularne pretrage:</span>
+                {(siteSettings?.about_tags && siteSettings.about_tags.length > 0
+                  ? siteSettings.about_tags
+                  : [
+                    "posao dostavljača",
+                    "prijava za dostavljača",
+                    "dostavljač Wolt",
+                    "dostavljač Glovo",
+                    "posao kurira",
+                    "dostava hrane",
+                    "dostavljač Srbija"
+                  ]
+                ).map((tag: string, idx: number) => (
+                  <span key={idx} className="px-3 py-1 bg-sky-50/40 hover:bg-sky-50 text-sky-700/80 hover:text-sky-800 rounded-full text-xs font-semibold border border-sky-100/50 transition duration-200">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      )}
+
+      {/* Sekcija: Kome je namenjen Deliverix? (Celina 3) */}
+      <section className="space-y-8" id="section-kome-je-namenjen">
+        <div className="text-center max-w-2xl mx-auto space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-800 rounded-full text-xs font-black uppercase tracking-wider border border-amber-100">
+            <CheckCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span>Kome pomažemo u pronalasku posla</span>
+          </div>
+          <h2 className="text-2xl sm:text-3.5xl font-black text-gray-900 tracking-tight">Kome je namenjen Deliverix?</h2>
+          <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+            Deliverix je namenjen svima koji žele da rade kao dostavljači ili traže fleksibilan posao sa mogućnošću dobre zarade. Pomažemo kandidatima različitih profila da brzo započnu sa radom:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              title: "Studentima",
+              desc: "Tražiš džeparac ili stabilan prihod uz predavanja? Radi fleksibilno, vikendima ili samo nekoliko sati tokom radne nedelje.",
+              icon: Sparkles
+            },
+            {
+              title: "Zaposlenima za dodatni prihod",
+              desc: "Imaš stalan posao ali želiš dodatnu zaradu u slobodno vreme? Sam biraš kada se uključuješ na platformu.",
+              icon: Clock
+            },
+            {
+              title: "Nezaposlenima i aktivnim tražiocima",
+              desc: "Tražiš posao sa punim radnim vremenom i visokom zaradom? Dostava pruža stabilan i odmah dostupan izvor prihoda.",
+              icon: ShieldCheck
+            },
+            {
+              title: "Ljudima bez ikakvog iskustva",
+              desc: "Nikada nisi radio dostavu? Ne brini, naš mentorski tim ti pruža potpuno besplatnu obuku i vodi te korak po korak.",
+              icon: HeartHandshake
+            },
+            {
+              title: "Vozačima automobila",
+              desc: "Iskoristi svoj automobil za rad. Savršeno rešenje za sve vremenske prilike i veće dostavne distance.",
+              icon: Car
+            },
+            {
+              title: "Vozačima skutera i motora",
+              desc: "Najbrži način kretanja kroz gradske gužve u Beogradu i Novom Sadu. Visoka efikasnost i veći broj dostava po satu.",
+              icon: ScooterIcon
+            },
+            {
+              title: "Biciklistima i e-bike vozačima",
+              desc: "Najzdraviji i najjeftiniji način za obavljanje dostave. Pomažemo ti i oko povoljnog najma električnih bicikala.",
+              icon: Bike
+            },
+            {
+              title: "Svima koji žele potpunu slobodu",
+              desc: "Nemaš fiksno radno vreme niti šefa. Ti diktiraš tempo rada, kada odmaraš i koliko zarađuješ.",
+              icon: Compass
+            }
+          ].map((item, idx) => {
+            const Icon = item.icon;
+            return (
+              <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-sky-300 transition-all duration-300 space-y-3 flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="w-10 h-10 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center shrink-0 border border-sky-100/50">
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 text-base">{item.title}</h3>
+                  <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
       {siteSettings?.why_choose_us_enabled !== false && (
         <section className="bg-gradient-to-tr from-sky-500 to-sky-600 rounded-3xl p-6 sm:p-10 text-white shadow-2xl shadow-sky-500/10 space-y-6" id="zasto-nas-biraju">
         <div className="max-w-4xl mx-auto text-center space-y-3">
@@ -563,9 +745,14 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
       {/* Kako funkcioniše proces */}
       {siteSettings?.steps_enabled !== false && (
         <section id="kako-funkcionise" className="space-y-12">
-          <div className="text-center max-w-2xl mx-auto space-y-3">
+          <div className="text-center max-w-3xl mx-auto space-y-4">
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">{siteSettings?.steps_title || "Kako funkcioniše proces?"}</h2>
-            <p className="text-gray-600">{siteSettings?.steps_subtitle || "Od prijave do tvoje prve isplate deli te samo nekoliko jednostavnih koraka"}</p>
+            <p className="text-gray-700 text-sm sm:text-base font-semibold leading-relaxed">
+              Prijava preko Deliverix platforme je jednostavna i traje svega nekoliko minuta. Naš cilj je da ti olakšamo početak rada tako što te povezujemo sa odgovarajućom partnerskom agencijom i pružamo podršku tokom cele procedure.
+            </p>
+            <p className="text-gray-500 text-xs sm:text-sm">
+              Od prijave do tvoje prve isplate deli te samo nekoliko jednostavnih koraka:
+            </p>
           </div>
 
           <div className={`grid gap-8 ${
@@ -587,10 +774,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
 
       {/* Šta ti je potrebno */}
       {siteSettings?.requirements_enabled !== false && (
-        <section id="sta-je-potrebno" className="bg-gray-50/50 rounded-3xl p-8 sm:p-12 border border-gray-100 space-y-12">
+        <section id="sta-je-potrebno" className="bg-slate-50/30 rounded-[2rem] p-8 sm:p-12 border border-slate-100 space-y-12 shadow-xl">
           <div className="text-center max-w-2xl mx-auto space-y-3">
             <h2 className="text-3xl font-black text-gray-900 tracking-tight">{siteSettings?.requirements_title || "Uslovi za Rad i Prijava za Deliverix Flotu"}</h2>
-            <p className="text-gray-600">{siteSettings?.requirements_subtitle || "Uslovi su minimalni i dostupni svima koji žele pošteno da zarade"}</p>
+            <p className="text-gray-600 text-sm sm:text-base font-semibold">{siteSettings?.requirements_subtitle || "Uslovi su minimalni i dostupni svima koji žele pošteno da zarade"}</p>
           </div>
 
           <div className={`grid gap-8 ${
@@ -602,8 +789,8 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
             {requirements.map((req, idx) => {
               const ReqIcon = req.icon;
               return (
-                <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 space-y-4 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center border border-sky-100">
+                <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-100/80 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/5 transition-all duration-300 space-y-4 flex flex-col items-center text-center">
+                  <div className="w-12 h-12 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center border border-sky-100/50">
                     <ReqIcon className="w-6 h-6" />
                   </div>
                   <h3 className="text-lg font-bold text-gray-900">{req.title}</h3>
@@ -617,10 +804,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
 
       {/* Sekcija: Nemaš Vozilo? Nema Problema! (Celina C - 3.2 i H3 2.2) */}
       {siteSettings?.rent_enabled === true && (
-        <section id="renta-vozila" className="bg-sky-50/40 rounded-3xl p-8 sm:p-12 border border-sky-100/60 space-y-8">
+        <section id="renta-vozila" className="bg-sky-50/20 rounded-[2rem] p-8 sm:p-12 border border-sky-100/30 space-y-8 shadow-xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7 space-y-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 text-amber-800 rounded-full text-xs font-bold uppercase tracking-wider border border-amber-100">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50/60 text-amber-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-amber-100/50">
               <Zap className="w-3.5 h-3.5 text-amber-500" />
               <span>Nemaš Vozilo? Nema Problema!</span>
             </div>
@@ -647,11 +834,11 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
             {rentItems.filter(v => v.enabled).map((v, i) => {
               const Icon = v.icon;
               return (
-                <div key={i} className={`bg-white p-4.5 rounded-2xl border flex items-start gap-4 shadow-xs hover:shadow-md transition ${
-                  v.available ? 'border-gray-100' : 'border-gray-200 bg-gray-50/50 opacity-90'
+                <div key={i} className={`bg-white p-4.5 rounded-2xl border flex items-start gap-4 shadow-sm hover:shadow-xl hover:border-sky-200 transition duration-300 ${
+                  v.available ? 'border-slate-100' : 'border-slate-200 bg-gray-50/50 opacity-90'
                 }`}>
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
-                    v.available ? 'bg-sky-50 text-sky-500 border-sky-100' : 'bg-gray-100 text-gray-400 border-gray-250'
+                    v.available ? 'bg-sky-50 text-sky-500 border-sky-100/50' : 'bg-gray-100 text-gray-400 border-gray-200'
                   }`}>
                     <Icon className="w-5 h-5" />
                   </div>
@@ -669,8 +856,8 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
                       {/* Availability badge */}
                       <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0 border flex items-center gap-1 ${
                         v.available 
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-100' 
-                          : 'bg-rose-50 text-rose-600 border-rose-100'
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-100/50' 
+                          : 'bg-rose-50 text-rose-600 border-rose-100/50'
                       }`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${v.available ? 'bg-emerald-500' : 'bg-rose-500'}`} />
                         {v.available ? 'Dostupno' : 'Zauzeto'}
@@ -686,53 +873,55 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
       </section>
       )}
 
-      {/* Ko može da radi (Fokus na jednostavnost i ljude bez iskustva) */}
+      {/* Sekcija: Zašto se prijaviti preko Deliverix-a? (Jedinstveni benefiti platforme - optimizovano) */}
       {siteSettings?.target_audience_enabled !== false && (
-        <section id="ko-moze-da-radi" className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-5 space-y-6">
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight">
-              {siteSettings?.target_audience_title || "Za koga je ovaj posao?"}
-            </h2>
-            <p className="text-gray-600 leading-relaxed">
-              {siteSettings?.target_audience_desc || "Dostava hrane i pošiljaka je idealna za sve koji cene slobodu i samostalnost u radu. Naš stručni tim ti pruža sigurnost, besplatne savete i brze odgovore u svakom trenutku."}
-            </p>
-
-            <div className="space-y-3.5">
-              {targetAudienceItems.map((text: string, idx: number) => (
-                <div key={idx} className="flex items-start gap-3">
-                  <div className="w-5 h-5 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="w-3 h-3 stroke-[3]" />
-                  </div>
-                  <p className="text-sm font-semibold text-gray-700">{text}</p>
-                </div>
-              ))}
+        <section id="zasto-se-prijaviti" className="bg-white border border-slate-100/90 rounded-[2rem] p-8 sm:p-12 space-y-8 shadow-xl">
+          <div className="max-w-3xl space-y-4">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50/60 text-sky-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-sky-100/50">
+              <HeartHandshake className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+              <span>Prednosti Deliverix Platforme</span>
             </div>
-
-            <button
-              id="ko-moze-apply-btn"
-              onClick={onOpenApply}
-              className="px-6 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center gap-2 cursor-pointer text-sm"
-            >
-              Započni prijavu odmah (Traje 1 min) <ArrowRight className="w-4 h-4" />
-            </button>
+            
+            <h2 className="text-2xl sm:text-3.5xl font-black text-gray-900 tracking-tight leading-tight">
+              {siteSettings?.why_apply_title || "Zašto se prijaviti preko Deliverix-a?"}
+            </h2>
+            
+            <p className="text-sm sm:text-base text-gray-600 leading-relaxed font-semibold">
+              {siteSettings?.why_apply_desc || "Za razliku od pojedinačnog prijavljivanja kod različitih agencija, Deliverix ti omogućava da na jednom mestu dobiješ sve potrebne informacije, besplatnu podršku i preporuku partnera koji najbolje odgovara tvojoj trenutnoj situaciji."}
+            </p>
           </div>
 
-          <div className="lg:col-span-7 bg-white border border-gray-100 p-8 rounded-3xl shadow-xs space-y-6">
-            <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <HeartHandshake className="w-5 h-5 text-sky-500" /> {siteSettings?.why_apply_title || "Zašto se prijaviti preko nas?"}
-            </h3>
-            <p className="text-sm text-gray-500">
-              {siteSettings?.why_apply_desc || "Kao nezavisna platforma za podršku, pomažemo ti da pronađeš partnersku agenciju koja nudi najbolje uslove za tvoj profil. To za tebe znači:"}
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
-              {whyApplyItems.map((item: any, idx: number) => (
-                <div key={idx} className="p-4 bg-gray-50 rounded-xl space-y-1">
-                  <h4 className="font-bold text-sm text-gray-900">{item.title}</h4>
-                  <p className="text-xs text-gray-500">{item.desc}</p>
+          <div className={`grid gap-6 pt-2 ${
+            whyApplyItems.length === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' :
+            whyApplyItems.length === 3 ? 'grid-cols-1 md:grid-cols-3' :
+            whyApplyItems.length === 2 ? 'grid-cols-1 sm:grid-cols-2' :
+            whyApplyItems.length % 3 === 0 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' :
+            'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+          }`}>
+            {whyApplyItems.map((item: any, idx: number) => (
+              <div key={idx} className="p-5 bg-slate-50/30 border border-slate-100 hover:border-sky-300 hover:bg-white hover:shadow-lg hover:shadow-sky-500/5 transition-all duration-300 rounded-2xl flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/40">
+                    <Check className="w-4 h-4 stroke-[3]" />
+                  </div>
+                  <h4 className="font-extrabold text-sm sm:text-base text-gray-900 leading-snug">{item.title}</h4>
+                  <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{item.desc}</p>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
+            <p className="text-xs text-gray-400 font-bold max-w-md">
+              Svi naši servisi, saveti i spajanje sa partnerima su potpuno besplatni. Bez skrivenih provizija i troškova.
+            </p>
+            <button
+              id="zasto-prijavi-se-btn"
+              onClick={onOpenApply}
+              className="w-full sm:w-auto px-8 py-4 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center justify-center gap-2 cursor-pointer text-sm"
+            >
+              Započni besplatnu prijavu <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </section>
       )}
@@ -850,6 +1039,61 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
           )}
         </section>
       )}
+
+      {/* Informativna Sekcija: Zašto kandidati biraju posao dostavljača? */}
+      <section className="bg-white border border-slate-100/90 rounded-[2rem] p-8 sm:p-12 space-y-8 shadow-xl" id="vodic-zasto-posao-dostavljaca">
+        <div className="w-full space-y-6">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50/60 text-sky-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-sky-100/50">
+            <Sparkles className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+            <span>Karijerni vodič i saveti</span>
+          </div>
+          
+          <h2 className="text-2xl sm:text-3.5xl font-black text-gray-900 tracking-tight leading-tight">
+            Zašto kandidati biraju posao dostavljača u Srbiji?
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-600 leading-relaxed">
+            <div className="space-y-4">
+              <p>
+                Tržište dostave hrane i pošiljaka u Srbiji doživljava ogroman rast u poslednjih nekoliko godina. Sve veći broj ljudi traži <span className="font-extrabold text-slate-800">fleksibilan posao</span> koji im omogućava da sami diktiraju svoje radno vreme, usklađuju privatne obaveze i ostvaruju natprosečne prihode. Upravo zbog toga, <span className="font-extrabold text-slate-800">posao dostavljača</span> postao je jedan od najtraženijih i najpopularnijih poslova na našim prostorima.
+              </p>
+              <p>
+                Bilo da vas zanima rad kao <span className="font-extrabold text-slate-800">dostavljač Wolt</span> platforme ili želite da postanete <span className="font-extrabold text-slate-800">dostavljač Glovo</span> flote, Deliverix platforma je tu da vam maksimalno pojednostavi i ubrza ceo proces zapošljavanja. Naš cilj je da eliminišemo administrativne prepreke i povežemo vas sa partnerima koji nude najbolje finansijske uslove, najniže provizije i redovne dvonedeljne isplate na račun.
+              </p>
+              <p>
+                Jedna od najvećih prednosti jeste sloboda izbora prevoznog sredstva. Ukoliko preferirate dinamičnu vožnju kroz grad bez troškova goriva, <span className="font-semibold text-slate-800">posao sa biciklom</span> ili električnim biciklom predstavlja izuzetan izbor. Sa druge strane, radnici koji žele maksimalan komfor tokom cele godine i rad bez obzira na kišu, sneg ili visoke temperature biraju <span className="font-semibold text-slate-800">posao sa automobilom</span>.
+              </p>
+            </div>
+            
+            <div className="space-y-4">
+              <p>
+                Takođe, <span className="font-semibold text-slate-800">posao kurira</span> je izuzetno popularan kao <span className="font-semibold text-slate-800">posao za studente</span> koji traže način da zarade džeparac tokom raspusta ili vikendima. Fleksibilna priroda aplikacije omogućava vam da radite tačno onoliko koliko želite – bez fiksnog radnog vremena, pritiska nadređenih ili obaveznih smena. Vi ste sami svoj šef.
+              </p>
+              <p>
+                Pored studenata, mnogi zaposleni koriste dostavu kao izvor za <span className="font-semibold text-slate-800">dodatnu zaradu</span> nakon redovnih radnih sati na primarnom poslu. Samo 2-3 sata dnevno može vam doneti značajnu dopunu kućnog budžeta. Isplate se vrše redovno, a transparentan sistem unutar aplikacije omogućava vam da u svakom trenutku pratite svoju zaradu, ostvarene bonuse i bakšiš koji vam korisnici ostavljaju.
+              </p>
+              <p>
+                Deliverix Srbija ne naplaćuje apsolutno ništa kandidatima. Naša misija je da pružimo besplatnu podršku, stručne savete i pomognemo vam da odaberete najbolju opciju za vaš profil. Od prve prijave na sajtu, preko prikupljanja dokumentacije, pa sve do preuzimanja opreme i prve uspešne dostave – naš mentorski tim je tu da vam pruži sigurnost i odgovori na sve nedoumice.
+              </p>
+            </div>
+          </div>
+          
+          <div className="pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
+            <div className="space-y-1">
+              <h4 className="font-extrabold text-sm text-gray-900">Maksimalna Fleksibilnost</h4>
+              <p className="text-xs text-gray-500">Sami birate kada radite, koliko dugo ostajete na terenu i kada pravite pauzu.</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-extrabold text-sm text-gray-900">Odlična i Brza Zarada</h4>
+              <p className="text-xs text-gray-500">Mogućnost ostvarivanja zarade i preko 150.000 RSD mesečno uz redovne isplate na svakih 15 dana.</p>
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-extrabold text-sm text-gray-900">Puna Podrška Mentora</h4>
+              <p className="text-xs text-gray-500">Deliverix platforma vam pruža besplatnu obuku i savetovanje kako biste odmah krenuli uspešno.</p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Česta Pitanja (FAQ) */}
       {siteSettings?.faq_enabled !== false && (

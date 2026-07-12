@@ -89,6 +89,7 @@ export default function App() {
   });
 
   const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Učitavanje logotipa i SEO podešavanja sa servera
   useEffect(() => {
@@ -314,73 +315,118 @@ export default function App() {
 
           {/* Navigacija i Akcije */}
           <nav className="flex items-center gap-2 sm:gap-4">
-            {siteSettings?.steps_enabled !== false && (
+            <div className="hidden lg:flex items-center gap-6">
               <button
-                id="nav-how-it-works-btn"
+                id="nav-what-is-btn"
                 onClick={() => {
                   setCurrentView('landing');
                   setTimeout(() => {
-                    document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('section-sta-je-deliverix')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }}
-                className="hidden md:inline text-sm font-semibold text-gray-600 hover:text-sky-500 transition cursor-pointer"
+                className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
               >
-                Kako funkcioniše
+                Šta je Deliverix?
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
               </button>
-            )}
-            {siteSettings?.requirements_enabled !== false && (
+              
               <button
-                id="nav-reqs-btn"
+                id="nav-kome-btn"
                 onClick={() => {
                   setCurrentView('landing');
                   setTimeout(() => {
-                    document.getElementById('sta-je-potrebno')?.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('section-kome-je-namenjen')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }}
-                className="hidden md:inline text-sm font-semibold text-gray-600 hover:text-sky-500 transition cursor-pointer"
+                className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
               >
-                Uslovi
+                Kome je namenjen?
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
               </button>
-            )}
-            {siteSettings?.faq_enabled !== false && (
+
+              {siteSettings?.steps_enabled !== false && (
+                <button
+                  id="nav-how-it-works-btn"
+                  onClick={() => {
+                    setCurrentView('landing');
+                    setTimeout(() => {
+                      document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
+                >
+                  Kako funkcioniše
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
+                </button>
+              )}
+
               <button
-                id="nav-faq-btn"
+                id="nav-zasto-btn"
                 onClick={() => {
                   setCurrentView('landing');
                   setTimeout(() => {
-                    document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('zasto-se-prijaviti')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }}
-                className="hidden md:inline text-sm font-semibold text-gray-600 hover:text-sky-500 transition cursor-pointer"
+                className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
               >
-                Česta Pitanja (FAQ)
+                Zašto mi?
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
               </button>
-            )}
-            {siteSettings?.blog_enabled !== false && (
-              <button
-                id="nav-blog-btn"
-                onClick={() => setCurrentView('blog')}
-                className={`text-sm font-semibold transition cursor-pointer ${currentView === 'blog' ? 'text-sky-500 font-black' : 'text-gray-600 hover:text-sky-500'}`}
-              >
-                Blog
-              </button>
-            )}
+
+              {siteSettings?.faq_enabled !== false && (
+                <button
+                  id="nav-faq-btn"
+                  onClick={() => {
+                    setCurrentView('landing');
+                    setTimeout(() => {
+                      document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
+                    }, 100);
+                  }}
+                  className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
+                >
+                  FAQ
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
+                </button>
+              )}
+
+              {siteSettings?.blog_enabled !== false && (
+                <button
+                  id="nav-blog-btn"
+                  onClick={() => setCurrentView('blog')}
+                  className={`text-sm font-semibold transition-colors relative group py-2 cursor-pointer ${currentView === 'blog' ? 'text-sky-500 font-black' : 'text-gray-600 hover:text-sky-500'}`}
+                >
+                  Blog
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-sky-500 transition-all ${currentView === 'blog' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                </button>
+              )}
+            </div>
 
             {(currentView === 'landing' || currentView === 'blog') ? (
-              <div className="flex flex-col sm:flex-row-reverse items-stretch sm:items-center gap-1 sm:gap-2 shrink-0">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                 <button
                   id="header-apply-btn"
                   onClick={() => setIsApplyModalOpen(true)}
-                  className="px-2.5 sm:px-5 py-1.5 sm:py-2.5 bg-sky-500 hover:bg-sky-600 text-white text-[11px] sm:text-sm font-black rounded-lg sm:rounded-xl shadow-md sm:shadow-lg shadow-sky-500/15 active:translate-y-0.5 transition cursor-pointer whitespace-nowrap text-center shrink-0"
+                  className="px-3 sm:px-5 py-2 sm:py-2.5 bg-sky-500 hover:bg-sky-600 text-white text-[11px] sm:text-sm font-black rounded-xl shadow-md sm:shadow-lg shadow-sky-500/15 active:translate-y-0.5 transition cursor-pointer whitespace-nowrap text-center shrink-0"
                 >
                   Prijavi se
                 </button>
                 <button
                   id="header-portal-btn"
                   onClick={() => setCurrentView('candidate')}
-                  className="px-2 sm:px-4 py-1.5 sm:py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-600 text-[11px] sm:text-sm font-black rounded-lg sm:rounded-xl transition cursor-pointer flex items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
+                  className="hidden sm:flex px-3 sm:px-4 py-2 sm:py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-600 text-[11px] sm:text-sm font-black rounded-xl transition cursor-pointer items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
                 >
                   <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> Prati prijavu
+                </button>
+
+                {/* Mobilni hamburger taster */}
+                <button
+                  id="mobile-menu-toggle-btn"
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="flex lg:hidden p-2 text-gray-500 hover:text-sky-500 hover:bg-sky-50 rounded-xl transition shrink-0 cursor-pointer"
+                  aria-label="Meni"
+                >
+                  {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
                 </button>
               </div>
             ) : (
@@ -395,6 +441,165 @@ export default function App() {
           </nav>
         </div>
       </header>
+
+      {/* Mobilni Meni Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-xs lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 220 }}
+              className="absolute right-0 top-0 bottom-0 w-full max-w-xs bg-white shadow-2xl p-6 flex flex-col justify-between"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="space-y-6">
+                <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                  <div className="flex items-center gap-2">
+                    <DeliverixLogo style={logoStyle} customLogoUrl={customLogoUrl} logoBlendMode={logoBlendMode} className="w-8 h-8" />
+                    <div>
+                      <span className="text-md font-black tracking-wider text-sky-600 block leading-none font-sans uppercase">
+                        DELIVERIX
+                      </span>
+                      <span className="text-[7px] text-gray-400 font-extrabold block uppercase tracking-[0.1em] mt-0.5">
+                        PODRŠKA ZA DOSTAVLJAČE
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-1.5">
+                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-3 mb-2">Navigacija</p>
+                  
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setCurrentView('landing');
+                      setTimeout(() => {
+                        document.getElementById('section-sta-je-deliverix')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 150);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <Compass className="w-4 h-4 text-sky-500 shrink-0" />
+                    <span>Šta je Deliverix?</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setCurrentView('landing');
+                      setTimeout(() => {
+                        document.getElementById('section-kome-je-namenjen')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 150);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <Users className="w-4 h-4 text-sky-500 shrink-0" />
+                    <span>Kome je namenjen?</span>
+                  </button>
+
+                  {siteSettings?.steps_enabled !== false && (
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setCurrentView('landing');
+                        setTimeout(() => {
+                          document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 150);
+                      }}
+                      className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                    >
+                      <Clock className="w-4 h-4 text-sky-500 shrink-0" />
+                      <span>Kako funkcioniše</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setCurrentView('landing');
+                      setTimeout(() => {
+                        document.getElementById('zasto-se-prijaviti')?.scrollIntoView({ behavior: 'smooth' });
+                      }, 150);
+                    }}
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-sky-500 shrink-0" />
+                    <span>Zašto mi?</span>
+                  </button>
+
+                  {siteSettings?.faq_enabled !== false && (
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setCurrentView('landing');
+                        setTimeout(() => {
+                          document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
+                        }, 150);
+                      }}
+                      className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                    >
+                      <HelpCircle className="w-4 h-4 text-sky-500 shrink-0" />
+                      <span>Česta pitanja (FAQ)</span>
+                    </button>
+                  )}
+
+                  {siteSettings?.blog_enabled !== false && (
+                    <button
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        setCurrentView('blog');
+                      }}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2.5 cursor-pointer ${currentView === 'blog' ? 'bg-sky-50 text-sky-600 font-extrabold' : 'text-gray-700 hover:text-sky-500 hover:bg-sky-50'}`}
+                    >
+                      <MessageSquare className="w-4 h-4 text-sky-500 shrink-0" />
+                      <span>Blog vesti</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Akcije na dnu mobilnog menija */}
+              <div className="space-y-3 pt-6 border-t border-gray-100">
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setIsApplyModalOpen(true);
+                  }}
+                  className="w-full py-3.5 bg-sky-500 hover:bg-sky-600 text-white text-sm font-black rounded-xl shadow-lg shadow-sky-500/25 transition text-center flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Prijavi se odmah</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    setCurrentView('candidate');
+                  }}
+                  className="w-full py-3.5 bg-sky-50 hover:bg-sky-100 text-sky-600 text-sm font-black rounded-xl transition text-center flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Lock className="w-4 h-4 shrink-0" />
+                  <span>Prati svoju prijavu</span>
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Glavni Sadržaj */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10" id="main-content-layout">

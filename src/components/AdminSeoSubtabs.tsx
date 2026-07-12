@@ -697,6 +697,35 @@ export function HomepageSectionsTabForm({
       hasChanges = true;
     }
 
+    if (!siteSettings.about_title) {
+      updatedSettings.about_title = 'Šta je Deliverix?';
+      hasChanges = true;
+    }
+    if (!siteSettings.about_intro) {
+      updatedSettings.about_intro = 'Deliverix je nezavisna platforma za prijavu dostavljača u Srbiji koja povezuje kandidate sa proverenim partnerskim agencijama za rad na dostavnim platformama kao što su Wolt i Glovo.';
+      hasChanges = true;
+    }
+    if (!siteSettings.about_paragraph1) {
+      updatedSettings.about_paragraph1 = 'Umesto da samostalno tražiš oglase, kontaktiraš više agencija i prolaziš kroz različite procedure, dovoljno je da ostaviš jednu prijavu. Na osnovu tvoje lokacije, raspoloživosti i željenog načina rada, pomažemo ti da pronađeš odgovarajuću saradnju.';
+      hasChanges = true;
+    }
+    if (!siteSettings.about_paragraph2) {
+      updatedSettings.about_paragraph2 = 'Naša podrška je potpuno besplatna i vodi te kroz ceo proces — od prve prijave do aktivacije naloga i početka rada.';
+      hasChanges = true;
+    }
+    if (!siteSettings.about_tags || siteSettings.about_tags.length === 0) {
+      updatedSettings.about_tags = [
+        'posao dostavljača',
+        'prijava za dostavljača',
+        'dostavljač Wolt',
+        'dostavljač Glovo',
+        'posao kurira',
+        'dostava hrane',
+        'dostavljač Srbija'
+      ];
+      hasChanges = true;
+    }
+
     if (hasChanges) {
       setSiteSettings(updatedSettings);
     }
@@ -921,7 +950,87 @@ export function HomepageSectionsTabForm({
       <form onSubmit={onSave} className="space-y-8">
         <div className="space-y-1 border-b border-gray-100 pb-3">
           <h3 className="text-lg font-black text-gray-900">Uređivanje Delova Sajta</h3>
-          <p className="text-xs text-gray-400">Prilagodite sekcije "Zašto nas biraju", "Kako funkcioniše", "Uslovi za rad" i "Renta vozila".</p>
+          <p className="text-xs text-gray-400">Prilagodite sekcije "Šta je Deliverix?", "Zašto nas biraju", "Kako funkcioniše", "Uslovi za rad" i "Renta vozila".</p>
+        </div>
+
+        {/* SEKCIJA 0: ŠTA JE DELIVERIX? */}
+        <div className={`space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border transition-all ${siteSettings.about_enabled !== false ? 'border-gray-100 opacity-100' : 'border-gray-200/80 bg-gray-100/30'}`}>
+          <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+              <Compass className="w-4 h-4" /> Sekcija: Šta je Deliverix?
+            </h4>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-gray-500 uppercase">{siteSettings.about_enabled !== false ? 'Aktivna' : 'Isključena'}</span>
+              <button
+                type="button"
+                onClick={() => setSiteSettings({ ...siteSettings, about_enabled: siteSettings.about_enabled !== false ? false : true })}
+                className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  siteSettings.about_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out ${
+                    siteSettings.about_enabled !== false ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-500 uppercase">Glavni naslov sekcije</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold"
+                value={siteSettings.about_title || 'Šta je Deliverix?'}
+                onChange={e => setSiteSettings({ ...siteSettings, about_title: e.target.value })}
+              />
+            </div>
+            
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-500 uppercase">Popularne pretrage (oznake, odvojene zarezom)</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-sky-700 font-mono"
+                value={(siteSettings.about_tags || []).join(', ')}
+                onChange={e => setSiteSettings({ ...siteSettings, about_tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                placeholder="posao dostavljača, prijava za dostavljača, dostavljač Wolt"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-gray-500 uppercase">Istaknuti uvodni tekst (Bold)</label>
+            <textarea
+              rows={2}
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium leading-relaxed"
+              value={siteSettings.about_intro || ''}
+              onChange={e => setSiteSettings({ ...siteSettings, about_intro: e.target.value })}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-500 uppercase">Prvi pasus (Detaljan opis)</label>
+              <textarea
+                rows={3}
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-600 leading-relaxed"
+                value={siteSettings.about_paragraph1 || ''}
+                onChange={e => setSiteSettings({ ...siteSettings, about_paragraph1: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-500 uppercase">Drugi pasus (Detaljan opis)</label>
+              <textarea
+                rows={3}
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-600 leading-relaxed"
+                value={siteSettings.about_paragraph2 || ''}
+                onChange={e => setSiteSettings({ ...siteSettings, about_paragraph2: e.target.value })}
+              />
+            </div>
+          </div>
         </div>
 
         {/* SEKCIJA 1: ZAŠTO NAS BIRAJU */}
@@ -1593,20 +1702,44 @@ export function FaqTabForm({
         ...prev,
         faqs: [
           {
-            q: 'U kojim gradovima mogu da radim?',
-            a: 'Primarni fokus nam je Beograd, ali prijave prihvatamo i za druge veće gradove u Srbiji u kojima su dostupne platforme.'
+            q: 'Da li je Deliverix besplatan?',
+            a: 'Da! Deliverix platforma je 100% besplatna za sve kandidate. Pomoć oko prijave, savetovanje, obuka i spajanje sa proverenim partnerskim agencijama vas ne košta apsolutno ništa. Nemamo nikakve skrivene troškove niti uzimamo procenat od vaše zarade.'
           },
           {
-            q: 'Za koje platforme radi Deliverix?',
-            a: 'Trenutno vršimo regrutaciju i obuku za Wolt dostavu, a uskoro pokrećemo saradnju i sa Glovo platformom. Možete se prijaviti odmah i osigurati svoje mesto.'
+            q: 'Da li Deliverix zapošljava?',
+            a: 'Deliverix je nezavisna platforma za podršku, informisanje i regrutaciju, a ne direktni poslodavac. Mi vas besplatno povezujemo sa zvaničnim i pouzdanim partnerskim agencijama (flotama) koje su licencirane za rad sa Wolt i Glovo platformama u Srbiji.'
           },
           {
-            q: 'Da li moram da imam svoje vozilo?',
-            a: 'Ne morate. Ukoliko nemate sopstveno vozilo, preko naših partnerskih agencija možemo vam pomoći da iznajmite skuter, automobil ili električni bicikl pod odličnim uslovima.'
+            q: 'Da li ste vi Wolt ili Glovo?',
+            a: 'Ne, mi nismo Wolt niti Glovo. Deliverix je nezavisna platforma koja pomaže budućim dostavljačima da brzo i jednostavno prođu kroz proceduru prijave i započnu rad kod proverenih partnerskih agencija (flota) za Wolt, Glovo i druge dostavne platforme.'
           },
           {
-            q: 'Kada i kako se vrši isplata?',
-            a: 'Isplate su redovne i tačne (svakih 15 dana), direktno na vaš račun, uz kompletan pregled ostvarenih bonusa i bakšiša.'
+            q: 'Koliko mogu da zaradim kao dostavljač?',
+            a: 'Zarada direktno zavisi od broja radnih sati, izabranog prevoznog sredstva i ostvarenih bonusa. Aktivni dostavljači koji rade puno radno vreme mogu ostvariti zaradu od 100.000 do preko 150.000 RSD mesečno. Takođe, sav bakšiš koji dobijete od kupaca ostaje 100% vama.'
+          },
+          {
+            q: 'Koliko traje proces prijave?',
+            a: 'Sama prijava na našem sajtu traje manje od 2 minuta. Nakon što popunite formular, naš mentorski tim će vas kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) kako bismo odgovorili na vaša pitanja i dogovorili sledeće korake.'
+          },
+          {
+            q: 'Kada mogu da počnem sa radom?',
+            a: 'Nakon razgovora sa našim mentorom i spajanja sa agencijom, proces aktivacije naloga i preuzimanja opreme obično traje između 24 i 48 sati. To znači da već za dan ili dva možete biti na ulicama i praviti svoje prve isporuke.'
+          },
+          {
+            q: 'Da li mogu da radim samo vikendom ili nekoliko sati dnevno?',
+            a: 'Apsolutno! Fleksibilnost je najveća prednost ovog posla. Sami birate kada se uključujete na aplikaciju i koliko radite. Možete raditi samo vikendom, nekoliko sati posle podne kao dodatni posao, ili puno radno vreme – izbor je isključivo vaš.'
+          },
+          {
+            q: 'Šta ako nemam sopstveno vozilo za dostavu?',
+            a: 'To uopšte nije problem. Preko naših partnerskih agencija obezbeđujemo mogućnost povoljnog najma električnih bickala (e-bike), skutera ili automobila po povlašćenim uslovima sa uključenim servisima, tako da možete početi odmah.'
+          },
+          {
+            q: 'Kako i kada funkcionišu isplate?',
+            a: 'Isplate se vrše redovno i na vreme, svake dve nedelje (na svakih 15 dana) direktno na vaš tekući račun. Uz svaku isplatu dobijate detaljan i transparentan obračun odrađenih dostava, bonusa i bakšiša.'
+          },
+          {
+            q: 'U kojim gradovima u Srbiji mogu da radim?',
+            a: 'Primarni fokus nam je na Beograd i Novi Sad gde je potražnja za dostavljačima najveća, ali prijave prihvatamo i za sve ostale veće gradove u Srbiji u kojima su dostupne Wolt i Glovo dostavne usluge.'
           }
         ]
       }));
@@ -1617,20 +1750,44 @@ export function FaqTabForm({
     ? siteSettings.faqs
     : [
         {
-          q: 'U kojim gradovima mogu da radim?',
-          a: 'Primarni fokus nam je Beograd, ali prijave prihvatamo i za druge veće gradove u Srbiji u kojima su dostupne platforme.'
+          q: 'Da li je Deliverix besplatan?',
+          a: 'Da! Deliverix platforma je 100% besplatna za sve kandidate. Pomoć oko prijave, savetovanje, obuka i spajanje sa proverenim partnerskim agencijama vas ne košta apsolutno ništa. Nemamo nikakve skrivene troškove niti uzimamo procenat od vaše zarade.'
         },
         {
-          q: 'Za koje platforme radi Deliverix?',
-          a: 'Trenutno vršimo regrutaciju i obuku za Wolt dostavu, a uskoro pokrećemo saradnju i sa Glovo platformom. Možete se prijaviti odmah i osigurati svoje mesto.'
+          q: 'Da li Deliverix zapošljava?',
+          a: 'Deliverix je nezavisna platforma za podršku, informisanje i regrutaciju, a ne direktni poslodavac. Mi vas besplatno povezujemo sa zvaničnim i pouzdanim partnerskim agencijama (flotama) koje su licencirane za rad sa Wolt i Glovo platformama u Srbiji.'
         },
         {
-          q: 'Da li moram da imam svoje vozilo?',
-          a: 'Ne morate. Ukoliko nemate sopstveno vozilo, preko naših partnerskih agencija možemo vam pomoći da iznajmite skuter, automobil ili električni bicikl pod odličnim uslovima.'
+          q: 'Da li ste vi Wolt ili Glovo?',
+          a: 'Ne, mi nismo Wolt niti Glovo. Deliverix je nezavisna platforma koja pomaže budućim dostavljačima da brzo i jednostavno prođu kroz proceduru prijave i započnu rad kod proverenih partnerskih agencija (flota) za Wolt, Glovo i druge dostavne platforme.'
         },
         {
-          q: 'Kada i kako se vrši isplata?',
-          a: 'Isplate su redovne i tačne (svakih 15 dana), direktno na vaš račun, uz kompletan pregled ostvarenih bonusa i bakšiša.'
+          q: 'Koliko mogu da zaradim kao dostavljač?',
+          a: 'Zarada direktno zavisi od broja radnih sati, izabranog prevoznog sredstva i ostvarenih bonusa. Aktivni dostavljači koji rade puno radno vreme mogu ostvariti zaradu od 100.000 do preko 150.000 RSD mesečno. Takođe, sav bakšiš koji dobijete od kupaca ostaje 100% vama.'
+        },
+        {
+          q: 'Koliko traje proces prijave?',
+          a: 'Sama prijava na našem sajtu traje manje od 2 minuta. Nakon što popunite formular, naš mentorski tim će vas kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) kako bismo odgovorili na vaša pitanja i dogovorili sledeće korake.'
+        },
+        {
+          q: 'Kada mogu da počnem sa radom?',
+          a: 'Nakon razgovora sa našim mentorom i spajanja sa agencijom, proces aktivacije naloga i preuzimanja opreme obično traje između 24 i 48 sati. To znači da već za dan ili dva možete biti na ulicama i praviti svoje prve isporuke.'
+        },
+        {
+          q: 'Da li mogu da radim samo vikendom ili nekoliko sati dnevno?',
+          a: 'Apsolutno! Fleksibilnost je najveća prednost ovog posla. Sami birate kada se uključujete na aplikaciju i koliko radite. Možete raditi samo vikendom, nekoliko sati posle podne kao dodatni posao, ili puno radno vreme – izbor je isključivo vaš.'
+        },
+        {
+          q: 'Šta ako nemam sopstveno vozilo za dostavu?',
+          a: 'To uopšte nije problem. Preko naših partnerskih agencija obezbeđujemo mogućnost povoljnog najma električnih bickala (e-bike), skutera ili automobila po povlašćenim uslovima sa uključenim servisima, tako da možete početi odmah.'
+        },
+        {
+          q: 'Kako i kada funkcionišu isplate?',
+          a: 'Isplate se vrše redovno i na vreme, svake dve nedelje (na svakih 15 dana) direktno na vaš tekući račun. Uz svaku isplatu dobijate detaljan i transparentan obračun odrađenih dostava, bonusa i bakšiša.'
+        },
+        {
+          q: 'U kojim gradovima u Srbiji mogu da radim?',
+          a: 'Primarni fokus nam je na Beograd i Novi Sad gde je potražnja za dostavljačima najveća, ali prijave prihvatamo i za sve ostale veće gradove u Srbiji u kojima su dostupne Wolt i Glovo dostavne usluge.'
         }
       ];
 
