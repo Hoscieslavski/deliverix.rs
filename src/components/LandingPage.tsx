@@ -120,6 +120,12 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
           } else {
             document.title = "Postani Wolt i Glovo Dostavljač Beograd | Posao Dostave - Deliverix";
           }
+          
+          // Dinamički ažuriraj meta description u dokumentu
+          const metaDesc = document.querySelector('meta[name="description"]');
+          if (metaDesc) {
+            metaDesc.setAttribute('content', data.settings.meta_description || "Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!");
+          }
         }
       })
       .catch(err => console.error('Greška pri učitavanju SEO podešavanja:', err))
