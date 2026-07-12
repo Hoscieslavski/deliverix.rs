@@ -1273,11 +1273,20 @@ app.get('/api/marketing/seo', async (req, res) => {
   }
 });
 
+// Globalni keš za SEO podatke (za brzi SSR)
+let seoCache: {
+  meta_title: string;
+  meta_description: string;
+  timestamp: number;
+} | null = null;
+const SEO_CACHE_DURATION = 5 * 60 * 1000; // 5 minuta
+
 // G. Čuvanje SEO i sajta podešavanja (Zaštićena ruta - Marketing/Super Admin)
 app.post('/api/marketing/seo', marketingAuthMiddleware, async (req, res) => {
   try {
     const settings = req.body;
     await setDoc(doc(db, 'site_configs', 'settings'), settings);
+    seoCache = null; // Invalidiraj keš nakon čuvanja novih podešavanja
 
     const currentPasscode = req.headers['x-admin-passcode'] as string;
     await addAuditLog(currentPasscode, 'Izmena SEO i podešavanja sajta', 'Ažurirana su SEO podešavanja, Hero sekcija, sekcije ili česta pitanja.');
@@ -1584,6 +1593,75 @@ app.get('/api/marketing/analytics', marketingAuthMiddleware, async (req, res) =>
 
 // --- VITE ILI STATIČKI FAJLOVI ---
 
+// Funkcija za dinamičko ubacivanje SEO tagova na serverskoj strani (SSR)
+async function serveIndexWithSEO(req: any, res: any, indexPath: string) {
+  try {
+    if (!fs.existsSync(indexPath)) {
+      return res.status(404).send('Index fajl nije pronađen.');
+    }
+
+    let html = fs.readFileSync(indexPath, 'utf8');
+
+    // Podrazumevane SEO vrednosti (optimizovane i skraćene prema SEO standardima)
+    let meta_title = "Wolt i Glovo Dostavljač Beograd | Deliverix";
+    let meta_description = "Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!";
+
+    const now = Date.now();
+    if (seoCache && (now - seoCache.timestamp < SEO_CACHE_DURATION)) {
+      meta_title = seoCache.meta_title;
+      meta_description = seoCache.meta_description;
+    } else {
+      try {
+        const docRef = doc(db, 'site_configs', 'settings');
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.meta_title) meta_title = data.meta_title;
+          if (data.meta_description) meta_description = data.meta_description;
+        }
+        // Sačuvaj u keš
+        seoCache = {
+          meta_title,
+          meta_description,
+          timestamp: now
+        };
+      } catch (dbErr) {
+        console.error('Greška pri dohvatanju SEO podešavanja za SSR:', dbErr);
+      }
+    }
+
+    // Bezbedno eskapovanje za HTML atribute
+    const escapeHtmlAttr = (str: string) => {
+      return str
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    };
+
+    const escapedTitle = escapeHtmlAttr(meta_title);
+    const escapedDesc = escapeHtmlAttr(meta_description);
+
+    // Zamenjuje <title>
+    html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapedTitle}</title>`);
+
+    // Zamenjuje meta name="description"
+    html = html.replace(/<meta\s+name="description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta name="description" content="${escapedDesc}" />`);
+
+    // Zamenjuje og:title, og:description, twitter:title, twitter:description
+    html = html.replace(/<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`);
+    html = html.replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="og:description" content="${escapedDesc}" />`);
+    html = html.replace(/<meta\s+property="twitter:title"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`);
+    html = html.replace(/<meta\s+property="twitter:description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDesc}" />`);
+
+    res.setHeader('Content-Type', 'text/html');
+    res.send(html);
+  } catch (err) {
+    console.error('Greška u serveIndexWithSEO:', err);
+    res.sendFile(indexPath);
+  }
+}
+
 async function startServer() {
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
@@ -1594,8 +1672,8 @@ async function startServer() {
   } else {
     const distPath = path.join(process.cwd(), 'dist');
     app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
+    app.get('*', async (req, res) => {
+      await serveIndexWithSEO(req, res, path.join(distPath, 'index.html'));
     });
   }
 

@@ -118,7 +118,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
           if (data.settings.meta_title) {
             document.title = data.settings.meta_title;
           } else {
-            document.title = "Postani Wolt i Glovo Dostavljač Beograd | Posao Dostave - Deliverix";
+            document.title = "Wolt i Glovo Dostavljač Beograd | Deliverix";
           }
           
           // Dinamički ažuriraj meta description u dokumentu
