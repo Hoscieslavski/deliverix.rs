@@ -726,9 +726,52 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 pb-2">
             {/* Leva strana: Naziv i opis */}
-            <div className="text-center md:text-left space-y-1">
-              <p className="font-extrabold text-gray-900">Deliverix Srbija</p>
-              <p className="text-xs text-gray-400 max-w-sm mx-auto md:mx-0">Besplatne konsultacije i posredovanje pri zapošljavanju dostavljača.</p>
+            <div className="text-center md:text-left space-y-3">
+              <div className="space-y-1">
+                <p className="font-extrabold text-gray-900">Deliverix Srbija</p>
+                <p className="text-xs text-gray-400 max-w-sm mx-auto md:mx-0">Besplatne konsultacije i posredovanje pri zapošljavanju dostavljača.</p>
+              </div>
+              
+              {/* Opcije za deljenje */}
+              <div className="flex flex-wrap items-center gap-2 justify-center md:justify-start">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Podeli sa prijateljima:</span>
+                <div className="flex items-center gap-1.5">
+                  <a 
+                    href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdeliverix.rs" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition duration-200 flex items-center justify-center"
+                    title="Podeli na Facebook-u"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                      <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c4.56-.93 8-4.96 8-9.75z"/>
+                    </svg>
+                  </a>
+                  <a 
+                    href="viber://forward?text=%C5%BDeli%C5%A1%20posao%20sa%20fleksibilnim%20radnim%20vremenom%20i%20zaradom%20do%20150.000%20RSD%3F%20Prijavi%20se%20preko%20Deliverix-a%3A%20https%3A%2F%2Fdeliverix.rs" 
+                    className="p-1.5 bg-purple-50 text-purple-600 hover:bg-purple-100 rounded-lg transition duration-200 flex items-center justify-center"
+                    title="Podeli na Viber-u"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      <circle cx="9" cy="10" r="1" fill="currentColor" />
+                      <circle cx="13" cy="10" r="1" fill="currentColor" />
+                      <circle cx="17" cy="10" r="1" fill="currentColor" />
+                    </svg>
+                  </a>
+                  <a 
+                    href="https://api.whatsapp.com/send?text=%C5%BDeli%C5%A1%20posao%20sa%20fleksibilnim%20radnim%20vremenom%20i%20zaradom%20do%20150.000%20RSD%3F%20Prijavi%20se%20preko%20Deliverix-a%3A%20https%3A%2F%2Fdeliverix.rs" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="p-1.5 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg transition duration-200 flex items-center justify-center"
+                    title="Podeli na WhatsApp-u"
+                  >
+                    <svg className="w-3.5 h-3.5 fill-none stroke-current stroke-2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
             </div>
             
             {/* Sredina: Istaknuti logo u srazmernim dimenzijama */}
