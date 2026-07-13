@@ -348,7 +348,7 @@ export function HeroTabForm({
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider font-sans">Pregled</span>
                   <div className="w-20 h-20 rounded-xl shadow-xs border border-gray-150 flex items-center justify-center overflow-hidden bg-white">
                     <img 
-                      src={siteSettings.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.jpg'} 
+                      src={siteSettings.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.webp'} 
                       alt="Hero pregled" 
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"

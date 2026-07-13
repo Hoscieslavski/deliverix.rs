@@ -28,6 +28,7 @@ import ScooterIcon from './ScooterIcon';
 interface LandingPageProps {
   onOpenApply: () => void;
   onNavigateToBlog: () => void;
+  siteSettings?: any;
 }
 
 function SafeBlogImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
@@ -61,11 +62,11 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
   );
 }
 
-export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPageProps) {
+export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSettings: initialSettings }: LandingPageProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
-  const [siteSettings, setSiteSettings] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [siteSettings, setSiteSettings] = useState<any>(initialSettings || null);
+  const [isLoading, setIsLoading] = useState<boolean>(!initialSettings);
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [landingBlogIndex, setLandingBlogIndex] = useState(0);
@@ -108,8 +109,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
   }, [siteSettings, siteSettings?.hero_slider_images]);
 
   React.useEffect(() => {
-    // Učitaj SEO i podešavanja sajta
-    setIsLoading(true);
+    // Ako već imamo settings iz prop-a, inicijalizuj bez čekanja
+    if (initialSettings) {
+      setSiteSettings(initialSettings);
+      setIsLoading(false);
+    }
+
+    // Učitaj SEO i podešavanja sajta u pozadini / osveži ih
     fetch('/api/marketing/seo')
       .then(res => res.json())
       .then(data => {
@@ -142,7 +148,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
         }
       })
       .catch(err => console.error('Greška pri učitavanju blog postova za landing:', err));
-  }, []);
+  }, [initialSettings]);
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(openFaq === idx ? null : idx);
@@ -505,32 +511,32 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
                         />
                       ))}
 
-                      {/* Navigacioni tasteri levo / desno (prikazuju se na hover) */}
+                      {/* Navigacioni tasteri levo / desno (prikazuju se na hover na desktopu, uvek vidljivi na mobilnom) */}
                       {slides.length > 1 && (
                         <>
                           <button
                             type="button"
                             onClick={() => setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/95 text-gray-800 flex items-center justify-center shadow-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer hover:scale-105 active:scale-95"
                             title="Prethodna slika"
                           >
-                            <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
+                            <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
                           </button>
                           <button
                             type="button"
                             onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-8 h-8 rounded-full bg-white/85 hover:bg-white text-gray-800 flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-12 h-12 rounded-full bg-white/95 text-gray-800 flex items-center justify-center shadow-lg opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition duration-300 focus:outline-none cursor-pointer hover:scale-105 active:scale-95"
                             title="Sledeća slika"
                           >
-                            <ChevronRight className="w-4 h-4 stroke-[2.5]" />
+                            <ChevronRight className="w-5 h-5 stroke-[2.5]" />
                           </button>
                         </>
                       )}
                     </>
                   ) : (
-                    /* Standardna pojedinačna slika */
+                    /* Standardna pojedinačna slika u WebP formatu */
                     <img
-                      src={siteSettings?.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.jpg'}
+                      src={siteSettings?.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.webp'}
                       alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
                       className="w-full h-full object-cover rounded-[1.75rem]"
                       referrerPolicy="no-referrer"
@@ -818,9 +824,9 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
               <span>Nemaš Vozilo? Nema Problema!</span>
             </div>
             
-            <h3 className="text-xl sm:text-3xl font-black text-gray-900 tracking-tight">
+            <h2 className="text-xl sm:text-3xl font-black text-gray-900 tracking-tight">
               {siteSettings?.rent_section_title || "Nemate sopstveno vozilo? Obezbeđujemo povoljnu rentu!"}
-            </h3>
+            </h2>
             
             <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
               {siteSettings?.rent_section_text || "Nemaš sopstveni auto, skuter ili električni bicikl? Deliverix sarađuje sa vodećim agencijama za rentiranje vozila. Pomažemo ti da obezbediš pouzdano vozilo po povlašćenim cenama i odmah počneš sa radom."}
@@ -851,7 +857,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="font-bold text-gray-900 text-sm sm:text-base">{v.title}</h4>
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">{v.title}</h3>
                         {v.badge && (
                           <span className="text-[9px] font-extrabold bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full uppercase tracking-wider border border-amber-100 shrink-0">
                             {v.badge}
@@ -910,7 +916,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
                   <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/40">
                     <Check className="w-4 h-4 stroke-[3]" />
                   </div>
-                  <h4 className="font-extrabold text-sm sm:text-base text-gray-900 leading-snug">{item.title}</h4>
+                  <h3 className="font-extrabold text-sm sm:text-base text-gray-900 leading-snug">{item.title}</h3>
                   <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
@@ -933,7 +939,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
       )}
 
       {/* Najnovije sa Bloga */}
-      {siteSettings?.blog_enabled !== false && latestPosts.length > 0 && (
+      {siteSettings?.blog_enabled !== false && (
         <section id="najnovije-sa-bloga" className="space-y-10 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-100 pb-5">
             <div className="space-y-2">
@@ -957,54 +963,87 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
             onScroll={handleLandingBlogScroll}
             className="flex overflow-x-auto md:grid md:grid-cols-3 gap-6 pb-4 md:pb-0 snap-x snap-mandatory scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
-            {latestPosts.map((post) => (
-              <div
-                key={post.id}
-                onClick={onNavigateToBlog}
-                className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-gray-200/80 transition duration-300 flex flex-col cursor-pointer group snap-start shrink-0 w-[85%] sm:w-[60%] md:w-full"
-              >
-                {/* Slika */}
-                <div className="h-48 overflow-hidden bg-gray-100 relative shrink-0">
-                  <SafeBlogImage
-                    src={post.cover_image}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                  <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-black text-gray-600 shadow-xs uppercase tracking-wider">
-                    {post.read_time} čitanja
-                  </div>
-                </div>
-
-                {/* Sadržaj kartice */}
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
-                    {/* Tagovi */}
-                    <div className="flex flex-wrap gap-1.5">
-                      {post.tags?.map((tag: string) => (
-                        <span key={tag} className="px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md text-[10px] font-bold">
-                          #{tag}
-                        </span>
-                      ))}
+            {latestPosts.length === 0 ? (
+              /* High-fidelity Skeleton loaders for CLS prevention */
+              Array.from({ length: 3 }).map((_, idx) => (
+                <div
+                  key={`blog-skeleton-${idx}`}
+                  className="bg-white rounded-2xl border border-gray-150 overflow-hidden shadow-xs flex flex-col shrink-0 w-[85%] sm:w-[60%] md:w-full animate-pulse"
+                >
+                  {/* Skeleton Image */}
+                  <div className="h-48 bg-gray-200 relative"></div>
+                  {/* Skeleton Content */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-3">
+                      <div className="flex gap-1.5">
+                        <div className="w-12 h-4 bg-gray-200 rounded-md"></div>
+                        <div className="w-16 h-4 bg-gray-200 rounded-md"></div>
+                      </div>
+                      <div className="w-3/4 h-5 bg-gray-250 rounded-md"></div>
+                      <div className="w-1/2 h-5 bg-gray-250 rounded-md"></div>
+                      <div className="space-y-2 pt-1">
+                        <div className="w-full h-3 bg-gray-200 rounded-md"></div>
+                        <div className="w-full h-3 bg-gray-200 rounded-md"></div>
+                        <div className="w-5/6 h-3 bg-gray-200 rounded-md"></div>
+                      </div>
                     </div>
-                    {/* Naslov */}
-                    <h3 className="font-extrabold text-gray-900 group-hover:text-sky-500 transition line-clamp-2 leading-snug">
-                      {post.title}
-                    </h3>
-                    {/* Kratak opis */}
-                    <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
-                      {post.summary}
-                    </p>
-                  </div>
-
-                  <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-bold">
-                    <span>{post.author}</span>
-                    <span className="text-sky-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0 font-extrabold">
-                      Pročitaj više <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
+                    <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+                      <div className="w-16 h-3 bg-gray-250 rounded-md"></div>
+                      <div className="w-20 h-3 bg-sky-200 rounded-md"></div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              latestPosts.map((post) => (
+                <div
+                  key={post.id}
+                  onClick={onNavigateToBlog}
+                  className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-gray-200/80 transition duration-300 flex flex-col cursor-pointer group snap-start shrink-0 w-[85%] sm:w-[60%] md:w-full"
+                >
+                  {/* Slika */}
+                  <div className="h-48 overflow-hidden bg-gray-100 relative shrink-0">
+                    <SafeBlogImage
+                      src={post.cover_image}
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    />
+                    <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-xs px-2.5 py-1 rounded-lg text-[10px] font-black text-gray-600 shadow-xs uppercase tracking-wider">
+                      {post.read_time} čitanja
+                    </div>
+                  </div>
+
+                  {/* Sadržaj kartice */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="space-y-2">
+                      {/* Tagovi */}
+                      <div className="flex flex-wrap gap-1.5">
+                        {post.tags?.map((tag: string) => (
+                          <span key={tag} className="px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md text-[10px] font-bold">
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+                      {/* Naslov */}
+                      <h3 className="font-extrabold text-gray-900 group-hover:text-sky-500 transition line-clamp-2 leading-snug">
+                        {post.title}
+                      </h3>
+                      {/* Kratak opis */}
+                      <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+                        {post.summary}
+                      </p>
+                    </div>
+
+                    <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-bold">
+                      <span>{post.author}</span>
+                      <span className="text-sky-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0 font-extrabold">
+                        Pročitaj više <ArrowRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           {/* Mobilni indikatori i kontrole */}
@@ -1086,15 +1125,15 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog }: LandingPa
           
           <div className="pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-6 text-left">
             <div className="space-y-1">
-              <h4 className="font-extrabold text-sm text-gray-900">Maksimalna Fleksibilnost</h4>
+              <h3 className="font-extrabold text-sm text-gray-900">Maksimalna Fleksibilnost</h3>
               <p className="text-xs text-gray-500">Sami birate kada radite, koliko dugo ostajete na terenu i kada pravite pauzu.</p>
             </div>
             <div className="space-y-1">
-              <h4 className="font-extrabold text-sm text-gray-900">Odlična i Brza Zarada</h4>
+              <h3 className="font-extrabold text-sm text-gray-900">Odlična i Brza Zarada</h3>
               <p className="text-xs text-gray-500">Mogućnost ostvarivanja zarade i preko 150.000 RSD mesečno uz redovne isplate na svakih 15 dana.</p>
             </div>
             <div className="space-y-1">
-              <h4 className="font-extrabold text-sm text-gray-900">Puna Podrška Mentora</h4>
+              <h3 className="font-extrabold text-sm text-gray-900">Puna Podrška Mentora</h3>
               <p className="text-xs text-gray-500">Deliverix platforma vam pruža besplatnu obuku i savetovanje kako biste odmah krenuli uspešno.</p>
             </div>
           </div>

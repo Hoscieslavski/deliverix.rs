@@ -1,0 +1,16 @@
+# Deliverix
+
+Deliverix is a highly optimized recruiting marketplace platform connecting candidate couriers with vetted official partner fleets for Wolt, Glovo, and other delivery services in the Republic of Serbia.
+
+## Core Resources
+
+- **Official Website:** [https://deliverix.rs](https://deliverix.rs)
+- **Sitemap:** [https://deliverix.rs/sitemap.xml](https://deliverix.rs/sitemap.xml)
+- **Robots Rules:** [https://deliverix.rs/robots.txt](https://deliverix.rs/robots.txt)
+- **Blog Section:** [https://deliverix.rs/blog](https://deliverix.rs/blog)
+- **Privacy Policy:** [https://deliverix.rs/privacy-policy](https://deliverix.rs/privacy-policy)
+- **Terms of Service:** [https://deliverix.rs/terms-of-service](https://deliverix.rs/terms-of-service)
+
+## Operations & Onboarding
+
+Candidates can apply through the platform in under 60 seconds. Deliverix filters and processes candidates through its CRM pipeline before matching them with vetted flotas (fleet partners) that offer legal contracts, lowest commissions, and prompt payouts.

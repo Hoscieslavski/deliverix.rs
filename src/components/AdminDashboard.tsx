@@ -130,7 +130,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     footer_logo_url: '',
     footer_logo_blend_mode: 'normal',
     hero_right_mode: 'image',
-    hero_image_url: '/src/assets/images/delivery_courier_hero_1783427588712.jpg',
+    hero_image_url: '/src/assets/images/delivery_courier_hero_1783427588712.webp',
     hero_slider_images: [] as string[],
     hero_slider_slides: [] as { image: string; badge_title: string; badge_text: string }[],
     hero_badge_title: 'Dostupno odmah',
@@ -630,7 +630,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
           footer_logo_url: data.settings.footer_logo_url || '',
           footer_logo_blend_mode: data.settings.footer_logo_blend_mode || 'normal',
           hero_right_mode: data.settings.hero_right_mode || 'image',
-          hero_image_url: data.settings.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.jpg',
+          hero_image_url: data.settings.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.webp',
           hero_slider_images: data.settings.hero_slider_images || [],
           hero_slider_slides: data.settings.hero_slider_slides || (data.settings.hero_slider_images || []).map((img: string) => ({
             image: img,

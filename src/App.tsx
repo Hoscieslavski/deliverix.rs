@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Bike, 
@@ -23,16 +23,19 @@ import {
   Image,
   Upload
 } from 'lucide-react';
+
 import LandingPage from './components/LandingPage';
-import ApplicationForm from './components/ApplicationForm';
-import AdminDashboard from './components/AdminDashboard';
-import CandidatePortal from './components/CandidatePortal';
-import BlogPage from './components/BlogPage';
-import PrivacyPolicy from './components/privacy-policy';
-import TermsOfService from './components/terms-of-service';
 import { Cookie } from 'lucide-react';
+
+// Lazy loaded views for maximum startup performance (LCP)
+const ApplicationForm = lazy(() => import('./components/ApplicationForm'));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard'));
+const CandidatePortal = lazy(() => import('./components/CandidatePortal'));
+const BlogPage = lazy(() => import('./components/BlogPage'));
+const PrivacyPolicy = lazy(() => import('./components/privacy-policy'));
+const TermsOfService = lazy(() => import('./components/terms-of-service'));
 // @ts-ignore
-import mapBg from './assets/images/belgrade_vector_map_bg_1783275326358.jpg';
+import mapBg from './assets/images/belgrade_vector_map_bg_1783275326358.webp';
 
 import { DeliverixLogo } from './components/DeliverixLogo';
 
@@ -603,89 +606,97 @@ export default function App() {
 
       {/* Glavni Sadržaj */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10" id="main-content-layout">
-        <AnimatePresence mode="wait">
-          {currentView === 'landing' ? (
-            <motion.div
-              key="landing"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <LandingPage 
-                onOpenApply={() => setIsApplyModalOpen(true)} 
-                onNavigateToBlog={() => setCurrentView('blog')}
-              />
-            </motion.div>
-          ) : currentView === 'blog' ? (
-            <motion.div
-              key="blog"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <BlogPage onBackToLanding={() => setCurrentView('landing')} />
-            </motion.div>
-          ) : currentView === 'admin' ? (
-            <motion.div
-              key="admin"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <AdminDashboard 
-                appUrl={appUrl} 
-                onLogout={() => setCurrentView('landing')}
-                onLogoChange={(style, url, blendMode) => {
-                  setLogoStyle(style);
-                  setCustomLogoUrl(url);
-                  if (blendMode) {
-                    setLogoBlendMode(blendMode);
-                  }
-                }}
-                onFooterLogoChange={(style, url, blendMode) => {
-                  setFooterLogoStyle(style);
-                  setFooterCustomLogoUrl(url);
-                  if (blendMode) {
-                    setFooterLogoBlendMode(blendMode);
-                  }
-                }}
-              />
-            </motion.div>
-          ) : currentView === 'privacy' ? (
-            <motion.div
-              key="privacy"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <PrivacyPolicy onBack={() => setCurrentView('landing')} />
-            </motion.div>
-          ) : currentView === 'terms' ? (
-            <motion.div
-              key="terms"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <TermsOfService onBack={() => setCurrentView('landing')} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="candidate"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <CandidatePortal onBack={() => setCurrentView('landing')} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <Suspense fallback={
+          <div className="flex flex-col items-center justify-center min-h-[400px] py-16" id="lazy-view-loading">
+            <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
+            <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">Učitavanje stranice...</p>
+          </div>
+        }>
+          <AnimatePresence mode="wait">
+            {currentView === 'landing' ? (
+              <motion.div
+                key="landing"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+              >
+                <LandingPage 
+                  siteSettings={siteSettings}
+                  onOpenApply={() => setIsApplyModalOpen(true)} 
+                  onNavigateToBlog={() => setCurrentView('blog')}
+                />
+              </motion.div>
+            ) : currentView === 'blog' ? (
+              <motion.div
+                key="blog"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+              >
+                <BlogPage onBackToLanding={() => setCurrentView('landing')} />
+              </motion.div>
+            ) : currentView === 'admin' ? (
+              <motion.div
+                key="admin"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+              >
+                <AdminDashboard 
+                  appUrl={appUrl} 
+                  onLogout={() => setCurrentView('landing')}
+                  onLogoChange={(style, url, blendMode) => {
+                    setLogoStyle(style);
+                    setCustomLogoUrl(url);
+                    if (blendMode) {
+                      setLogoBlendMode(blendMode);
+                    }
+                  }}
+                  onFooterLogoChange={(style, url, blendMode) => {
+                    setFooterLogoStyle(style);
+                    setFooterCustomLogoUrl(url);
+                    if (blendMode) {
+                      setFooterLogoBlendMode(blendMode);
+                    }
+                  }}
+                />
+              </motion.div>
+            ) : currentView === 'privacy' ? (
+              <motion.div
+                key="privacy"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+              >
+                <PrivacyPolicy onBack={() => setCurrentView('landing')} />
+              </motion.div>
+            ) : currentView === 'terms' ? (
+              <motion.div
+                key="terms"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+              >
+                <TermsOfService onBack={() => setCurrentView('landing')} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="candidate"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.25 }}
+              >
+                <CandidatePortal onBack={() => setCurrentView('landing')} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Suspense>
       </main>
 
       {/* Modal sa Formom za Prijavu */}
@@ -707,15 +718,22 @@ export default function App() {
                 <X className="w-5 h-5" />
               </button>
 
-              <ApplicationForm 
-                onSuccess={() => {
-                  // Sačekamo kratko i zatvorimo modal
-                  setTimeout(() => setIsApplyModalOpen(false), 2500);
-                }} 
-                onClose={() => setIsApplyModalOpen(false)}
-                referralCode={referralCode}
-                source={source}
-              />
+              <Suspense fallback={
+                <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
+                  <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
+                  <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">Učitavanje forme...</p>
+                </div>
+              }>
+                <ApplicationForm 
+                  onSuccess={() => {
+                    // Sačekamo kratko i zatvorimo modal
+                    setTimeout(() => setIsApplyModalOpen(false), 2500);
+                  }} 
+                  onClose={() => setIsApplyModalOpen(false)}
+                  referralCode={referralCode}
+                  source={source}
+                />
+              </Suspense>
             </motion.div>
           </div>
         )}
