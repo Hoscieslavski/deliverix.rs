@@ -1825,7 +1825,9 @@ async function startServer() {
     // Presretanje HTML zahteva u razvoju radi dinamičkog SEO renderovanja
     app.use(async (req, res, next) => {
       const url = req.originalUrl || req.url;
-      if (!url.startsWith('/api/') && !url.includes('.')) {
+      const isHtmlRequest = req.headers.accept && req.headers.accept.includes('text/html');
+      
+      if (isHtmlRequest && !url.startsWith('/api/') && !url.startsWith('/@') && !url.startsWith('/node_modules/') && !url.includes('.')) {
         try {
           const indexPath = path.resolve(process.cwd(), 'index.html');
           let html = fs.readFileSync(indexPath, 'utf8');
