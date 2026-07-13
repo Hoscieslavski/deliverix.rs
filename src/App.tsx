@@ -292,7 +292,7 @@ export default function App() {
       {/* Pozadina sa mapom - Povećan opacity i postavljen z-0 */}
       <div 
         className="fixed inset-0 z-0 pointer-events-none opacity-[0.38] sm:opacity-[0.28] bg-cover bg-center bg-no-repeat transition-opacity duration-300" 
-        style={{ backgroundImage: `url(${mapBg})` }} 
+        style={{ backgroundImage: `url("${mapBg}")` }} 
       />
       
       {/* Gornji Navigacioni Bar - Dinamičko sakrivanje sa transition */}
