@@ -1,26 +1,49 @@
 <!doctype html>
 <html lang="sr">
   <head>
-    <!-- Optimized Font Preloading -->
+    <!-- Optimized Font Preloading (Faza 6) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'" />
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" />
     </noscript>
 
-    <!-- Delayed Google Tag Manager for LCP Optimization -->
+    <!-- Defer Google Tag Manager to first user interaction or fallback timeout (Faza 5) -->
     <script>
-      window.addEventListener('load', function() {
-        setTimeout(function() {
+      (function() {
+        var gtmLoaded = false;
+        function loadGTM() {
+          if (gtmLoaded) return;
+          gtmLoaded = true;
+
+          // Remove interaction event listeners
+          window.removeEventListener('scroll', loadGTM);
+          window.removeEventListener('click', loadGTM);
+          window.removeEventListener('touchstart', loadGTM);
+          window.removeEventListener('mousemove', loadGTM);
+          window.removeEventListener('keydown', loadGTM);
+          clearTimeout(gtmTimeout);
+
+          // Standard GTM Loader script
           (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
           new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
           j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
           })(window,document,'script','dataLayer','GTM-P387C4XR');
-        }, 2500);
-      });
+        }
+
+        // Trigger on interaction
+        window.addEventListener('scroll', loadGTM, { passive: true });
+        window.addEventListener('click', loadGTM, { passive: true });
+        window.addEventListener('touchstart', loadGTM, { passive: true });
+        window.addEventListener('mousemove', loadGTM, { passive: true });
+        window.addEventListener('keydown', loadGTM, { passive: true });
+
+        // Fallback timeout
+        var gtmTimeout = setTimeout(loadGTM, 5000);
+      })();
     </script>
     <!-- End Google Tag Manager -->
     <meta charset="UTF-8" />

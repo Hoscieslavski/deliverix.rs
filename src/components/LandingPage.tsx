@@ -24,6 +24,7 @@ import {
   Car
 } from 'lucide-react';
 import ScooterIcon from './ScooterIcon';
+import { DEFAULT_SITE_SETTINGS } from '../constants';
 
 interface LandingPageProps {
   onOpenApply: () => void;
@@ -65,8 +66,8 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
 export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSettings: initialSettings }: LandingPageProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
-  const [siteSettings, setSiteSettings] = useState<any>(initialSettings || null);
-  const [isLoading, setIsLoading] = useState<boolean>(!initialSettings);
+  const [siteSettings, setSiteSettings] = useState<any>(initialSettings || DEFAULT_SITE_SETTINGS);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [landingBlogIndex, setLandingBlogIndex] = useState(0);
@@ -112,7 +113,6 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
     // Ako već imamo settings iz prop-a, inicijalizuj bez čekanja
     if (initialSettings) {
       setSiteSettings(initialSettings);
-      setIsLoading(false);
     }
 
     // Učitaj SEO i podešavanja sajta u pozadini / osveži ih
@@ -134,20 +134,27 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           }
         }
       })
-      .catch(err => console.error('Greška pri učitavanju SEO podešavanja:', err))
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .catch(err => console.error('Greška pri učitavanju SEO podešavanja:', err));
 
-    // Učitaj najnovija 3 blog posta
-    fetch('/api/blog-posts')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.posts) {
-          setLatestPosts(data.posts.slice(0, 3));
-        }
-      })
-      .catch(err => console.error('Greška pri učitavanju blog postova za landing:', err));
+    // Učitaj najnovija 3 blog posta u pozadini sa odlaganjem (Faza 4)
+    const loadBlogPosts = () => {
+      fetch('/api/blog-posts')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.posts) {
+            setLatestPosts(data.posts.slice(0, 3));
+          }
+        })
+        .catch(err => console.error('Greška pri učitavanju blog postova za landing:', err));
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => {
+        setTimeout(loadBlogPosts, 1500);
+      });
+    } else {
+      setTimeout(loadBlogPosts, 2000);
+    }
   }, [initialSettings]);
 
   const toggleFaq = (idx: number) => {

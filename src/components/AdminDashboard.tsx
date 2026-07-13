@@ -177,7 +177,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     summary: '',
     content: '',
     tags: '',
-    cover_image: 'https://images.unsplash.com/photo-1526367790999-0150786486a9?w=800',
+    cover_image: '/assets/images/blog_post_default_cover_1783427588712.webp',
     read_time: '3 min',
     author: 'Deliverix Marketing'
   });
@@ -841,7 +841,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
           summary: '',
           content: '',
           tags: '',
-          cover_image: 'https://images.unsplash.com/photo-1526367790999-0150786486a9?w=800',
+          cover_image: '/assets/images/blog_post_default_cover_1783427588712.webp',
           read_time: '3 min',
           author: 'Deliverix Marketing'
         });
@@ -2754,7 +2754,7 @@ Postani Dostavljač Podrška`;
                   summary: '',
                   content: '',
                   tags: '',
-                  cover_image: 'https://images.unsplash.com/photo-1526367790999-0150786486a9?w=800',
+                  cover_image: '/assets/images/blog_post_default_cover_1783427588712.webp',
                   read_time: '3 min',
                   author: 'Deliverix Marketing'
                 });

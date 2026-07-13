@@ -38,6 +38,7 @@ const TermsOfService = lazy(() => import('./components/terms-of-service'));
 import mapBg from './assets/images/belgrade_vector_map_bg_1783275326358.webp';
 
 import { DeliverixLogo } from './components/DeliverixLogo';
+import { DEFAULT_SITE_SETTINGS } from './constants';
 
 export default function App() {
   const [currentView, setCurrentView] = useState<'landing' | 'admin' | 'candidate' | 'blog' | 'privacy' | 'terms'>(() => {
@@ -48,7 +49,7 @@ export default function App() {
     return 'landing';
   });
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const [siteSettings, setSiteSettings] = useState<any>(null);
+  const [siteSettings, setSiteSettings] = useState<any>(DEFAULT_SITE_SETTINGS);
   const [cookieConsent, setCookieConsent] = useState<'accepted' | 'rejected' | null>(() => {
     const saved = localStorage.getItem('deliverix_cookie_consent');
     if (saved === 'accepted' || saved === 'rejected') {
@@ -91,12 +92,11 @@ export default function App() {
     return (localStorage.getItem('deliverix_footer_logo_blend_mode') as any) || 'normal';
   });
 
-  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Učitavanje logotipa i SEO podešavanja sa servera
+  // Učitavanje logotipa i SEO podešavanja sa servera u pozadini (asinhrono i neblokirajuće)
   useEffect(() => {
-    setIsInitialLoading(true);
     fetch('/api/marketing/seo')
       .then(res => res.json())
       .then(data => {
@@ -121,64 +121,80 @@ export default function App() {
             setFooterLogoBlendMode(data.settings.footer_logo_blend_mode);
           }
 
-          // Dinamičko učitavanje Google Analytics-a / Google Tag Manager-a na osnovu konfigurisanog ID-ja
+          // Dinamičko učitavanje Google Analytics-a / Google Tag Manager-a na osnovu konfigurisanog ID-ja (Odloženo - Faza 5)
           const gaId = data.settings.ga_measurement_id;
           if (gaId && gaId !== 'G-XXXXXXXXXX') {
-            if (gaId.startsWith('G-')) {
-              // Standardni Google Analytics (gtag.js)
-              if (!document.getElementById('google-analytics-script')) {
-                const script1 = document.createElement('script');
-                script1.id = 'google-analytics-script';
-                script1.async = true;
-                script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
-                document.head.appendChild(script1);
+            const loadAnalytics = () => {
+              if ((window as any).__dynamic_analytics_loaded) return;
+              (window as any).__dynamic_analytics_loaded = true;
 
-                const script2 = document.createElement('script');
-                script2.id = 'google-analytics-init';
-                script2.innerHTML = `
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', '${gaId}');
-                `;
-                document.head.appendChild(script2);
-              }
-            } else if (gaId.startsWith('GTM-')) {
-              // Google Tag Manager (gtm.js)
-              if (!document.getElementById('google-gtm-script')) {
-                const script1 = document.createElement('script');
-                script1.id = 'google-gtm-script';
-                script1.innerHTML = `
-                  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                  })(window,document,'script','dataLayer','${gaId}');
-                `;
-                document.head.appendChild(script1);
+              window.removeEventListener('scroll', loadAnalytics);
+              window.removeEventListener('click', loadAnalytics);
+              window.removeEventListener('touchstart', loadAnalytics);
+              window.removeEventListener('mousemove', loadAnalytics);
+              window.removeEventListener('keydown', loadAnalytics);
+              clearTimeout(analyticsTimeout);
 
-                // NoScript iFrame za GTM u body
-                if (!document.getElementById('google-gtm-noscript')) {
-                  const noscript = document.createElement('noscript');
-                  noscript.id = 'google-gtm-noscript';
-                  const iframe = document.createElement('iframe');
-                  iframe.src = `https://www.googletagmanager.com/ns.html?id=${gaId}`;
-                  iframe.height = '0';
-                  iframe.width = '0';
-                  iframe.style.display = 'none';
-                  iframe.style.visibility = 'hidden';
-                  noscript.appendChild(iframe);
-                  document.body.insertBefore(noscript, document.body.firstChild);
+              if (gaId.startsWith('G-')) {
+                // Standardni Google Analytics (gtag.js)
+                if (!document.getElementById('google-analytics-script')) {
+                  const script1 = document.createElement('script');
+                  script1.id = 'google-analytics-script';
+                  script1.async = true;
+                  script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+                  document.head.appendChild(script1);
+
+                  const script2 = document.createElement('script');
+                  script2.id = 'google-analytics-init';
+                  script2.innerHTML = `
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                    gtag('config', '${gaId}');
+                  `;
+                  document.head.appendChild(script2);
+                }
+              } else if (gaId.startsWith('GTM-')) {
+                // Google Tag Manager (gtm.js)
+                if (!document.getElementById('google-gtm-script')) {
+                  const script1 = document.createElement('script');
+                  script1.id = 'google-gtm-script';
+                  script1.innerHTML = `
+                    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                    })(window,document,'script','dataLayer','${gaId}');
+                  `;
+                  document.head.appendChild(script1);
+
+                  // NoScript iFrame za GTM u body
+                  if (!document.getElementById('google-gtm-noscript')) {
+                    const noscript = document.createElement('noscript');
+                    noscript.id = 'google-gtm-noscript';
+                    const iframe = document.createElement('iframe');
+                    iframe.src = `https://www.googletagmanager.com/ns.html?id=${gaId}`;
+                    iframe.height = '0';
+                    iframe.width = '0';
+                    iframe.style.display = 'none';
+                    iframe.style.visibility = 'hidden';
+                    noscript.appendChild(iframe);
+                    document.body.insertBefore(noscript, document.body.firstChild);
+                  }
                 }
               }
-            }
+            };
+
+            const analyticsTimeout = setTimeout(loadAnalytics, 5000);
+            window.addEventListener('scroll', loadAnalytics, { passive: true });
+            window.addEventListener('click', loadAnalytics, { passive: true });
+            window.addEventListener('touchstart', loadAnalytics, { passive: true });
+            window.addEventListener('mousemove', loadAnalytics, { passive: true });
+            window.addEventListener('keydown', loadAnalytics, { passive: true });
           }
         }
       })
-      .catch(err => console.error('Greška pri učitavanju globalnih podešavanja logotipa/SEO:', err))
-      .finally(() => {
-        setIsInitialLoading(false);
-      });
+      .catch(err => console.error('Greška pri učitavanju globalnih podešavanja logotipa/SEO:', err));
   }, []);
 
   // Sačuvaj trenutni prikaz u localStorage na promenu

@@ -762,7 +762,7 @@ U Beogradu i Novom Sadu postoje delovi grada sa ekstremno visokom koncentracijom
 
 ### 4. Oprema i priprema vozila
 Bilo da voziš bicikl, skuter ili automobil, tehnička ispravnost je ključ. Svaki sat proveden u kvaru je izgubljen novac. Električni bicikli i skuteri se pokazuju kao najisplativiji jer nemaju troškove goriva i lako se parkiraju, što štedi dragoceno vreme u gradu.`,
-    cover_image: "https://images.unsplash.com/photo-1585759057420-5313b061a3ee?auto=format&fit=crop&w=800&q=80",
+    cover_image: "/assets/images/blog_post_zarada_wolt_1783427588712.webp",
     author: "Deliverix Marketing",
     tags: ["Zarada", "Saveti", "Wolt"],
     read_time: "5 min",
@@ -792,7 +792,7 @@ Automobil pruža maksimalni komfor, ali nosi i najveće operativne troškove.
 * **Prednosti:** Udobnost tokom cele godine (klima, grejanje, suvo). Rad noću i po lošem vremenu (kada su i najveće gužve i bonusi).
 * **Mane:** Velika potrošnja goriva, skupo održavanje i ogroman problem sa parkingom u centru grada.
 * **Preporuka:** Odličan za prigradska naselja ili za rad tokom hladnih zimskih dana i noćnih smena.`,
-    cover_image: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80",
+    cover_image: "/assets/images/blog_post_izbor_vozila_1783427588712.webp",
     author: "Deliverix Saveti",
     tags: ["Vozila", "Saveti", "Početak"],
     read_time: "4 min",
@@ -818,7 +818,7 @@ Ukoliko imaš predavanja ponedeljkom i sredom prepodne, tvoj raspored može izgl
 
 ### Kako početi?
 Prijavi se na našem portalu, naznači da si student i u razgovoru sa našim mentorom izaberi agenciju koja ima najbolje uslove i saradnju sa omladinskim zadrugama.`,
-    cover_image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
+    cover_image: "/assets/images/blog_post_studenti_rad_1783427588712.webp",
     author: "Deliverix Student",
     tags: ["Studenti", "Iskustva", "Wolt"],
     read_time: "3 min",
@@ -919,7 +919,7 @@ app.post('/api/blog-posts', marketingAuthMiddleware, async (req, res) => {
       slug: finalSlug,
       content,
       summary: summary || '',
-      cover_image: cover_image || 'https://images.unsplash.com/photo-1585759057420-5313b061a3ee?auto=format&fit=crop&w=800&q=80',
+      cover_image: cover_image || '/assets/images/blog_post_default_cover_1783427588712.webp',
       author: author || 'Deliverix Marketing',
       tags: Array.isArray(tags) ? tags : [],
       read_time: read_time || '3 min',
