@@ -40,6 +40,22 @@ import mapBg from './assets/images/belgrade_vector_map_bg_1783275326358.webp';
 import { DeliverixLogo } from './components/DeliverixLogo';
 import { DEFAULT_SITE_SETTINGS } from './constants';
 
+let seoCache: any = null;
+
+export async function getSeoSettings() {
+  if (seoCache) {
+    return seoCache;
+  }
+  try {
+    const res = await fetch('/api/marketing/seo-public');
+    seoCache = await res.json();
+    return seoCache;
+  } catch (err) {
+    console.error('Greška pri dohvatanju javnog SEO:', err);
+    return { success: false };
+  }
+}
+
 export default function App() {
   const [currentView, setCurrentView] = useState<'landing' | 'admin' | 'candidate' | 'blog' | 'privacy' | 'terms'>(() => {
     const saved = localStorage.getItem('current_view');
@@ -97,11 +113,10 @@ export default function App() {
 
   // Učitavanje logotipa i SEO podešavanja sa servera u pozadini (asinhrono i neblokirajuće)
   useEffect(() => {
-    fetch('/api/marketing/seo')
-      .then(res => res.json())
+    getSeoSettings()
       .then(data => {
         if (data.success && data.settings) {
-          setSiteSettings(data.settings);
+          setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
           if (data.settings.logo_style) {
             setLogoStyle(data.settings.logo_style);
           }

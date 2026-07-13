@@ -4,13 +4,13 @@
     <!-- Optimized Font Preloading (Faza 6) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'" />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" media="print" onload="this.media='all'" />
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" />
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" />
     </noscript>
 
-    <!-- Defer Google Tag Manager to first user interaction or fallback timeout (Faza 5) -->
+    <!-- Defer Google Tag Manager to first user interaction (Faza 6) -->
     <script>
       (function() {
         var gtmLoaded = false;
@@ -24,7 +24,6 @@
           window.removeEventListener('touchstart', loadGTM);
           window.removeEventListener('mousemove', loadGTM);
           window.removeEventListener('keydown', loadGTM);
-          clearTimeout(gtmTimeout);
 
           // Standard GTM Loader script
           (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -40,9 +39,6 @@
         window.addEventListener('touchstart', loadGTM, { passive: true });
         window.addEventListener('mousemove', loadGTM, { passive: true });
         window.addEventListener('keydown', loadGTM, { passive: true });
-
-        // Fallback timeout
-        var gtmTimeout = setTimeout(loadGTM, 5000);
       })();
     </script>
     <!-- End Google Tag Manager -->

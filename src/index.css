@@ -4,3 +4,20 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
+
+/* Stabilizacija visine Hero sekcije radi eliminisanja CLS-a (Faza 4) */
+#section-hero {
+  min-height: 640px;
+}
+
+@media (max-width: 1023px) {
+  #section-hero {
+    min-height: 920px; /* Na tabletima i manjim ekranima gde su kolone vertikalno poređane */
+  }
+}
+
+@media (max-width: 640px) {
+  #section-hero {
+    min-height: 820px; /* Na mobilnim ekranima */
+  }
+}

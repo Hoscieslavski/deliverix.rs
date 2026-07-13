@@ -53,7 +53,12 @@ const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadsDir));
+app.use('/uploads', express.static(uploadsDir, {
+  maxAge: '30d',
+  setHeaders: (res) => {
+    res.setHeader('Cache-Control', 'public, max-age=2592000');
+  }
+}));
 
 // Admin lozinke za različite uloge (fallback-ovi)
 const ADMIN_PASSCODE = process.env.ADMIN_PASSCODE || 'deliverix2026'; // Promenjeno na deliverix2026 (stara: wolt2026)
@@ -1273,6 +1278,53 @@ app.get('/api/marketing/seo', async (req, res) => {
   }
 });
 
+// G1. Lagani javni SEO i logotip endpoint za bolje performanse (Faza 2)
+app.get('/api/marketing/seo-public', async (req, res) => {
+  try {
+    const docRef = doc(db, 'site_configs', 'settings');
+    const docSnap = await getDoc(docRef);
+    
+    const baseSettings = {
+      meta_title: "Postani Dostavljač | Deliverix Srbija",
+      meta_description: "Prijavi se za rad na Wolt, Glovo ili drugim dostavnim platformama. Odlični uslovi, fleksibilno radno vreme i podrška.",
+      keywords: "posao dostavljaca, wolt, glovo, srbija, beograd, dostava hrane",
+      og_image: "/public/og-image.jpg",
+      canonical: "https://deliverix.rs",
+      ga_measurement_id: "G-XXXXXXXXXX",
+      logo_style: "flow",
+      logo_url: "",
+      logo_blend_mode: "normal",
+      footer_logo_style: "flow",
+      footer_logo_url: "",
+      footer_logo_blend_mode: "normal"
+    };
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const filtered = {
+        meta_title: data.meta_title || baseSettings.meta_title,
+        meta_description: data.meta_description || baseSettings.meta_description,
+        keywords: data.keywords || baseSettings.keywords,
+        og_image: data.og_image || data.ogImage || baseSettings.og_image,
+        canonical: data.canonical || baseSettings.canonical,
+        ga_measurement_id: data.ga_measurement_id || baseSettings.ga_measurement_id,
+        logo_style: data.logo_style || baseSettings.logo_style,
+        logo_url: data.logo_url !== undefined ? data.logo_url : baseSettings.logo_url,
+        logo_blend_mode: data.logo_blend_mode || baseSettings.logo_blend_mode,
+        footer_logo_style: data.footer_logo_style || baseSettings.footer_logo_style,
+        footer_logo_url: data.footer_logo_url !== undefined ? data.footer_logo_url : baseSettings.footer_logo_url,
+        footer_logo_blend_mode: data.footer_logo_blend_mode || baseSettings.footer_logo_blend_mode
+      };
+      res.json({ success: true, settings: filtered });
+    } else {
+      res.json({ success: true, settings: baseSettings });
+    }
+  } catch (error) {
+    console.error('Greška pri dohvatanju javnog SEO:', error);
+    res.status(500).json({ error: 'Greška na serveru.' });
+  }
+});
+
 // Globalni keš za SEO podatke (za brzi SSR)
 let seoCache: {
   meta_title: string;
@@ -1808,6 +1860,7 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     }
 
     res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.send(html);
   } catch (err) {
     console.error('Greška u serveIndexWithSEO:', err);
@@ -1849,7 +1902,17 @@ async function startServer() {
     app.use(vite.middlewares);
   } else {
     const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
+    app.use(express.static(distPath, {
+      maxAge: '1y',
+      immutable: true,
+      setHeaders: (res, filepath) => {
+        if (filepath.endsWith('.html')) {
+          res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        } else {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        }
+      }
+    }));
     app.get('*', async (req, res) => {
       await serveIndexWithSEO(req, res, path.join(distPath, 'index.html'));
     });

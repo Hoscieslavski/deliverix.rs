@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import ScooterIcon from './ScooterIcon';
 import { DEFAULT_SITE_SETTINGS } from '../constants';
+import { getSeoSettings } from '../App';
 
 interface LandingPageProps {
   onOpenApply: () => void;
@@ -115,12 +116,11 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
       setSiteSettings(initialSettings);
     }
 
-    // Učitaj SEO i podešavanja sajta u pozadini / osveži ih
-    fetch('/api/marketing/seo')
-      .then(res => res.json())
+    // Učitaj SEO i podešavanja sajta u pozadini / osveži ih preko keširanog javnog SEO endpointa
+    getSeoSettings()
       .then(data => {
         if (data.success && data.settings) {
-          setSiteSettings(data.settings);
+          setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
           if (data.settings.meta_title) {
             document.title = data.settings.meta_title;
           } else {
@@ -148,13 +148,32 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
         .catch(err => console.error('Greška pri učitavanju blog postova za landing:', err));
     };
 
-    if ('requestIdleCallback' in window) {
-      (window as any).requestIdleCallback(() => {
-        setTimeout(loadBlogPosts, 1500);
-      });
-    } else {
-      setTimeout(loadBlogPosts, 2000);
-    }
+    let isBlogLoaded = false;
+    const triggerBlogLoad = () => {
+      if (isBlogLoaded) return;
+      isBlogLoaded = true;
+      window.removeEventListener('scroll', triggerBlogLoad);
+      window.removeEventListener('touchstart', triggerBlogLoad);
+      
+      if ('requestIdleCallback' in window) {
+        (window as any).requestIdleCallback(() => {
+          loadBlogPosts();
+        });
+      } else {
+        setTimeout(loadBlogPosts, 1000);
+      }
+    };
+
+    window.addEventListener('scroll', triggerBlogLoad, { passive: true });
+    window.addEventListener('touchstart', triggerBlogLoad, { passive: true });
+
+    const fallbackTimeout = setTimeout(triggerBlogLoad, 4000);
+
+    return () => {
+      window.removeEventListener('scroll', triggerBlogLoad);
+      window.removeEventListener('touchstart', triggerBlogLoad);
+      clearTimeout(fallbackTimeout);
+    };
   }, [initialSettings]);
 
   const toggleFaq = (idx: number) => {
