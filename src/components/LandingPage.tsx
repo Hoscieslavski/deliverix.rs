@@ -111,11 +111,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
   }, [siteSettings, siteSettings?.hero_slider_images]);
 
   React.useEffect(() => {
-    // Ako već imamo settings iz prop-a, inicijalizuj bez čekanja
+    // Sinkronizuj podešavanja iz roditeljskog App.tsx kad god se učitaju/ažuriraju
     if (initialSettings) {
       setSiteSettings(initialSettings);
     }
+  }, [initialSettings]);
 
+  React.useEffect(() => {
     // Učitaj SEO i podešavanja sajta u pozadini / osveži ih preko keširanog javnog SEO endpointa
     getSeoSettings()
       .then(data => {
@@ -174,7 +176,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
       window.removeEventListener('touchstart', triggerBlogLoad);
       clearTimeout(fallbackTimeout);
     };
-  }, [initialSettings]);
+  }, []);
 
   const toggleFaq = (idx: number) => {
     setOpenFaq(openFaq === idx ? null : idx);

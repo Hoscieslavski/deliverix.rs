@@ -210,6 +210,26 @@ export default function App() {
         }
       })
       .catch(err => console.error('Greška pri učitavanju globalnih podešavanja logotipa/SEO:', err));
+
+    // Učitavanje kompletnih podešavanja sajta u pozadini (asinhrono i neblokirajuće)
+    const loadFullSettings = () => {
+      fetch('/api/marketing/seo')
+        .then(res => res.json())
+        .then(data => {
+          if (data.success && data.settings) {
+            setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
+          }
+        })
+        .catch(err => console.error('Greška pri asinhronom učitavanju kompletnih podešavanja:', err));
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => {
+        setTimeout(loadFullSettings, 100);
+      });
+    } else {
+      setTimeout(loadFullSettings, 300);
+    }
   }, []);
 
   // Sačuvaj trenutni prikaz u localStorage na promenu
