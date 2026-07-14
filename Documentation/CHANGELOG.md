@@ -81,3 +81,15 @@ This document tracks all major milestones, architectural updates, and systemic m
 - Stable asset bundling using `npm run build`.
 - Successful standalone production start (`node dist/server.cjs`).
 - Full automated SEO pre-render tests completed successfully on all subpages.
+
+---
+
+## [10.0.0] - Production Finalization & Launch Audit
+### Added
+- **Skip Navigation Link**: Implemented a visually hidden, keyboard-focusable "Skip to Main Content" skip link (`#glavni-sadrzaj`) at the top of the body for WCAG 2.1 compliance.
+- **Dynamic SEO Metadata Engine**: Built dynamic title, description, canonical link, and crawler index controller inside `App.tsx` and `BlogPage.tsx` using React hooks.
+- **Enhanced XML Sitemap**: Added compliance pages (`/privacy-policy` and `/terms-of-service`) to `/sitemap.xml` for structural transparency.
+- **JSON-LD Schema Upgrades**: Injected complete Schema.org schemas for `BreadcrumbList`, `Blog`, `BlogPosting` (Article), and `FAQPage`.
+- **Performance Image Lazy-Loading**: Applied the native HTML `loading="lazy"` attribute to all blog and partner thumbnails.
+- **Hardened Security Headers Middleware**: Implemented CSP, X-Frame-Options (conditional SAMEORIGIN/ALLOWALL), Referrer-Policy, HSTS, and X-Content-Type-Options.
+- **H1 SEO Architecture Audit**: Audited and converted all auxiliary headers from `<h1>` to `<h2>` across privacy, terms of service, and blog index, preserving only the primary landing Hero H1 and active blog post headline.
