@@ -36,6 +36,45 @@ const app = express();
 app.set('trust proxy', true);
 const PORT = Number(process.env.PORT || 3000);
 
+// Sigurnosna zaglavlja za produkciju (Faza 7)
+app.use((req, res, next) => {
+  // 1. Content Security Policy (CSP)
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' data: https://fonts.gstatic.com; " +
+    "img-src 'self' data: https://* blob:; " +
+    "connect-src 'self' https://* wss://*; " +
+    "frame-src 'self' https://*"
+  );
+  
+  // 2. Prevent clickjacking (Allow iFrames in AI Studio dev sandbox, restrict in production)
+  if (process.env.NODE_ENV === "production") {
+    res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  } else {
+    res.setHeader("X-Frame-Options", "ALLOWALL");
+  }
+  
+  // 3. Referrer Policy
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  
+  // 4. Permissions Policy
+  res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+  
+  // 5. Strict Transport Security (HSTS)
+  res.setHeader("Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload");
+  
+  // 6. Prevent MIME type sniffing
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  
+  // 7. XSS Protection
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  
+  next();
+});
+
 // 301 Redirect sa www.deliverix.rs na deliverix.rs (rešava "www and non-www" SEO upozorenje)
 app.use((req, res, next) => {
   const host = req.headers.host;
@@ -1036,6 +1075,8 @@ app.get('/sitemap.xml', async (req, res) => {
     const staticPages = [
       '',
       '/blog',
+      '/privacy-policy',
+      '/terms-of-service',
     ];
 
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
