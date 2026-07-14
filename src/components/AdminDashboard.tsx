@@ -1374,13 +1374,13 @@ Postani Dostavljač Podrška`;
             <span className="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Autorizovan</span>
             <span className="text-xs text-gray-400 font-mono uppercase">Uloga: {adminRole === 'super_admin' ? 'Super Admin' : adminRole === 'marketing_admin' ? 'Marketing' : 'Kandidati'}</span>
           </div>
-          <h1 className="text-2xl font-black text-gray-900 mt-1">
+          <h2 className="text-2xl font-black text-gray-900 mt-1">
             {adminRole === 'marketing_admin' 
               ? 'Službeni Marketing & SEO Panel' 
               : adminRole === 'candidate_admin'
               ? 'Sistem za Upravljanje Kandidatima'
               : 'Deliverix Super-Admin Konzola'}
-          </h1>
+          </h2>
           <p className="text-gray-500 text-sm">
             {adminRole === 'marketing_admin'
               ? 'Upravljajte SEO podešavanjima, pisanjem bloga, Google analitikom i generisanjem partnerskih linkova.'

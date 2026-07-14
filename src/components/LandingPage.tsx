@@ -60,6 +60,7 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
       className={className}
       onError={() => setError(true)}
       referrerPolicy="no-referrer"
+      loading="lazy"
     />
   );
 }
@@ -367,6 +368,84 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
 
   return (
     <div className="space-y-10 sm:space-y-12 pb-16" id="landing-page-root">
+      {/* Dynamic JSON-LD Structured Data for SEO / Schema.org (Faza 2) */}
+      <script type="application/ld+json" id="schema-website">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Deliverix",
+          "url": "https://deliverix.rs/",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://deliverix.rs/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })}
+      </script>
+
+      <script type="application/ld+json" id="schema-employment-agency">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "EmploymentAgency",
+          "name": "Deliverix Srbija",
+          "image": "https://deliverix.rs/logo.png",
+          "url": "https://deliverix.rs/",
+          "telephone": siteSettings?.support_phone || "+381600000000",
+          "logo": "https://deliverix.rs/logo.png",
+          "description": "Besplatni regrutacioni partner i vodič za rad na Wolt i Glovo dostavnim platformama u Beogradu i celoj Srbiji.",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Beograd",
+            "addressCountry": "RS"
+          },
+          "sameAs": [
+            "https://www.facebook.com/deliverix",
+            "https://www.instagram.com/deliverix"
+          ]
+        })}
+      </script>
+
+      <script type="application/ld+json" id="schema-faq">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": faqs.map(faq => ({
+            "@type": "Question",
+            "name": faq.q,
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": faq.a
+            }
+          }))
+        })}
+      </script>
+
+      <script type="application/ld+json" id="schema-job-posting">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "JobPosting",
+          "title": "Wolt i Glovo Dostavljač",
+          "description": "Postani partner za Wolt i Glovo dostavu hrane u Beogradu i Srbiji. Fleksibilno radno vreme, odlična zarada do 150.000 RSD, nedeljne isplate i obezbeđen najam prevoza.",
+          "datePosted": "2026-07-10",
+          "validThrough": "2027-07-10",
+          "employmentType": "FULL_TIME",
+          "hiringOrganization": {
+            "@type": "Organization",
+            "name": "Deliverix Srbija",
+            "sameAs": "https://deliverix.rs/",
+            "logo": "https://deliverix.rs/logo.png"
+          },
+          "jobLocation": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Beograd",
+              "addressRegion": "Srbija",
+              "addressCountry": "RS"
+            }
+          }
+        })}
+      </script>
       
       {/* Obaveštenje sa vrha (Samo ako postoji) */}
       {siteSettings?.announcement_banner && (

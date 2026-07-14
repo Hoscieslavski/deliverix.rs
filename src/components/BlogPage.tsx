@@ -61,6 +61,7 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
       className={className}
       onError={() => setError(true)}
       referrerPolicy="no-referrer"
+      loading="lazy"
     />
   );
 }
@@ -72,6 +73,47 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCoping, setIsCoping] = useState(false);
+
+  // Dinamičko ažuriranje SEO meta tagova za selektovani blog post (Faza 3)
+  useEffect(() => {
+    if (selectedPost) {
+      document.title = `${selectedPost.title} | Deliverix Blog`;
+      
+      const setMetaTag = (attrName: 'name' | 'property', attrValue: string, content: string) => {
+        let tag = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+        if (!tag) {
+          tag = document.createElement('meta');
+          tag.setAttribute(attrName, attrValue);
+          document.head.appendChild(tag);
+        }
+        tag.setAttribute('content', content);
+      };
+      
+      const setCanonicalLink = (href: string) => {
+        let link: HTMLLinkElement | null = document.querySelector('link[rel="canonical"]');
+        if (!link) {
+          link = document.createElement('link');
+          link.setAttribute('rel', 'canonical');
+          document.head.appendChild(link);
+        }
+        link.setAttribute('href', href);
+      };
+
+      const summaryText = selectedPost.summary || selectedPost.title;
+      setMetaTag('name', 'description', summaryText);
+      setCanonicalLink(`https://deliverix.rs/blog/${selectedPost.slug || selectedPost.id}`);
+      
+      setMetaTag('property', 'og:title', `${selectedPost.title} | Deliverix Blog`);
+      setMetaTag('property', 'og:description', summaryText);
+      setMetaTag('property', 'og:url', `https://deliverix.rs/blog/${selectedPost.slug || selectedPost.id}`);
+      
+      setMetaTag('property', 'twitter:title', `${selectedPost.title} | Deliverix Blog`);
+      setMetaTag('property', 'twitter:description', summaryText);
+      setMetaTag('property', 'twitter:url', `https://deliverix.rs/blog/${selectedPost.slug || selectedPost.id}`);
+    } else {
+      document.title = "Saveti i Vodiči za Wolt i Glovo Dostavljače | Deliverix Blog";
+    }
+  }, [selectedPost]);
 
   // Preuzmi sve postove
   useEffect(() => {
@@ -198,6 +240,85 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
 
   return (
     <div className="max-w-6xl mx-auto space-y-8" id="blog-page-root">
+      {/* Breadcrumb Schema for Blog Index or Article Details (Faza 2) */}
+      <script type="application/ld+json" id="schema-breadcrumb">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Početna",
+              "item": "https://deliverix.rs/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Blog",
+              "item": "https://deliverix.rs/blog"
+            },
+            ...(selectedPost ? [{
+              "@type": "ListItem",
+              "position": 3,
+              "name": selectedPost.title,
+              "item": `https://deliverix.rs/blog/${selectedPost.slug || selectedPost.id}`
+            }] : [])
+          ]
+        })}
+      </script>
+
+      {/* Blog Index Schema (Faza 2) */}
+      {!selectedPost && (
+        <script type="application/ld+json" id="schema-blog-index">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Blog",
+            "name": "Deliverix Vodič za Dostavljače",
+            "description": "Najbolji saveti, vodiči i lična iskustva za rad na platformama za dostavu hrane Wolt i Glovo u Srbiji.",
+            "url": "https://deliverix.rs/blog",
+            "publisher": {
+              "@type": "Organization",
+              "name": "Deliverix Srbija",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://deliverix.rs/logo.png"
+              }
+            }
+          })}
+        </script>
+      )}
+
+      {/* Article & BlogPosting Schema for Selected Post (Faza 2) */}
+      {selectedPost && (
+        <script type="application/ld+json" id="schema-blog-article">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BlogPosting",
+            "headline": selectedPost.title,
+            "description": selectedPost.summary || selectedPost.title,
+            "image": selectedPost.cover_image || "https://deliverix.rs/og-image.jpg",
+            "datePublished": selectedPost.created_at || "2026-07-10",
+            "author": {
+              "@type": "Person",
+              "name": selectedPost.author || "Deliverix Mentor"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "Deliverix Srbija",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://deliverix.rs/logo.png"
+              }
+            },
+            "mainEntityOfPage": {
+              "@type": "WebPage",
+              "@id": `https://deliverix.rs/blog/${selectedPost.slug || selectedPost.id}`
+            }
+          })}
+        </script>
+      )}
+      
       
       {/* Dugme za povratak */}
       <div className="flex items-center justify-between" id="blog-navigation-bar">
