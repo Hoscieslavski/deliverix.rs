@@ -1292,10 +1292,8 @@ app.get('/api/marketing/seo-public', async (req, res) => {
       canonical: "https://deliverix.rs",
       ga_measurement_id: "G-XXXXXXXXXX",
       logo_style: "flow",
-      logo_url: "",
       logo_blend_mode: "normal",
       footer_logo_style: "flow",
-      footer_logo_url: "",
       footer_logo_blend_mode: "normal"
     };
 
@@ -1309,15 +1307,18 @@ app.get('/api/marketing/seo-public', async (req, res) => {
         canonical: data.canonical || baseSettings.canonical,
         ga_measurement_id: data.ga_measurement_id || baseSettings.ga_measurement_id,
         logo_style: data.logo_style || baseSettings.logo_style,
-        logo_url: data.logo_url !== undefined ? data.logo_url : baseSettings.logo_url,
         logo_blend_mode: data.logo_blend_mode || baseSettings.logo_blend_mode,
         footer_logo_style: data.footer_logo_style || baseSettings.footer_logo_style,
-        footer_logo_url: data.footer_logo_url !== undefined ? data.footer_logo_url : baseSettings.footer_logo_url,
         footer_logo_blend_mode: data.footer_logo_blend_mode || baseSettings.footer_logo_blend_mode
       };
-      res.json({ success: true, settings: filtered });
+      
+      const responsePayload = { success: true, settings: filtered };
+      console.log("SEO PUBLIC SIZE:", JSON.stringify(responsePayload).length);
+      res.json(responsePayload);
     } else {
-      res.json({ success: true, settings: baseSettings });
+      const responsePayload = { success: true, settings: baseSettings };
+      console.log("SEO PUBLIC SIZE:", JSON.stringify(responsePayload).length);
+      res.json(responsePayload);
     }
   } catch (error) {
     console.error('Greška pri dohvatanju javnog SEO:', error);

@@ -218,6 +218,24 @@ export default function App() {
         .then(data => {
           if (data.success && data.settings) {
             setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
+            if (data.settings.logo_style) {
+              setLogoStyle(data.settings.logo_style);
+            }
+            if (data.settings.logo_url !== undefined) {
+              setCustomLogoUrl(data.settings.logo_url);
+            }
+            if (data.settings.logo_blend_mode) {
+              setLogoBlendMode(data.settings.logo_blend_mode);
+            }
+            if (data.settings.footer_logo_style) {
+              setFooterLogoStyle(data.settings.footer_logo_style);
+            }
+            if (data.settings.footer_logo_url !== undefined) {
+              setFooterCustomLogoUrl(data.settings.footer_logo_url);
+            }
+            if (data.settings.footer_logo_blend_mode) {
+              setFooterLogoBlendMode(data.settings.footer_logo_blend_mode);
+            }
           }
         })
         .catch(err => console.error('Greška pri asinhronom učitavanju kompletnih podešavanja:', err));
@@ -342,7 +360,7 @@ export default function App() {
       
       {/* Pozadina sa mapom - Povećan opacity i postavljen z-0 */}
       <div 
-        className="fixed inset-0 z-0 pointer-events-none opacity-[0.38] sm:opacity-[0.28] bg-cover bg-center bg-no-repeat transition-opacity duration-300" 
+        className="fixed inset-0 z-0 pointer-events-none opacity-[0.72] sm:opacity-[0.58] bg-cover bg-center bg-no-repeat transition-opacity duration-300" 
         style={{ backgroundImage: `url("${mapBg}")` }} 
       />
       

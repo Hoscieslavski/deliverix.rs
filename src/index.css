@@ -1,3 +1,27 @@
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import "tailwindcss";
 
 @theme {
@@ -5,19 +29,13 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }
 
-/* Stabilizacija visine Hero sekcije radi eliminisanja CLS-a (Faza 4) */
+/* Stabilizacija visine Hero sekcije radi eliminisanja CLS-a (Faza 3) */
 #section-hero {
-  min-height: 640px;
+  min-height: 620px;
 }
 
-@media (max-width: 1023px) {
+@media (min-width: 1024px) {
   #section-hero {
-    min-height: 920px; /* Na tabletima i manjim ekranima gde su kolone vertikalno poređane */
-  }
-}
-
-@media (max-width: 640px) {
-  #section-hero {
-    min-height: 820px; /* Na mobilnim ekranima */
+    min-height: 700px;
   }
 }
