@@ -2796,7 +2796,7 @@ Postani Dostavljač Podrška`;
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-wrap gap-1">
                           {post.tags?.map((tag: string) => (
-                            <span key={tag} className="px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md text-[10px] font-bold">
+                            <span key={tag} className="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-md text-[10px] font-bold">
                               #{tag}
                             </span>
                           ))}

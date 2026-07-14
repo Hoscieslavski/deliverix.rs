@@ -368,7 +368,7 @@ export default function App() {
           >
             <DeliverixLogo style={logoStyle} customLogoUrl={customLogoUrl} logoBlendMode={logoBlendMode} className="w-10 h-10 sm:w-12 sm:h-12 group-hover:scale-105 transition-transform" />
             <div>
-              <span className="text-lg sm:text-2xl font-black tracking-wider text-sky-600 block leading-none font-sans uppercase">
+              <span className="text-lg sm:text-2xl font-black tracking-wider text-sky-700 block leading-none font-sans uppercase">
                 DELIVERIX
               </span>
               <span className="text-[10px] sm:text-xs text-gray-500 font-extrabold block uppercase tracking-[0.15em] mt-0.5 sm:mt-1">
@@ -471,7 +471,7 @@ export default function App() {
                 <button
                   id="header-apply-btn"
                   onClick={() => setIsApplyModalOpen(true)}
-                  className="px-3 sm:px-5 py-2 sm:py-2.5 bg-sky-500 hover:bg-sky-600 text-white text-[11px] sm:text-sm font-black rounded-xl shadow-md sm:shadow-lg shadow-sky-500/15 active:translate-y-0.5 transition cursor-pointer whitespace-nowrap text-center shrink-0"
+                  className="px-3 sm:px-5 py-2 sm:py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-[11px] sm:text-sm font-black rounded-xl shadow-md sm:shadow-lg shadow-sky-600/15 active:translate-y-0.5 transition cursor-pointer whitespace-nowrap text-center shrink-0"
                 >
                   Prijavi se
                 </button>
@@ -530,7 +530,7 @@ export default function App() {
                   <div className="flex items-center gap-2">
                     <DeliverixLogo style={logoStyle} customLogoUrl={customLogoUrl} logoBlendMode={logoBlendMode} className="w-8 h-8" />
                     <div>
-                      <span className="text-md font-black tracking-wider text-sky-600 block leading-none font-sans uppercase">
+                      <span className="text-md font-black tracking-wider text-sky-700 block leading-none font-sans uppercase">
                         DELIVERIX
                       </span>
                       <span className="text-[10px] text-gray-500 font-extrabold block uppercase tracking-[0.1em] mt-0.5">
@@ -645,7 +645,7 @@ export default function App() {
                     setIsMobileMenuOpen(false);
                     setIsApplyModalOpen(true);
                   }}
-                  className="w-full py-3.5 bg-sky-500 hover:bg-sky-600 text-white text-sm font-black rounded-xl shadow-lg shadow-sky-500/25 transition text-center flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-black rounded-xl shadow-lg shadow-sky-600/25 transition text-center flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Prijavi se odmah</span>
                 </button>
@@ -862,26 +862,26 @@ export default function App() {
             <div className="flex flex-wrap justify-center md:justify-end gap-x-4 gap-y-2 text-xs font-bold text-gray-500">
               <button onClick={() => {
                 document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-sky-500 cursor-pointer">Kako radi</button>
+              }} className="hover:text-sky-700 cursor-pointer">Kako radi</button>
               <button onClick={() => {
                 document.getElementById('sta-je-potrebno')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-sky-500 cursor-pointer">Uslovi</button>
+              }} className="hover:text-sky-700 cursor-pointer">Uslovi</button>
               <button onClick={() => {
                 document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-sky-500 cursor-pointer">FAQ</button>
+              }} className="hover:text-sky-700 cursor-pointer">FAQ</button>
               {currentView === 'landing' ? (
                 <div className="flex flex-wrap items-center justify-center md:justify-end gap-3">
                   <button 
                     id="footer-portal-link"
                     onClick={() => setCurrentView('candidate')} 
-                    className="hover:text-sky-500 cursor-pointer text-sky-600 flex items-center gap-1 font-black"
+                    className="hover:text-sky-800 cursor-pointer text-sky-700 flex items-center gap-1 font-black"
                   >
                     <Lock className="w-3.5 h-3.5" /> Kandidat Portal
                   </button>
                   <button 
                     id="footer-admin-link"
                     onClick={() => setCurrentView('admin')} 
-                    className="hover:text-sky-500 cursor-pointer text-gray-500 flex items-center gap-1 font-bold"
+                    className="hover:text-sky-700 cursor-pointer text-gray-500 flex items-center gap-1 font-bold"
                   >
                     <Lock className="w-3.5 h-3.5" /> Admin Panel
                   </button>
@@ -890,7 +890,7 @@ export default function App() {
                 <button 
                   id="footer-back-link"
                   onClick={() => setCurrentView('landing')} 
-                  className="hover:text-sky-500 cursor-pointer flex items-center gap-1 font-black"
+                  className="hover:text-sky-700 cursor-pointer flex items-center gap-1 font-black"
                 >
                   Nazad na sajt
                 </button>
@@ -907,7 +907,7 @@ export default function App() {
                   setCurrentView('terms');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }} 
-                className="hover:text-sky-500 font-semibold cursor-pointer transition"
+                className="hover:text-sky-700 font-semibold cursor-pointer transition"
               >
                 Uslovi korišćenja
               </button>
@@ -917,7 +917,7 @@ export default function App() {
                   setCurrentView('privacy');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }} 
-                className="hover:text-sky-500 font-semibold cursor-pointer transition"
+                className="hover:text-sky-700 font-semibold cursor-pointer transition"
               >
                 Politika privatnosti
               </button>

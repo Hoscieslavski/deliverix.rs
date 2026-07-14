@@ -396,7 +396,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
               )}
             </h1>
 
-            <h2 className="text-lg sm:text-xl font-extrabold text-gray-700 tracking-tight text-left text-sky-600">
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight text-left">
               {siteSettings?.hero_platform_title || "Besplatno povezivanje sa proverenim partnerskim agencijama u Srbiji"}
             </h2>
             
@@ -416,7 +416,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                   <div className="w-5 h-5 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
                     <Check className="w-3.5 h-3.5 stroke-[3]" />
                   </div>
-                  <span className="text-xs sm:text-sm font-bold text-gray-700">{bullet}</span>
+                  <span className="text-xs sm:text-sm font-bold text-gray-900">{bullet}</span>
                 </div>
               ))}
             </div>
@@ -428,17 +428,17 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                 onClick={() => setActivePlatformTab('wolt')}
                 className={`flex-1 p-3.5 rounded-xl transition-all cursor-pointer text-left flex flex-col justify-between border ${
                   activePlatformTab === 'wolt'
-                    ? 'bg-sky-500 text-white border-sky-500 shadow-lg shadow-sky-500/20'
+                    ? 'bg-sky-50 text-sky-900 border-sky-300 shadow-lg shadow-sky-500/10'
                     : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50/50'
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-black uppercase tracking-wider">Wolt</span>
-                  <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${activePlatformTab === 'wolt' ? 'bg-white text-sky-600' : 'bg-emerald-100 text-emerald-800 animate-pulse'}`}>
+                  <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${activePlatformTab === 'wolt' ? 'bg-white text-sky-700 border border-sky-200 shadow-xs' : 'bg-emerald-100 text-emerald-800 animate-pulse'}`}>
                     Aktivno / Prijavi se
                   </span>
                 </div>
-                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'wolt' ? 'text-sky-200' : 'text-gray-500'}`}>
+                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'wolt' ? 'text-sky-700' : 'text-gray-500'}`}>
                   Isplate na 15 dana. Fleksibilno vreme.
                 </p>
               </button>
@@ -805,7 +805,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           }`}>
             {steps.map((step, idx) => (
               <div key={idx} className="bg-white p-8 rounded-2xl shadow-xs border border-gray-100 relative space-y-4 hover:border-sky-300 transition-all duration-300 group">
-                <span className="text-5xl font-black text-sky-200 group-hover:text-sky-300 transition-colors absolute top-4 right-6">{step.number || `0${idx + 1}`}</span>
+                <span className="text-5xl font-black text-sky-300 group-hover:text-sky-400 transition-colors absolute top-4 right-6">{step.number || `0${idx + 1}`}</span>
                 <h3 className="text-xl font-bold text-gray-900 pt-4">{step.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{step.desc}</p>
               </div>
@@ -1049,7 +1049,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                       {/* Tagovi */}
                       <div className="flex flex-wrap gap-1.5">
                         {post.tags?.map((tag: string) => (
-                          <span key={tag} className="px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md text-[10px] font-bold">
+                          <span key={tag} className="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-md text-[10px] font-bold">
                             #{tag}
                           </span>
                         ))}

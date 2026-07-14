@@ -261,7 +261,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
               <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-sky-500" /> {selectedPost.author}</span>
               <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-sky-500" /> {selectedPost.read_time} čitanja</span>
             </div>
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-sky-50 text-sky-600 rounded-lg"><Eye className="w-4 h-4" /> {selectedPost.views || 0} pregleda</span>
+            <span className="flex items-center gap-1.5 px-3 py-1 bg-sky-100 text-sky-700 rounded-lg"><Eye className="w-4 h-4" /> {selectedPost.views || 0} pregleda</span>
           </div>
 
           {/* Sadržaj posta */}
@@ -361,7 +361,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-1.5">
                         {post.tags?.map((tag: string) => (
-                          <span key={tag} className="px-2 py-0.5 bg-sky-50 text-sky-600 rounded-md text-[10px] font-bold">
+                          <span key={tag} className="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-md text-[10px] font-bold">
                             #{tag}
                           </span>
                         ))}
