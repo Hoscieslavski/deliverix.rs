@@ -253,6 +253,76 @@ export default function App() {
     localStorage.setItem('current_view', currentView);
   }, [currentView]);
 
+  // Dinamičko ažuriranje SEO meta tagova u zavisnosti od izabranog prikaza (Faza 3)
+  useEffect(() => {
+    const setMetaTag = (attrName: 'name' | 'property', attrValue: string, content: string) => {
+      let tag = document.querySelector(`meta[${attrName}="${attrValue}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attrName, attrValue);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    const setCanonicalLink = (href: string) => {
+      let link: HTMLLinkElement | null = document.querySelector('link[rel="canonical"]');
+      if (!link) {
+        link = document.createElement('link');
+        link.setAttribute('rel', 'canonical');
+        document.head.appendChild(link);
+      }
+      link.setAttribute('href', href);
+    };
+
+    let title = "Wolt i Glovo Dostavljač Beograd | Deliverix";
+    let desc = "Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!";
+    let canonical = "https://deliverix.rs/";
+    let robots = "index, follow";
+
+    if (currentView === 'landing') {
+      title = siteSettings?.meta_title || "Wolt i Glovo Dostavljač Beograd | Deliverix";
+      desc = siteSettings?.meta_description || "Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!";
+      canonical = "https://deliverix.rs/";
+      robots = "index, follow";
+    } else if (currentView === 'blog') {
+      title = "Saveti i Vodiči za Wolt i Glovo Dostavljače | Deliverix Blog";
+      desc = "Najbolji saveti, vodiči i lična iskustva za dostavljače hrane u Srbiji. Saznaj kako da maksimizuješ svoju zaradu.";
+      canonical = "https://deliverix.rs/blog";
+      robots = "index, follow";
+    } else if (currentView === 'privacy') {
+      title = "Politika Privatnosti | Deliverix";
+      desc = "Politika privatnosti i zaštita ličnih podataka za kandidate i dostavljače na platformi Deliverix.";
+      canonical = "https://deliverix.rs/privacy-policy";
+      robots = "index, follow";
+    } else if (currentView === 'terms') {
+      title = "Uslovi Korišćenja | Deliverix";
+      desc = "Uslovi korišćenja platforme Deliverix za regrutaciju i podršku dostavljačima.";
+      canonical = "https://deliverix.rs/terms-of-service";
+      robots = "index, follow";
+    } else if (currentView === 'admin' || currentView === 'candidate') {
+      title = "Admin Portal | Deliverix";
+      desc = "Službeni portal za upravljanje kandidatima i marketing podešavanjima.";
+      canonical = "https://deliverix.rs/admin";
+      robots = "noindex, nofollow";
+    }
+
+    document.title = title;
+    setMetaTag('name', 'description', desc);
+    setMetaTag('name', 'robots', robots);
+    setCanonicalLink(canonical);
+
+    // OpenGraph
+    setMetaTag('property', 'og:title', title);
+    setMetaTag('property', 'og:description', desc);
+    setMetaTag('property', 'og:url', canonical);
+
+    // Twitter Cards
+    setMetaTag('property', 'twitter:title', title);
+    setMetaTag('property', 'twitter:description', desc);
+    setMetaTag('property', 'twitter:url', canonical);
+  }, [currentView, siteSettings]);
+
   // Dinamičko ažuriranje favikona (favicon) u zavisnosti od izabranog logotipa
   useEffect(() => {
     let faviconUrl = '/logo.png';
@@ -355,6 +425,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50/20 text-gray-900 font-sans selection:bg-sky-500 selection:text-white relative overflow-x-hidden" id="main-application-root">
+      {/* Skip to Main Content Link for Keyboard / Screen Reader Accessibility */}
+      <a 
+        href="#glavni-sadrzaj" 
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-sky-600 focus:text-white focus:rounded-xl focus:font-bold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+        id="skip-to-content"
+      >
+        Preskoči na glavni sadržaj
+      </a>
       
       {/* Gornji Navigacioni Bar - Dinamičko sakrivanje sa transition */}
       <header className={`sticky top-0 z-40 bg-white border-b border-gray-100 transition-transform duration-300 ease-in-out ${showHeader ? 'translate-y-0' : '-translate-y-full'}`} id="main-header">
@@ -666,7 +744,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Glavni Sadržaj */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10" id="main-content-layout">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10" id="glavni-sadrzaj">
         <Suspense fallback={
           <div className="flex flex-col items-center justify-center min-h-[400px] py-16" id="lazy-view-loading">
             <div className="w-10 h-10 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
