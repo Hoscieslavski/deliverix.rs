@@ -34,8 +34,6 @@ const CandidatePortal = lazy(() => import('./components/CandidatePortal'));
 const BlogPage = lazy(() => import('./components/BlogPage'));
 const PrivacyPolicy = lazy(() => import('./components/privacy-policy'));
 const TermsOfService = lazy(() => import('./components/terms-of-service'));
-// @ts-ignore
-import mapBg from './assets/images/belgrade_vector_map_bg_1783275326358.webp';
 
 import { DeliverixLogo } from './components/DeliverixLogo';
 import { DEFAULT_SITE_SETTINGS } from './constants';
@@ -357,12 +355,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50/20 text-gray-900 font-sans selection:bg-sky-500 selection:text-white relative overflow-x-hidden" id="main-application-root">
-      
-      {/* Pozadina sa mapom - Povećan opacity i postavljen z-0 */}
-      <div 
-        className="fixed inset-0 z-0 pointer-events-none opacity-[0.72] sm:opacity-[0.58] bg-cover bg-center bg-no-repeat transition-opacity duration-300" 
-        style={{ backgroundImage: `url("${mapBg}")` }} 
-      />
       
       {/* Gornji Navigacioni Bar - Dinamičko sakrivanje sa transition */}
       <header className={`sticky top-0 z-40 bg-white border-b border-gray-100 transition-transform duration-300 ease-in-out ${showHeader ? 'translate-y-0' : '-translate-y-full'}`} id="main-header">
