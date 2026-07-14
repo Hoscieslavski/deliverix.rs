@@ -357,8 +357,8 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] py-20 animate-fade-in" id="landing-loading">
-        <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
-        <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">
+        <div className="w-10 h-10 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
+        <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">
           Učitavanje...
         </p>
       </div>
@@ -438,7 +438,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     Aktivno / Prijavi se
                   </span>
                 </div>
-                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'wolt' ? 'text-sky-100' : 'text-gray-500'}`}>
+                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'wolt' ? 'text-sky-200' : 'text-gray-500'}`}>
                   Isplate na 15 dana. Fleksibilno vreme.
                 </p>
               </button>
@@ -598,9 +598,11 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                             key={idx}
                             type="button"
                             onClick={() => setCurrentSlide(idx)}
-                            className={`w-1.5 h-1.5 rounded-full transition-all duration-300 cursor-pointer ${currentSlide === idx ? 'bg-white w-3 rounded-full' : 'bg-white/40'}`}
+                            className="w-8 h-8 flex items-center justify-center cursor-pointer"
                             aria-label={`Slajd ${idx + 1}`}
-                          />
+                          >
+                            <span className={`h-1.5 rounded-full transition-all duration-300 ${currentSlide === idx ? 'bg-white w-3' : 'bg-white/40 w-1.5'}`} />
+                          </button>
                         ))}
                       </div>
                     )}
@@ -647,7 +649,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
               
               {/* Popularne pretrage u podnožju desne strane */}
               <div className="pt-4 border-t border-slate-100/50 flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mr-2">Popularne pretrage:</span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mr-2">Popularne pretrage:</span>
                 {(siteSettings?.about_tags && siteSettings.about_tags.length > 0
                   ? siteSettings.about_tags
                   : [
@@ -660,7 +662,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     "dostavljač Srbija"
                   ]
                 ).map((tag: string, idx: number) => (
-                  <span key={idx} className="px-3 py-1 bg-sky-50/40 hover:bg-sky-50 text-sky-700/80 hover:text-sky-800 rounded-full text-xs font-semibold border border-sky-100/50 transition duration-200">
+                  <span key={idx} className="px-3 py-1 bg-sky-50/40 hover:bg-sky-50 text-sky-700 hover:text-sky-800 rounded-full text-xs font-semibold border border-sky-100/50 transition duration-200">
                     {tag}
                   </span>
                 ))}
@@ -803,7 +805,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           }`}>
             {steps.map((step, idx) => (
               <div key={idx} className="bg-white p-8 rounded-2xl shadow-xs border border-gray-100 relative space-y-4 hover:border-sky-300 transition-all duration-300 group">
-                <span className="text-5xl font-black text-sky-100 group-hover:text-sky-200 transition-colors absolute top-4 right-6">{step.number || `0${idx + 1}`}</span>
+                <span className="text-5xl font-black text-sky-200 group-hover:text-sky-300 transition-colors absolute top-4 right-6">{step.number || `0${idx + 1}`}</span>
                 <h3 className="text-xl font-bold text-gray-900 pt-4">{step.title}</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">{step.desc}</p>
               </div>
@@ -878,7 +880,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                   v.available ? 'border-slate-100' : 'border-slate-200 bg-gray-50/50 opacity-90'
                 }`}>
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
-                    v.available ? 'bg-sky-50 text-sky-500 border-sky-100/50' : 'bg-gray-100 text-gray-400 border-gray-200'
+                    v.available ? 'bg-sky-50 text-sky-500 border-sky-100/50' : 'bg-gray-100 text-gray-500 border-gray-200'
                   }`}>
                     <Icon className="w-5 h-5" />
                   </div>
@@ -952,7 +954,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           </div>
 
           <div className="pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <p className="text-xs text-gray-400 font-bold max-w-md">
+            <p className="text-xs text-gray-500 font-bold max-w-md">
               Svi naši servisi, saveti i spajanje sa partnerima su potpuno besplatni. Bez skrivenih provizija i troškova.
             </p>
             <button
@@ -1062,7 +1064,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-bold">
+                    <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-500 font-bold">
                       <span>{post.author}</span>
                       <span className="text-sky-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0 font-extrabold">
                         Pročitaj više <ArrowRight className="w-3.5 h-3.5" />
@@ -1083,9 +1085,11 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                   <button
                     key={idx}
                     onClick={() => scrollLandingBlogTo(idx)}
-                    className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${landingBlogIndex === idx ? 'w-6 bg-sky-500' : 'w-2 bg-gray-200 hover:bg-gray-300'}`}
+                    className="w-8 h-8 flex items-center justify-center cursor-pointer"
                     aria-label={`Prikaži članak ${idx + 1}`}
-                  />
+                  >
+                    <span className={`h-2 rounded-full transition-all duration-300 ${landingBlogIndex === idx ? 'w-6 bg-sky-500' : 'w-2 bg-gray-200 hover:bg-gray-300'}`} />
+                  </button>
                 ))}
               </div>
               
@@ -1191,7 +1195,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     className="w-full px-6 py-4 text-left font-bold text-gray-900 flex justify-between items-center hover:bg-gray-50/50 cursor-pointer transition text-sm sm:text-base"
                   >
                     <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp className="w-5 h-5 text-sky-500 shrink-0" /> : <ChevronDown className="w-5 h-5 text-gray-400 shrink-0" />}
+                    {isOpen ? <ChevronUp className="w-5 h-5 text-sky-500 shrink-0" /> : <ChevronDown className="w-5 h-5 text-gray-500 shrink-0" />}
                   </button>
                   
                   {isOpen && (
@@ -1221,7 +1225,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
               {siteSettings?.footer_cta_title || "Započni svoju dostavljačku karijeru danas"}
             </h2>
-            <p className="text-sky-100 text-sm sm:text-base">
+            <p className="text-sky-200 text-sm sm:text-base">
               {siteSettings?.footer_cta_desc || "Nemoj odlagati priliku za odličnu zaradu i potpunu slobodu. Registracija te ništa ne košta i ne obavezuje te ni na šta. Pomažemo ti oko celog procesa besplatno."}
             </p>
           </div>
@@ -1244,7 +1248,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             </a>
           </div>
 
-          <p className="text-[11px] text-sky-100/80">
+          <p className="text-[11px] text-sky-200/90">
             {siteSettings?.footer_disclaimer || "Napomena: Mi nismo deo ni jedne dostavne mreže (Wolt, Glovo, itd.) već nezavisni posrednik za podršku, informacije i brzu regrutaciju u Srbiji. Sve informacije su neutralne i tačne."}
           </p>
         </section>

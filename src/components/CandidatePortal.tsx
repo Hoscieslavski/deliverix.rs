@@ -265,7 +265,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
     }
 
     return (
-      <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center border border-gray-200 z-10 text-xs font-bold">
+      <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center border border-gray-200 z-10 text-xs font-bold">
         {idx + 1}
       </div>
     );
@@ -324,9 +324,9 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
 
             <form onSubmit={handleRequestOtp} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase text-gray-400 tracking-wider">Broj telefona</label>
+                <label className="text-xs font-bold uppercase text-gray-500 tracking-wider">Broj telefona</label>
                 <div className="relative">
-                  <Smartphone className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" />
+                  <Smartphone className="absolute left-4 top-3.5 w-5 h-5 text-gray-500" />
                   <input 
                     id="login-phone-input"
                     type="tel" 
@@ -402,7 +402,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
 
             <form onSubmit={handleVerifyOtp} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase text-gray-400 tracking-wider">Unesite OTP kod</label>
+                <label className="text-xs font-bold uppercase text-gray-500 tracking-wider">Unesite OTP kod</label>
                 <input 
                   id="login-otp-input"
                   type="text" 
@@ -465,27 +465,27 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   </div>
                   <div>
                     <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">{profile.ime}</h2>
-                    <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Korisnički nalog kandidata</p>
+                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Korisnički nalog kandidata</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                   <div className="bg-gray-50/80 p-3 rounded-2xl border border-gray-100">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Grad</span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Grad</span>
                     <span className="text-sm font-bold text-gray-800 flex items-center gap-1 mt-0.5">
                       <MapPin className="w-4 h-4 text-sky-500 shrink-0" />
                       {profile.grad}
                     </span>
                   </div>
                   <div className="bg-gray-50/80 p-3 rounded-2xl border border-gray-100">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Vozilo</span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Vozilo</span>
                     <span className="text-sm font-bold text-gray-800 flex items-center gap-1 mt-0.5 capitalize">
                       {renderVehicleIcon(profile.vozilo, "w-4 h-4 shrink-0")}
                       {profile.vozilo}
                     </span>
                   </div>
                   <div className="bg-gray-50/80 p-3 rounded-2xl border border-gray-100 col-span-2 sm:col-span-2">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Datum prijave</span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Datum prijave</span>
                     <span className="text-sm font-bold text-gray-800 flex items-center gap-1 mt-0.5">
                       <Calendar className="w-4 h-4 text-sky-500 shrink-0" />
                       {new Date(profile.datum_prijave).toLocaleDateString('sr-RS', {
@@ -511,7 +511,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
                   Osveži status
                 </button>
-                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Automatski osvežava</span>
+                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Automatski osvežava</span>
               </div>
             </div>
 
@@ -545,7 +545,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   <h3 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
                     <ClipboardList className="w-5 h-5 text-sky-500" /> Moj Status Prijave
                   </h3>
-                  <p className="text-xs text-gray-400 mt-0.5">Pratite trenutnu fazu vaše prijave u realnom vremenu.</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Pratite trenutnu fazu vaše prijave u realnom vremenu.</p>
                 </div>
 
                 {/* TIMELINE RENDER */}
@@ -596,7 +596,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-10 text-gray-400 space-y-2">
+                  <div className="text-center py-10 text-gray-500 space-y-2">
                     <AlertCircle className="w-10 h-10 mx-auto text-gray-300" />
                     <p className="font-bold text-gray-500">Istorija statusa nije dostupna</p>
                     <p className="text-xs">Nalog je označen kao neaktivan od strane admina.</p>
@@ -647,7 +647,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                     </p>
                   )}
 
-                  <div className="border-t border-white/20 pt-4 text-xs text-sky-100 flex items-center gap-1">
+                  <div className="border-t border-white/20 pt-4 text-xs text-sky-200 flex items-center gap-1">
                     <span>Zadnje ažuriranje:</span>
                     <strong className="text-white">
                       {profile.last_updated_at ? new Date(profile.last_updated_at).toLocaleDateString('sr-RS') : 'Uskoro'}

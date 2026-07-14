@@ -344,9 +344,9 @@ export default function App() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-white" id="global-loading">
         <div className="relative flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
         </div>
-        <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">
+        <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">
           Učitavanje...
         </p>
       </div>
@@ -371,7 +371,7 @@ export default function App() {
               <span className="text-lg sm:text-2xl font-black tracking-wider text-sky-600 block leading-none font-sans uppercase">
                 DELIVERIX
               </span>
-              <span className="text-[8px] sm:text-[9px] text-gray-400 font-extrabold block uppercase tracking-[0.15em] mt-0.5 sm:mt-1">
+              <span className="text-[10px] sm:text-xs text-gray-500 font-extrabold block uppercase tracking-[0.15em] mt-0.5 sm:mt-1">
                 POSTANI DOSTAVLJAČ
               </span>
             </div>
@@ -533,21 +533,21 @@ export default function App() {
                       <span className="text-md font-black tracking-wider text-sky-600 block leading-none font-sans uppercase">
                         DELIVERIX
                       </span>
-                      <span className="text-[7px] text-gray-400 font-extrabold block uppercase tracking-[0.1em] mt-0.5">
+                      <span className="text-[10px] text-gray-500 font-extrabold block uppercase tracking-[0.1em] mt-0.5">
                         PODRŠKA ZA DOSTAVLJAČE
                       </span>
                     </div>
                   </div>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition cursor-pointer"
+                    className="p-1.5 text-gray-500 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
                 <div className="space-y-1.5">
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-3 mb-2">Navigacija</p>
+                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-3 mb-2">Navigacija</p>
                   
                   <button
                     onClick={() => {
@@ -669,8 +669,8 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10" id="main-content-layout">
         <Suspense fallback={
           <div className="flex flex-col items-center justify-center min-h-[400px] py-16" id="lazy-view-loading">
-            <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
-            <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">Učitavanje stranice...</p>
+            <div className="w-10 h-10 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
+            <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">Učitavanje stranice...</p>
           </div>
         }>
           <AnimatePresence mode="wait">
@@ -781,8 +781,8 @@ export default function App() {
 
               <Suspense fallback={
                 <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
-                  <div className="w-10 h-10 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
-                  <p className="mt-4 text-xs font-bold text-gray-400 uppercase tracking-widest animate-pulse">Učitavanje forme...</p>
+                  <div className="w-10 h-10 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
+                  <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">Učitavanje forme...</p>
                 </div>
               }>
                 <ApplicationForm 
@@ -808,12 +808,12 @@ export default function App() {
             <div className="text-center md:text-left space-y-3">
               <div className="space-y-1">
                 <p className="font-extrabold text-gray-900">Deliverix Srbija</p>
-                <p className="text-xs text-gray-400 max-w-sm mx-auto md:mx-0">Besplatne konsultacije i posredovanje pri zapošljavanju dostavljača.</p>
+                <p className="text-xs text-gray-500 max-w-sm mx-auto md:mx-0">Besplatne konsultacije i posredovanje pri zapošljavanju dostavljača.</p>
               </div>
               
               {/* Opcije za deljenje */}
               <div className="flex flex-wrap items-center gap-2 justify-center md:justify-start">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Podeli sa prijateljima:</span>
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Podeli sa prijateljima:</span>
                 <div className="flex items-center gap-1.5">
                   <a 
                     href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fdeliverix.rs" 
@@ -899,7 +899,7 @@ export default function App() {
           </div>
 
           <div className="border-t border-gray-200/60 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs text-gray-400">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs text-gray-500">
               <span>© {new Date().getFullYear()} Deliverix.rs. Sva prava zadržana.</span>
               <span className="hidden sm:inline text-gray-300">•</span>
               <button 
@@ -922,7 +922,7 @@ export default function App() {
                 Politika privatnosti
               </button>
             </div>
-            <p className="text-[10px] text-gray-400 max-w-md text-center sm:text-right">
+            <p className="text-[10px] text-gray-500 max-w-md text-center sm:text-right">
               Izjava o odgovornosti: Mi nismo zvanični predstavnici niti deo kompanija Wolt, Glovo ili drugih dostavnih platformi. Mi smo nezavisni informativni portal koji pomaže kandidatima da se lakše povežu sa registrovanim partnerskim agencijama za dostavu u Republici Srbiji.
             </p>
           </div>
@@ -960,6 +960,7 @@ export default function App() {
               <button
                 onClick={handleAcceptCookies}
                 className="px-4 py-2 text-white bg-sky-500 hover:bg-sky-600 rounded-xl transition cursor-pointer shadow-md shadow-sky-500/10"
+                aria-label="Prihvati kolačiće"
               >
                 Prihvati sve
               </button>

@@ -305,7 +305,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
           <div className="flex flex-col md:flex-row gap-4 items-stretch justify-between bg-white p-4 border border-gray-100 rounded-3xl shadow-xs" id="blog-filters">
             {/* Pretraga */}
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 w-4.5 h-4.5" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 w-4.5 h-4.5" />
               <input
                 type="text"
                 placeholder="Pretraži članke po naslovu ili opisu..."
@@ -374,7 +374,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
                       </p>
                     </div>
 
-                    <div className="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-400 font-bold">
+                    <div className="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-500 font-bold">
                       <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" /> {post.author}</span>
                       <span className="text-sky-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0 font-extrabold">
                         Čitaj <ChevronRight className="w-3.5 h-3.5" />
