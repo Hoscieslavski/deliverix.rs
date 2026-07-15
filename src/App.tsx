@@ -63,7 +63,13 @@ export default function App() {
     return 'landing';
   });
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
-  const [siteSettings, setSiteSettings] = useState<any>(DEFAULT_SITE_SETTINGS);
+  const [siteSettings, setSiteSettings] = useState<any>(() => {
+    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    if (initial) {
+      return { ...DEFAULT_SITE_SETTINGS, ...initial };
+    }
+    return DEFAULT_SITE_SETTINGS;
+  });
   const [cookieConsent, setCookieConsent] = useState<'accepted' | 'rejected' | null>(() => {
     const saved = localStorage.getItem('deliverix_cookie_consent');
     if (saved === 'accepted' || saved === 'rejected') {
@@ -551,14 +557,14 @@ export default function App() {
                   onClick={() => setIsApplyModalOpen(true)}
                   className="px-3 sm:px-5 py-2 sm:py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-[11px] sm:text-sm font-black rounded-xl shadow-md sm:shadow-lg shadow-sky-600/15 active:translate-y-0.5 transition cursor-pointer whitespace-nowrap text-center shrink-0"
                 >
-                  Prijavi se
+                  {siteSettings?.button_header_apply || "Prijavi se"}
                 </button>
                 <button
                   id="header-portal-btn"
                   onClick={() => setCurrentView('candidate')}
                   className="hidden sm:flex px-3 sm:px-4 py-2 sm:py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-600 text-[11px] sm:text-sm font-black rounded-xl transition cursor-pointer items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
                 >
-                  <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> Prati prijavu
+                  <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> {siteSettings?.button_header_portal || "Prati prijavu"}
                 </button>
 
                 {/* Mobilni hamburger taster */}
@@ -885,8 +891,8 @@ export default function App() {
             {/* Leva strana: Naziv i opis */}
             <div className="text-center md:text-left space-y-3">
               <div className="space-y-1">
-                <p className="font-extrabold text-gray-900">Deliverix Srbija</p>
-                <p className="text-xs text-gray-500 max-w-sm mx-auto md:mx-0">Besplatne konsultacije i posredovanje pri zapošljavanju dostavljača.</p>
+                <p className="font-extrabold text-gray-900">{siteSettings?.footer_company_name || 'Deliverix Srbija'}</p>
+                <p className="text-xs text-gray-500 max-w-sm mx-auto md:mx-0">{siteSettings?.footer_description || 'Besplatne konsultacije i posredovanje pri zapošljavanju dostavljača.'}</p>
               </div>
               
               {/* Opcije za deljenje */}
@@ -978,7 +984,7 @@ export default function App() {
 
           <div className="border-t border-gray-200/60 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs text-gray-500">
-              <span>© {new Date().getFullYear()} Deliverix.rs. Sva prava zadržana.</span>
+              <span>© {new Date().getFullYear()} {siteSettings?.footer_company_name || 'Deliverix Srbija'}. Sva prava zadržana.</span>
               <span className="hidden sm:inline text-gray-300">•</span>
               <button 
                 onClick={() => {
@@ -987,7 +993,7 @@ export default function App() {
                 }} 
                 className="hover:text-sky-700 font-semibold cursor-pointer transition"
               >
-                Uslovi korišćenja
+                {siteSettings?.footer_terms_text || 'Uslovi korišćenja'}
               </button>
               <span className="hidden sm:inline text-gray-300">•</span>
               <button 
@@ -997,11 +1003,11 @@ export default function App() {
                 }} 
                 className="hover:text-sky-700 font-semibold cursor-pointer transition"
               >
-                Politika privatnosti
+                {siteSettings?.footer_privacy_text || 'Politika privatnosti'}
               </button>
             </div>
             <p className="text-[10px] text-gray-500 max-w-md text-center sm:text-right">
-              Izjava o odgovornosti: Mi nismo zvanični predstavnici niti deo kompanija Wolt, Glovo ili drugih dostavnih platformi. Mi smo nezavisni informativni portal koji pomaže kandidatima da se lakše povežu sa registrovanim partnerskim agencijama za dostavu u Republici Srbiji.
+              {siteSettings?.footer_legal_disclaimer || "Izjava o odgovornosti: Mi nismo zvanični predstavnici niti deo kompanija Wolt, Glovo ili drugih dostavnih platformi. Mi smo nezavisni informativni portal koji pomaže kandidatima da se lakše povežu sa registrovanim partnerskim agencijama za dostavu u Republici Srbiji."}
             </p>
           </div>
         </div>
