@@ -136,6 +136,8 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     hero_badge_title: 'Dostupno odmah',
     hero_badge_text: 'Pomoć oko zaposlenja je 100% besplatna!',
     hero_image_alt: 'Dostavljač hrane - Wolt Glovo Srbija',
+    hero_h1: '',
+    hero_bullets: [] as { text: string }[],
     about_enabled: true,
     about_title: '',
     about_intro: '',
@@ -158,7 +160,20 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     requirements: [] as { title: string; desc: string; icon: string }[],
     rent_section_title: '',
     rent_section_text: '',
-    faqs: [] as { q: string; a: string }[]
+    faqs: [] as { q: string; a: string }[],
+    button_hero_cta: '',
+    button_hero_secondary_cta: '',
+    button_requirements_cta: '',
+    button_blog_cta: '',
+    button_footer_cta: '',
+    button_header_apply: '',
+    button_header_portal: '',
+    button_wolt_title: '',
+    button_wolt_badge: '',
+    button_wolt_desc: '',
+    button_glovo_title: '',
+    button_glovo_badge: '',
+    button_glovo_desc: ''
   });
 
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -632,14 +647,17 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
           hero_right_mode: data.settings.hero_right_mode || 'image',
           hero_image_url: data.settings.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.webp',
           hero_slider_images: data.settings.hero_slider_images || [],
-          hero_slider_slides: data.settings.hero_slider_slides || (data.settings.hero_slider_images || []).map((img: string) => ({
+          hero_slider_slides: data.settings.hero_slider_slides || (data.settings.hero_slider_images || []).map((img: string, idx: number) => ({
             image: img,
-            badge_title: data.settings.hero_badge_title || 'Dostupno odmah',
-            badge_text: data.settings.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'
+            badge_title: idx === 0 ? "Brzi Start" : idx === 1 ? "Redovna Isplata" : `Prednost #${idx + 1}`,
+            badge_text: idx === 0 ? "Aktivacija naloga i oprema u roku od 24h" : idx === 1 ? "Sigurna zarada na svake dve nedelje" : (data.settings.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+            seo_alt: `${data.settings.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${idx + 1}`
           })),
           hero_badge_title: data.settings.hero_badge_title || 'Dostupno odmah',
           hero_badge_text: data.settings.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!',
           hero_image_alt: data.settings.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija',
+          hero_h1: data.settings.hero_h1 || '',
+          hero_bullets: data.settings.hero_bullets || [],
           rent_bike_enabled: data.settings.rent_bike_enabled !== false,
           rent_scooter_enabled: data.settings.rent_scooter_enabled !== false,
           rent_car_enabled: data.settings.rent_car_enabled !== false,
@@ -656,7 +674,20 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
           requirements: data.settings.requirements || [],
           rent_section_title: data.settings.rent_section_title || '',
           rent_section_text: data.settings.rent_section_text || '',
-          faqs: data.settings.faqs || []
+          faqs: data.settings.faqs || [],
+          button_hero_cta: data.settings.button_hero_cta || '',
+          button_hero_secondary_cta: data.settings.button_hero_secondary_cta || '',
+          button_requirements_cta: data.settings.button_requirements_cta || '',
+          button_blog_cta: data.settings.button_blog_cta || '',
+          button_footer_cta: data.settings.button_footer_cta || '',
+          button_header_apply: data.settings.button_header_apply || '',
+          button_header_portal: data.settings.button_header_portal || '',
+          button_wolt_title: data.settings.button_wolt_title || '',
+          button_wolt_badge: data.settings.button_wolt_badge || '',
+          button_wolt_desc: data.settings.button_wolt_desc || '',
+          button_glovo_title: data.settings.button_glovo_title || '',
+          button_glovo_badge: data.settings.button_glovo_badge || '',
+          button_glovo_desc: data.settings.button_glovo_desc || ''
         });
       }
     } catch (err) {
@@ -1076,19 +1107,22 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
       let base64String = reader.result as string;
       try {
         base64String = await resizeImage(base64String, 1600, 'image/jpeg', 0.85);
-        setSiteSettings(prev => {
+         setSiteSettings(prev => {
           const currentSlides = prev.hero_slider_slides && prev.hero_slider_slides.length > 0
             ? [...prev.hero_slider_slides]
-            : (prev.hero_slider_images || []).map(img => ({
+            : (prev.hero_slider_images || []).map((img, i) => ({
                 image: img,
-                badge_title: prev.hero_badge_title || 'Dostupno odmah',
-                badge_text: prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'
+                badge_title: i === 0 ? "Brzi Start" : i === 1 ? "Redovna Isplata" : `Prednost #${i + 1}`,
+                badge_text: i === 0 ? "Aktivacija naloga i oprema u roku od 24h" : i === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+                seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${i + 1}`
               }));
 
+          const nextIndex = currentSlides.length;
           const newSlide = {
             image: base64String,
-            badge_title: prev.hero_badge_title || 'Dostupno odmah',
-            badge_text: prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'
+            badge_title: nextIndex === 0 ? "Brzi Start" : nextIndex === 1 ? "Redovna Isplata" : `Prednost #${nextIndex + 1}`,
+            badge_text: nextIndex === 0 ? "Aktivacija naloga i oprema u roku od 24h" : nextIndex === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+            seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${nextIndex + 1}`
           };
 
           const updatedSlides = [...currentSlides, newSlide];
@@ -1149,21 +1183,23 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     });
   };
 
-  const handleUpdateSlideText = (idx: number, field: 'badge_title' | 'badge_text', value: string) => {
+  const handleUpdateSlideText = (idx: number, field: 'badge_title' | 'badge_text' | 'seo_alt', value: string) => {
     setSiteSettings(prev => {
       const currentSlides = prev.hero_slider_slides && prev.hero_slider_slides.length > 0
         ? [...prev.hero_slider_slides]
-        : (prev.hero_slider_images || []).map(img => ({
+        : (prev.hero_slider_images || []).map((img, i) => ({
             image: img,
-            badge_title: prev.hero_badge_title || 'Dostupno odmah',
-            badge_text: prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'
+            badge_title: i === 0 ? "Brzi Start" : i === 1 ? "Redovna Isplata" : `Prednost #${i + 1}`,
+            badge_text: i === 0 ? "Aktivacija naloga i oprema u roku od 24h" : i === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+            seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${i + 1}`
           }));
 
       if (!currentSlides[idx]) {
         currentSlides[idx] = {
           image: prev.hero_slider_images?.[idx] || '',
-          badge_title: prev.hero_badge_title || 'Dostupno odmah',
-          badge_text: prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'
+          badge_title: idx === 0 ? "Brzi Start" : idx === 1 ? "Redovna Isplata" : `Prednost #${idx + 1}`,
+          badge_text: idx === 0 ? "Aktivacija naloga i oprema u roku od 24h" : idx === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+          seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${idx + 1}`
         };
       }
       currentSlides[idx] = {

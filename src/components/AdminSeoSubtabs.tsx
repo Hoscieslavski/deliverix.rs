@@ -1,7 +1,8 @@
 import React from 'react';
 import { 
   Globe, Sparkles, Compass, HelpCircle, 
-  Plus, Trash2, Upload, Loader2, Check, Bike, Car, Smartphone, FileText, Clock, MapPin, ShieldCheck, HeartHandshake, Phone
+  Plus, Trash2, Upload, Loader2, Check, Bike, Car, Smartphone, FileText, Clock, MapPin, ShieldCheck, HeartHandshake, Phone,
+  ArrowUp, ArrowDown
 } from 'lucide-react';
 import ScooterIcon from './ScooterIcon';
 import { DeliverixLogo } from './DeliverixLogo';
@@ -249,7 +250,7 @@ interface HeroTabFormProps {
   handleHeroImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleHeroSlideUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveHeroSlide: (idx: number) => void;
-  handleUpdateSlideText: (idx: number, field: 'badge_title' | 'badge_text', value: string) => void;
+  handleUpdateSlideText: (idx: number, field: 'badge_title' | 'badge_text' | 'seo_alt', value: string) => void;
 }
 
 export function HeroTabForm({
@@ -263,6 +264,49 @@ export function HeroTabForm({
   handleRemoveHeroSlide,
   handleUpdateSlideText
 }: HeroTabFormProps) {
+  const bullets = siteSettings.hero_bullets && siteSettings.hero_bullets.length > 0
+    ? siteSettings.hero_bullets
+    : [
+        { text: "Prijava traje 2 minuta" },
+        { text: "Besplatna podrška" },
+        { text: "Pomažemo do prve dostave" },
+        { text: "Beograd i Novi Sad" }
+      ];
+
+  const handleUpdateBulletText = (index: number, text: string) => {
+    const updated = [...bullets];
+    updated[index] = { ...updated[index], text };
+    setSiteSettings({ ...siteSettings, hero_bullets: updated });
+  };
+
+  const handleAddBullet = () => {
+    const updated = [...bullets, { text: "" }];
+    setSiteSettings({ ...siteSettings, hero_bullets: updated });
+  };
+
+  const handleRemoveBullet = (index: number) => {
+    const updated = bullets.filter((_: any, i: number) => i !== index);
+    setSiteSettings({ ...siteSettings, hero_bullets: updated });
+  };
+
+  const handleMoveBulletUp = (index: number) => {
+    if (index === 0) return;
+    const updated = [...bullets];
+    const temp = updated[index];
+    updated[index] = updated[index - 1];
+    updated[index - 1] = temp;
+    setSiteSettings({ ...siteSettings, hero_bullets: updated });
+  };
+
+  const handleMoveBulletDown = (index: number) => {
+    if (index === bullets.length - 1) return;
+    const updated = [...bullets];
+    const temp = updated[index];
+    updated[index] = updated[index + 1];
+    updated[index + 1] = temp;
+    setSiteSettings({ ...siteSettings, hero_bullets: updated });
+  };
+
   return (
     <div className="bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 shadow-sm w-full" id="hero-tab-form-root">
       <form onSubmit={onSave} className="space-y-6">
@@ -273,11 +317,23 @@ export function HeroTabForm({
 
         <div className="grid grid-cols-1 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-gray-500 uppercase">Glavni Hero Naslov</label>
+            <label className="text-xs font-bold text-gray-500 uppercase">Glavni Hero H1 naslov</label>
             <input
               type="text"
               required
-              placeholder="npr. Postani dostavljač i ostvari odličnu zaradu!"
+              placeholder="npr. Pronađi posao dostavljača uz Deliverix"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
+              value={siteSettings.hero_h1 || ''}
+              onChange={e => setSiteSettings({ ...siteSettings, hero_h1: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-gray-500 uppercase">Hero Slogan (H2)</label>
+            <input
+              type="text"
+              required
+              placeholder="npr. Tvoja vožnja. Tvoja zarada. Tvoj tempo."
               className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
               value={siteSettings.hero_title || ''}
               onChange={e => setSiteSettings({ ...siteSettings, hero_title: e.target.value })}
@@ -307,6 +363,65 @@ export function HeroTabForm({
               onChange={e => setSiteSettings({ ...siteSettings, hero_platform_title: e.target.value })}
             />
           </div>
+        </div>
+
+        {/* Hero ključne prednosti (Faza 5) */}
+        <div className="pt-4 border-t border-gray-100 space-y-4">
+          <h4 className="text-xs font-extrabold text-sky-600 uppercase tracking-wider font-sans flex items-center gap-1.5">
+            <Check className="w-4 h-4 stroke-[3]" /> Hero ključne prednosti
+          </h4>
+          <div className="space-y-2">
+            {bullets.map((bullet: any, idx: number) => (
+              <div key={idx} className="flex items-center gap-2">
+                <span className="text-xs font-bold text-gray-400 w-6">#{idx + 1}</span>
+                <input
+                  type="text"
+                  required
+                  placeholder="Upišite stavku prednosti..."
+                  className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                  value={bullet?.text || bullet || ''}
+                  onChange={e => handleUpdateBulletText(idx, e.target.value)}
+                />
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    disabled={idx === 0}
+                    onClick={() => handleMoveBulletUp(idx)}
+                    className="p-1.5 bg-gray-50 hover:bg-gray-100 disabled:opacity-30 border border-gray-200 rounded-lg cursor-pointer"
+                    title="Pomeri gore"
+                  >
+                    <ArrowUp className="w-3.5 h-3.5 text-gray-600" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={idx === bullets.length - 1}
+                    onClick={() => handleMoveBulletDown(idx)}
+                    className="p-1.5 bg-gray-50 hover:bg-gray-100 disabled:opacity-30 border border-gray-200 rounded-lg cursor-pointer"
+                    title="Pomeri dole"
+                  >
+                    <ArrowDown className="w-3.5 h-3.5 text-gray-600" />
+                  </button>
+                  {bullets.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveBullet(idx)}
+                      className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-lg cursor-pointer"
+                      title="Obriši"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={handleAddBullet}
+            className="text-xs font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" /> Dodaj novu stavku prednosti
+          </button>
         </div>
 
         <div className="pt-4 border-t border-gray-100 space-y-4">
@@ -480,6 +595,16 @@ export function HeroTabForm({
                               onChange={e => handleUpdateSlideText(idx, 'badge_text', e.target.value)}
                             />
                           </div>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">SEO ALT Oznaka slike za ovaj slajd</label>
+                          <input
+                            type="text"
+                            placeholder="npr. Dostavljač Wolt na električnom biciklu Beograd"
+                            className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
+                            value={slide.seo_alt || ''}
+                            onChange={e => handleUpdateSlideText(idx, 'seo_alt', e.target.value)}
+                          />
                         </div>
                       </div>
                     </div>
@@ -804,6 +929,31 @@ export function HomepageSectionsTabForm({
 
   const handleRemoveBullet = (index: number) => {
     setSiteSettings({ ...siteSettings, why_choose_us_items: whyChooseUsItems.filter((_: any, i: number) => i !== index) });
+  };
+
+  // Helpers za Kome je namenjen Deliverix (8 kartica)
+  const defaultAudienceCards = [
+    { title: 'Osobe koje traže fleksibilnost', desc: 'Sami određujete kada i koliko radite, bez ikakvog pritiska.' },
+    { title: 'Studenti', desc: 'Odličan način da zaradite džeparac uporedo sa studijama.' },
+    { title: 'Zaposleni (Dodatni posao)', desc: 'Radite par sati dnevno nakon primarnog posla za dodatni prihod.' },
+    { title: 'Oni koji žele dobre prihode', desc: 'Zaradite preko 150.000 RSD uz redovne dvonedeljne isplate.' },
+    { title: 'Profesionalni vozači', desc: 'Iskoristite svoje poznavanje grada i pretvorite kilometre u novac.' },
+    { title: 'Osobe bez iskustva', desc: 'Pružamo besplatnu obuku i podršku, nikakvo predznanje nije potrebno.' },
+    { title: 'Ljubitelji biciklizma', desc: 'Spojite rekreaciju i zaradu vozeći sopstveni ili naš električni e-bike.' },
+    { title: 'Zajednica / Timski duh', desc: 'Postanite deo velike i podržavajuće flote dostavljača u Srbiji.' }
+  ];
+
+  const targetAudienceCards = (siteSettings.target_audience_cards && siteSettings.target_audience_cards.length > 0)
+    ? siteSettings.target_audience_cards
+    : defaultAudienceCards;
+
+  const handleUpdateAudienceCard = (index: number, field: 'title' | 'desc', val: string) => {
+    const updated = [...targetAudienceCards];
+    if (!updated[index]) {
+      updated[index] = { title: '', desc: '' };
+    }
+    updated[index] = { ...updated[index], [field]: val };
+    setSiteSettings({ ...siteSettings, target_audience_cards: updated });
   };
 
   // Helpers za Kako funkcioniše (Steps)
@@ -1626,6 +1776,211 @@ export function HomepageSectionsTabForm({
           </div>
         </div>
 
+        {/* SEKCIJA ZA KOME JE NAMENJEN DELIVERIX (8 KARTICA) */}
+        <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
+          <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
+            <Compass className="w-4 h-4" /> Sekcija: Kome je namenjen Deliverix (8 Kartica)
+          </h4>
+          <div className="space-y-4">
+            <span className="text-xs font-extrabold text-gray-400 uppercase block">Uređivanje 8 kartica ciljnih grupa</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {targetAudienceCards.map((card: any, idx: number) => (
+                <div key={idx} className="bg-white p-4 rounded-xl border border-gray-150 space-y-3 relative">
+                  <span className="text-xs font-black text-sky-600">Kartica #{idx + 1}</span>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase">Naslov</label>
+                    <input
+                      type="text"
+                      className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs font-bold"
+                      value={card.title || ''}
+                      onChange={e => handleUpdateAudienceCard(idx, 'title', e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase">Opis</label>
+                    <textarea
+                      rows={2}
+                      className="w-full px-2.5 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs leading-relaxed"
+                      value={card.desc || ''}
+                      onChange={e => handleUpdateAudienceCard(idx, 'desc', e.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* SEKCIJA ZA SEO ARTIKAL */}
+        <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
+          <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4" /> Sekcija: SEO Karijerni vodič / Artikal
+            </h4>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-bold text-gray-500 uppercase">{siteSettings.seo_article_enabled !== false ? 'Aktivna' : 'Isključena'}</span>
+              <button
+                type="button"
+                onClick={() => setSiteSettings({ ...siteSettings, seo_article_enabled: siteSettings.seo_article_enabled !== false ? false : true })}
+                className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                  siteSettings.seo_article_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow-xs transition duration-200 ease-in-out ${
+                    siteSettings.seo_article_enabled !== false ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-500 uppercase">Glavni naslov artikla</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold"
+                value={siteSettings.seo_article_title || "Zašto kandidati biraju posao dostavljača u Srbiji?"}
+                onChange={e => setSiteSettings({ ...siteSettings, seo_article_title: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-gray-500 uppercase">Mali bedž na vrhu sekcije</label>
+              <input
+                type="text"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm"
+                value={siteSettings.seo_article_badge || "Karijerni vodič i saveti"}
+                onChange={e => setSiteSettings({ ...siteSettings, seo_article_badge: e.target.value })}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <span className="text-xs font-extrabold text-gray-400 uppercase block">Paragrafi artikla</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Paragraf 1 (Leva kolona, vrh)</label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-2.5 py-1.5 bg-white border border-gray-200 rounded text-xs leading-relaxed"
+                    value={siteSettings.seo_article_p1 || ""}
+                    onChange={e => setSiteSettings({ ...siteSettings, seo_article_p1: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Paragraf 2 (Leva kolona, sredina)</label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-2.5 py-1.5 bg-white border border-gray-200 rounded text-xs leading-relaxed"
+                    value={siteSettings.seo_article_p2 || ""}
+                    onChange={e => setSiteSettings({ ...siteSettings, seo_article_p2: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Paragraf 3 (Leva kolona, dno)</label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-2.5 py-1.5 bg-white border border-gray-200 rounded text-xs leading-relaxed"
+                    value={siteSettings.seo_article_p3 || ""}
+                    onChange={e => setSiteSettings({ ...siteSettings, seo_article_p3: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Paragraf 4 (Desna kolona, vrh)</label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-2.5 py-1.5 bg-white border border-gray-200 rounded text-xs leading-relaxed"
+                    value={siteSettings.seo_article_p4 || ""}
+                    onChange={e => setSiteSettings({ ...siteSettings, seo_article_p4: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Paragraf 5 (Desna kolona, sredina)</label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-2.5 py-1.5 bg-white border border-gray-200 rounded text-xs leading-relaxed"
+                    value={siteSettings.seo_article_p5 || ""}
+                    onChange={e => setSiteSettings({ ...siteSettings, seo_article_p5: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Paragraf 6 (Desna kolona, dno)</label>
+                  <textarea
+                    rows={3}
+                    className="w-full px-2.5 py-1.5 bg-white border border-gray-200 rounded text-xs leading-relaxed"
+                    value={siteSettings.seo_article_p6 || ""}
+                    onChange={e => setSiteSettings({ ...siteSettings, seo_article_p6: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2 border-t border-gray-100">
+            <span className="text-xs font-extrabold text-gray-400 uppercase block">Metrike / Karakteristike na dnu artikla</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="p-3 bg-white border border-gray-200 rounded-xl space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">Karakteristika 1</label>
+                <input
+                  type="text"
+                  placeholder="Naslov"
+                  className="w-full px-2.5 py-1 bg-gray-50 border border-gray-200 rounded text-xs font-bold"
+                  value={siteSettings.seo_article_metric1_title || "Maksimalna Fleksibilnost"}
+                  onChange={e => setSiteSettings({ ...siteSettings, seo_article_metric1_title: e.target.value })}
+                />
+                <textarea
+                  rows={2}
+                  placeholder="Opis"
+                  className="w-full px-2.5 py-1 bg-gray-50 border border-gray-200 rounded text-xs"
+                  value={siteSettings.seo_article_metric1_desc || "Sami birate kada radite, koliko dugo ostajete na terenu i kada pravite pauzu."}
+                  onChange={e => setSiteSettings({ ...siteSettings, seo_article_metric1_desc: e.target.value })}
+                />
+              </div>
+
+              <div className="p-3 bg-white border border-gray-200 rounded-xl space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">Karakteristika 2</label>
+                <input
+                  type="text"
+                  placeholder="Naslov"
+                  className="w-full px-2.5 py-1 bg-gray-50 border border-gray-200 rounded text-xs font-bold"
+                  value={siteSettings.seo_article_metric2_title || "Odlična i Brza Zarada"}
+                  onChange={e => setSiteSettings({ ...siteSettings, seo_article_metric2_title: e.target.value })}
+                />
+                <textarea
+                  rows={2}
+                  placeholder="Opis"
+                  className="w-full px-2.5 py-1 bg-gray-50 border border-gray-200 rounded text-xs"
+                  value={siteSettings.seo_article_metric2_desc || "Mogućnost ostvarivanja zarade i preko 150.000 RSD mesečno uz redovne isplate na svakih 15 dana."}
+                  onChange={e => setSiteSettings({ ...siteSettings, seo_article_metric2_desc: e.target.value })}
+                />
+              </div>
+
+              <div className="p-3 bg-white border border-gray-200 rounded-xl space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase">Karakteristika 3</label>
+                <input
+                  type="text"
+                  placeholder="Naslov"
+                  className="w-full px-2.5 py-1 bg-gray-50 border border-gray-200 rounded text-xs font-bold"
+                  value={siteSettings.seo_article_metric3_title || "Puna Podrška Mentora"}
+                  onChange={e => setSiteSettings({ ...siteSettings, seo_article_metric3_title: e.target.value })}
+                />
+                <textarea
+                  rows={2}
+                  placeholder="Opis"
+                  className="w-full px-2.5 py-1 bg-gray-50 border border-gray-200 rounded text-xs"
+                  value={siteSettings.seo_article_metric3_desc || "Deliverix platforma vam pruža besplatnu obuku i savetovanje kako biste odmah krenuli uspešno."}
+                  onChange={e => setSiteSettings({ ...siteSettings, seo_article_metric3_desc: e.target.value })}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* SEKCIJA 7: DONJI CTA, KONTAKT & NAPOMENA */}
         <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
           <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
@@ -1670,6 +2025,172 @@ export function HomepageSectionsTabForm({
             />
           </div>
         </div>
+
+        {/* SEKCIJA 6: POZIVI NA AKCIJU (CTA DUGMAD) & PLATFORME */}
+        <div className="space-y-6 p-4 sm:p-6 bg-sky-50/25 rounded-2xl border border-sky-100">
+          <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-sky-100/50 pb-2">
+            <Sparkles className="w-4 h-4" /> Uređivanje CTA Dugmadi i Tabova Platformi
+          </h4>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* CTA Dugmad Grupa */}
+            <div className="space-y-4">
+              <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">Tekstovi na dugmadima (CTA)</h5>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase">Glavni Hero CTA (Započni prijavu)</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+                  value={siteSettings.button_hero_cta || ''}
+                  placeholder="npr. Započni prijavu odmah"
+                  onChange={e => setSiteSettings({ ...siteSettings, button_hero_cta: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase">Sporedni Hero CTA (Kako funkcioniše)</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+                  value={siteSettings.button_hero_secondary_cta || ''}
+                  placeholder="npr. Kako funkcioniše?"
+                  onChange={e => setSiteSettings({ ...siteSettings, button_hero_secondary_cta: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase">Dugme u zaglavlju (Prijavi se)</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+                  value={siteSettings.button_header_apply || ''}
+                  placeholder="npr. Prijavi se"
+                  onChange={e => setSiteSettings({ ...siteSettings, button_header_apply: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase">Dugme za praćenje prijave (Header)</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+                  value={siteSettings.button_header_portal || ''}
+                  placeholder="npr. Prati prijavu"
+                  onChange={e => setSiteSettings({ ...siteSettings, button_header_portal: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase">CTA u sekciji Uslovi</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+                  value={siteSettings.button_requirements_cta || ''}
+                  placeholder="npr. Započni besplatnu prijavu"
+                  onChange={e => setSiteSettings({ ...siteSettings, button_requirements_cta: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase">CTA u sekciji Blog (Poseti naš blog)</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+                  value={siteSettings.button_blog_cta || ''}
+                  placeholder="npr. Poseti naš blog"
+                  onChange={e => setSiteSettings({ ...siteSettings, button_blog_cta: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-gray-500 uppercase">CTA u podnožju (Footer)</label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold"
+                  value={siteSettings.button_footer_cta || ''}
+                  placeholder="npr. Započni prijavu odmah (Traje 1 min)"
+                  onChange={e => setSiteSettings({ ...siteSettings, button_footer_cta: e.target.value })}
+                />
+              </div>
+            </div>
+
+            {/* Platforme Tabovi Grupa */}
+            <div className="space-y-4">
+              <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider text-sky-700">Wolt & Glovo Tabovi na vrhu</h5>
+
+              <div className="p-3 bg-white/60 border border-gray-150 rounded-xl space-y-3">
+                <span className="text-[10px] font-extrabold text-sky-600 uppercase">Wolt podešavanja</span>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Naslov platforme</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold"
+                    value={siteSettings.button_wolt_title || ''}
+                    placeholder="Wolt"
+                    onChange={e => setSiteSettings({ ...siteSettings, button_wolt_title: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Oznaka / Značka</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold"
+                    value={siteSettings.button_wolt_badge || ''}
+                    placeholder="Aktivno / Prijavi se"
+                    onChange={e => setSiteSettings({ ...siteSettings, button_wolt_badge: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Opis podnaslov</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs"
+                    value={siteSettings.button_wolt_desc || ''}
+                    placeholder="Isplate na 15 dana. Fleksibilno vreme."
+                    onChange={e => setSiteSettings({ ...siteSettings, button_wolt_desc: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="p-3 bg-white/60 border border-gray-150 rounded-xl space-y-3">
+                <span className="text-[10px] font-extrabold text-amber-600 uppercase">Glovo podešavanja</span>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Naslov platforme</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold"
+                    value={siteSettings.button_glovo_title || ''}
+                    placeholder="Glovo"
+                    onChange={e => setSiteSettings({ ...siteSettings, button_glovo_title: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Oznaka / Značka</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs font-semibold"
+                    value={siteSettings.button_glovo_badge || ''}
+                    placeholder="Uskoro / Rezerviši mesto"
+                    onChange={e => setSiteSettings({ ...siteSettings, button_glovo_badge: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Opis podnaslov</label>
+                  <input
+                    type="text"
+                    className="w-full px-3 py-1.5 bg-white border border-gray-200 rounded-xl text-xs"
+                    value={siteSettings.button_glovo_desc || ''}
+                    placeholder="Uskoro krećemo! Prijavi se i osiguraj mesto."
+                    onChange={e => setSiteSettings({ ...siteSettings, button_glovo_desc: e.target.value })}
+                  />
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
 
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
@@ -1823,6 +2344,27 @@ export function FaqTabForm({
           >
             <Plus className="w-3.5 h-3.5" /> Dodaj FAQ
           </button>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-gray-100">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-gray-500 uppercase">Naslov FAQ Sekcije</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold"
+              value={siteSettings.faq_title || 'Česta Pitanja (FAQ)'}
+              onChange={e => setSiteSettings({ ...siteSettings, faq_title: e.target.value })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-gray-500 uppercase">Podnaslov FAQ Sekcije</label>
+            <input
+              type="text"
+              className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm"
+              value={siteSettings.faq_subtitle || 'Sve što te interesuje na jednom mestu, jasno i transparentno'}
+              onChange={e => setSiteSettings({ ...siteSettings, faq_subtitle: e.target.value })}
+            />
+          </div>
         </div>
 
         <div className="space-y-4">
