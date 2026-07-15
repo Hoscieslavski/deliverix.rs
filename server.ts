@@ -1242,14 +1242,6 @@ app.get('/api/marketing/seo', async (req, res) => {
           available: false
         }
       ],
-      target_audience_title: "Za koga je ovaj posao?",
-      target_audience_desc: "Dostava hrane i pošiljaka je idealna za sve koji cene slobodu i samostalnost u radu. Naš stručni tim ti pruža sigurnost, besplatne savete i brze odgovore u svakom trenutku.",
-      target_audience_items: [
-        "Osobe koje žele odličnu zaradu i stabilan prihod uz potpunu kontrolu nad svojim vremenom",
-        "Studente koji žele da rade samo vikendom ili par sati dnevno",
-        "Zaposlene koji traže dodatni izvor prihoda nakon radnog vremena",
-        "Osobe bez ikakvog prethodnog iskustva u dostavi ili prodaji"
-      ],
       why_apply_title: "Zašto se prijaviti preko nas?",
       why_apply_desc: "Kao nezavisna platforma za podršku, pomažemo ti da pronađeš partnersku agenciju koja nudi najbolje uslove za tvoj profil. To za tebe znači:",
       why_apply_items: [
@@ -1302,7 +1294,82 @@ app.get('/api/marketing/seo', async (req, res) => {
       ],
       footer_cta_title: "Započni svoju dostavljačku karijeru danas",
       footer_cta_desc: "Nemoj odlagati priliku za odličnu zaradu i potpunu slobodu. Registracija te ništa ne košta i ne obavezuje te ni na šta. Pomažemo ti oko celog procesa besplatno.",
-      footer_disclaimer: "Napomena: Mi nismo deo ni jedne dostavne mreže (Wolt, Glovo, itd.) već nezavisni posrednik za podršku, informacije i brzu regrutaciju u Srbiji. Sve informacije su neutralne i tačne."
+      footer_disclaimer: "Napomena: Mi nismo deo ni jedne dostavne mreže (Wolt, Glovo, itd.) već nezavisni posrednik za podršku, informacije i brzu regrutaciju u Srbiji. Sve informacije su neutralne i tačne.",
+
+      // Kome je namenjen Deliverix? (Target Audience)
+      target_audience_title: "Kome je namenjen Deliverix?",
+      target_audience_desc: "Deliverix je namenjen svima koji žele da rade kao dostavljači ili traže fleksibilan posao sa mogućnošću dobre zarade. Pomažemo kandidatima različitih profila da brzo započnu sa radom:",
+      target_audience_cards: [
+        {
+          title: "Studentima",
+          desc: "Tražiš džeparac ili stabilan prihod uz predavanja? Radi fleksibilno, vikendima ili samo nekoliko sati tokom radne nedelje.",
+          icon: "Sparkles"
+        },
+        {
+          title: "Zaposlenima za dodatni prihod",
+          desc: "Imaš stalan posao ali želiš dodatnu zaradu u slobodno vreme? Sam biraš kada se uključuješ na platformu.",
+          icon: "Clock"
+        },
+        {
+          title: "Nezaposlenima i aktivnim tražiocima",
+          desc: "Tražiš posao sa punim radnim vremenom i visokom zaradom? Dostava pruža stabilan i odmah dostupan izvor prihoda.",
+          icon: "ShieldCheck"
+        },
+        {
+          title: "Ljudima bez ikakvog iskustva",
+          desc: "Nikada nisi radio dostavu? Ne brini, naš mentorski tim ti pruža potpuno besplatnu obuku i vodi te korak po korak.",
+          icon: "HeartHandshake"
+        },
+        {
+          title: "Vozačima automobila",
+          desc: "Iskoristi svoj automobil za rad. Savršeno rešenje za sve vremenske prilike i veće dostavne distance.",
+          icon: "Car"
+        },
+        {
+          title: "Vozačima skutera i motora",
+          desc: "Najbrži način kretanja kroz gradske gužve u Beogradu i Novom Sadu. Visoka efikasnost i veći broj dostava po satu.",
+          icon: "ScooterIcon"
+        },
+        {
+          title: "Biciklistima i e-bike vozačima",
+          desc: "Najzdraviji i najjeftiniji način za obavljanje dostave. Pomažemo ti i oko povoljnog najma električnih bicikala.",
+          icon: "Bike"
+        },
+        {
+          title: "Svima koji žele potpunu slobodu",
+          desc: "Nemaš fiksno radno vreme niti šefa. Ti diktiraš tempo rada, kada odmaraš i koliko zarađuješ.",
+          icon: "Compass"
+        }
+      ],
+
+      // Kako funkcioniše proces
+      steps_intro: "Prijava preko Deliverix platforme je jednostavna i traje svega nekoliko minuta. Naš cilj je da ti olakšamo početak rada tako što te povezujemo sa odgovarajućom partnerskom agencijom i pružamo podršku tokom cele procedure.",
+
+      // SEO Karijerni vodič sekcija
+      seo_article_enabled: true,
+      seo_article_badge: "Karijerni vodič i saveti",
+      seo_article_title: "Zašto kandidati biraju posao dostavljača u Srbiji?",
+      seo_article_p1: "Tržište dostave hrane i pošiljaka u Srbiji doživljava ogroman rast u poslednjih nekoliko godina. Sve veći broj ljudi traži fleksibilan posao koji im omogućava da sami diktiraju svoje radno vreme, usklađuju privatne obaveze i ostvaruju natprosečne prihode. Upravo zbog toga, posao dostavljača postao je jedan od najtraženijih i najpopularnijih poslova na našim prostorima.",
+      seo_article_p2: "Bilo da vas zanima rad kao dostavljač Wolt platforme ili želite da postanete dostavljač Glovo flote, Deliverix platforma je tu da vam maksimalno pojednostavi i ubrza ceo proces zapošljavanja. Naš cilj je da eliminišemo administrativne prepreke i povežemo vas sa partnerima koji nude najbolje finansijske uslove, najniže provizije i redovne dvonedeljne isplate na račun.",
+      seo_article_p3: "Jedna od najvećih prednosti jeste sloboda izbora prevoznog sredstva. Ukoliko preferirate dinamičnu vožnju kroz grad bez troškova goriva, posao sa biciklom ili električnim biciklom predstavlja izuzetan izbor. Sa druge strane, radnici koji žele maksimalan komfor tokom cele godine i rad bez obzira na kišu, sneg ili visoke temperature biraju posao sa automobilom.",
+      seo_article_p4: "Takođe, posao kurira je izuzetno popularan kao posao za studente koji traže način da zarade džeparac tokom raspusta ili vikendima. Fleksibilna priroda aplikacije omogućava vam da radite tačno onoliko koliko želite – bez fiksnog radnog vremena, pritiska nadređenih ili obaveznih smena. Vi ste sami svoj šef.",
+      seo_article_p5: "Pored studenata, many zaposleni koriste dostavu kao izvor za dodatnu zaradu nakon redovnih radnih sati na primarnom poslu. Samo 2-3 sata dnevno može vam doneti značajnu dopunu kućnog budžeta. Isplate se vrše redovno, a transparentan sistem unutar aplikacije omogućava vam da u svakom trenutku pratite svoju zaradu, ostvarene bonuse i bakšiš koji vam korisnici ostavljaju.",
+      seo_article_p6: "Deliverix Srbija ne naplaćuje apsolutno ništa kandidatima. Naša misija je da pružimo besplatnu podršku, stručne savete i pomognemo vam da odaberete najbolju opciju za vaš profil. Od prve prijave na sajtu, preko prikupljanja dokumentacije, pa sve do preuzimanja opreme i prve uspešne dostave – naš mentorski tim je tu da vam pruži sigurnost i odgovori na sve nedoumice.",
+      seo_article_metric1_title: "Maksimalna Fleksibilnost",
+      seo_article_metric1_desc: "Sami birate kada radite, koliko dugo ostajete na terenu i kada pravite pauzu.",
+      seo_article_metric2_title: "Odlična i Brza Zarada",
+      seo_article_metric2_desc: "Mogućnost ostvarivanja zarade i preko 150.000 RSD mesečno uz redovne isplate na svakih 15 dana.",
+      seo_article_metric3_title: "Puna Podrška Mentora",
+      seo_article_metric3_desc: "Deliverix platforma vam pruža besplatnu obuku i savetovanje kako biste odmah krenuli uspešno.",
+
+      // FAQ
+      faq_title: "Česta Pitanja (FAQ)",
+      faq_subtitle: "Sve što te interesuje na jednom mestu, jasno i transparentno",
+
+      // Footer & Company Info
+      footer_company_name: "Deliverix Srbija",
+      footer_description: "Besplatne konsultacije i posredovanje pri zapošljavanju dostavljača.",
+      footer_legal_disclaimer: "Izjava o odgovornosti: Mi nismo zvanični predstavnici niti deo kompanija Wolt, Glovo ili drugih dostavnih platformi. Mi smo nezavisni informativni portal koji pomaže kandidatima da se lakše povežu sa registrovanim partnerskim agencijama za dostavu u Republici Srbiji."
     };
 
     const docRef = doc(db, 'site_configs', 'settings');
@@ -1874,6 +1941,13 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     const canonicalUrl = `https://deliverix.rs${urlPath === '/' ? '' : urlPath}`;
     const canonicalTag = `<link rel="canonical" href="${canonicalUrl}" />`;
     html = html.replace('</head>', `${canonicalTag}\n</head>`);
+
+    // 3.5 Ubacivanje inicijalnih podešavanja za React hidrataciju i eliminaciju Content Flasha
+    if (siteSettingsData) {
+      const escapedSettings = JSON.stringify(siteSettingsData).replace(/</g, '\\u003c');
+      const settingsScript = `<script>window.__INITIAL_SITE_SETTINGS__ = ${escapedSettings};</script>`;
+      html = html.replace('</head>', `${settingsScript}\n</head>`);
+    }
 
     // 4. Zamena standardnih meta tagova
     html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapedTitle}</title>`);
