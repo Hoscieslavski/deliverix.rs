@@ -16,7 +16,7 @@ export const DEFAULT_SITE_SETTINGS = {
     { text: "Beograd i Novi Sad" }
   ],
   hero_right_mode: "single", // 'single' or 'slider'
-  hero_image_url: "/src/assets/images/delivery_courier_hero_1783427588712.webp",
+  hero_image_url: "/assets/images/delivery_courier_hero_1783427588712.webp",
   hero_image_alt: "Dostavljač hrane - Wolt Glovo Srbija",
   hero_wolt_bullet_1: "Fleksibilno radno vreme",
   hero_glovo_bullet_1: "Radno vreme na zakazivanje",
@@ -26,7 +26,7 @@ export const DEFAULT_SITE_SETTINGS = {
   hero_slider_upper_text: "Započni posao lakše",
   hero_slider_slides: [
     {
-      image: "/src/assets/images/delivery_courier_hero_1783427588712.webp",
+      image: "/assets/images/delivery_courier_hero_1783427588712.webp",
       badge_title: "Brzi Start",
       badge_text: "Aktivacija naloga i oprema u roku od 24h",
       seo_alt: "Dostavljač hrane na skuteru u Beogradu"
@@ -148,12 +148,9 @@ export const DEFAULT_SITE_SETTINGS = {
   blog_enabled: true,
   announcement_banner: "",
   
-  logo_style: "flow",
-  logo_url: "",
+  logo_style: "custom",
+  logo_url: "/assets/images/logo_custom.png",
   logo_blend_mode: "normal",
-  footer_logo_style: "flow",
-  footer_logo_url: "",
-  footer_logo_blend_mode: "normal",
   ga_measurement_id: "G-XXXXXXXXXX",
 
   // Kome je namenjen Deliverix? (Target Audience)

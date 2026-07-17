@@ -63,12 +63,27 @@ export default function App() {
     return 'landing';
   });
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  
+  // Pomoćna funkcija za dobijanje keširanih podešavanja (most recent safe CMS state)
+  const getCachedSettings = () => {
+    try {
+      const cached = localStorage.getItem('deliverix_cached_site_settings');
+      if (cached) {
+        return JSON.parse(cached);
+      }
+    } catch (e) {
+      console.error('Greška pri čitanju keširanih podešavanja:', e);
+    }
+    return null;
+  };
+
   const [siteSettings, setSiteSettings] = useState<any>(() => {
     const initial = (window as any).__INITIAL_SITE_SETTINGS__;
     if (initial) {
       return { ...DEFAULT_SITE_SETTINGS, ...initial };
     }
-    return DEFAULT_SITE_SETTINGS;
+    // Return null so we render the skeleton on first paint when __INITIAL_SITE_SETTINGS__ is not present
+    return null;
   });
   const [cookieConsent, setCookieConsent] = useState<'accepted' | 'rejected' | null>(() => {
     const saved = localStorage.getItem('deliverix_cookie_consent');
@@ -91,37 +106,19 @@ export default function App() {
   const [logoStyle, setLogoStyle] = useState<'flow' | 'neon' | 'urban' | 'custom'>(() => {
     const initial = (window as any).__INITIAL_SITE_SETTINGS__;
     if (initial?.logo_style) return initial.logo_style;
-    return (localStorage.getItem('deliverix_logo_style') as any) || 'flow';
+    return 'custom';
   });
 
   const [customLogoUrl, setCustomLogoUrl] = useState<string>(() => {
     const initial = (window as any).__INITIAL_SITE_SETTINGS__;
     if (initial?.logo_url !== undefined) return initial.logo_url;
-    return localStorage.getItem('deliverix_custom_logo') || '';
+    return '/assets/images/logo_custom.png';
   });
 
   const [logoBlendMode, setLogoBlendMode] = useState<'normal' | 'multiply'>(() => {
     const initial = (window as any).__INITIAL_SITE_SETTINGS__;
     if (initial?.logo_blend_mode) return initial.logo_blend_mode;
-    return (localStorage.getItem('deliverix_logo_blend_mode') as any) || 'normal';
-  });
-
-  const [footerLogoStyle, setFooterLogoStyle] = useState<'flow' | 'neon' | 'urban' | 'custom'>(() => {
-    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
-    if (initial?.footer_logo_style) return initial.footer_logo_style;
-    return (localStorage.getItem('deliverix_footer_logo_style') as any) || 'flow';
-  });
-
-  const [footerCustomLogoUrl, setFooterCustomLogoUrl] = useState<string>(() => {
-    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
-    if (initial?.footer_logo_url !== undefined) return initial.footer_logo_url;
-    return localStorage.getItem('deliverix_footer_custom_logo') || '';
-  });
-
-  const [footerLogoBlendMode, setFooterLogoBlendMode] = useState<'normal' | 'multiply'>(() => {
-    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
-    if (initial?.footer_logo_blend_mode) return initial.footer_logo_blend_mode;
-    return (localStorage.getItem('deliverix_footer_logo_blend_mode') as any) || 'normal';
+    return 'normal';
   });
 
   const [isInitialLoading, setIsInitialLoading] = useState(false);
@@ -144,15 +141,6 @@ export default function App() {
           }
           if (data.settings.logo_blend_mode) {
             setLogoBlendMode(data.settings.logo_blend_mode);
-          }
-          if (data.settings.footer_logo_style) {
-            setFooterLogoStyle(data.settings.footer_logo_style);
-          }
-          if (data.settings.footer_logo_url !== undefined) {
-            setFooterCustomLogoUrl(data.settings.footer_logo_url);
-          }
-          if (data.settings.footer_logo_blend_mode) {
-            setFooterLogoBlendMode(data.settings.footer_logo_blend_mode);
           }
 
           // Dinamičko učitavanje Google Analytics-a / Google Tag Manager-a na osnovu konfigurisanog ID-ja (Odloženo - Faza 5)
@@ -238,6 +226,11 @@ export default function App() {
           if (data.success && data.settings) {
             setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
             setSiteSettingsLoaded(true);
+            try {
+              localStorage.setItem('deliverix_cached_site_settings', JSON.stringify(data.settings));
+            } catch (e) {
+              console.error('Greška pri keširanju podešavanja:', e);
+            }
             if (data.settings.logo_style) {
               setLogoStyle(data.settings.logo_style);
             }
@@ -246,15 +239,6 @@ export default function App() {
             }
             if (data.settings.logo_blend_mode) {
               setLogoBlendMode(data.settings.logo_blend_mode);
-            }
-            if (data.settings.footer_logo_style) {
-              setFooterLogoStyle(data.settings.footer_logo_style);
-            }
-            if (data.settings.footer_logo_url !== undefined) {
-              setFooterCustomLogoUrl(data.settings.footer_logo_url);
-            }
-            if (data.settings.footer_logo_blend_mode) {
-              setFooterLogoBlendMode(data.settings.footer_logo_blend_mode);
             }
           }
         })
@@ -817,13 +801,6 @@ export default function App() {
                       setLogoBlendMode(blendMode);
                     }
                   }}
-                  onFooterLogoChange={(style, url, blendMode) => {
-                    setFooterLogoStyle(style);
-                    setFooterCustomLogoUrl(url);
-                    if (blendMode) {
-                      setFooterLogoBlendMode(blendMode);
-                    }
-                  }}
                 />
               </motion.div>
             ) : currentView === 'privacy' ? (
@@ -956,7 +933,7 @@ export default function App() {
             
             {/* Sredina: Istaknuti logo u srazmernim dimenzijama */}
             <div className="flex justify-center shrink-0">
-              <DeliverixLogo style={footerLogoStyle} customLogoUrl={footerCustomLogoUrl} logoBlendMode={footerLogoBlendMode} className="w-32 h-32 md:w-36 md:h-36" />
+              <DeliverixLogo style={logoStyle} customLogoUrl={customLogoUrl} logoBlendMode={logoBlendMode} className="w-32 h-32 md:w-36 md:h-36" />
             </div>
             
             {/* Desna strana: Navigacioni linkovi */}

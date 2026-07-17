@@ -99,6 +99,21 @@ app.use('/uploads', express.static(uploadsDir, {
   }
 }));
 
+// Specijalno preusmeravanje / fallback za logotipe kako bi se sprečio 404 (stale first paint / missing assets)
+app.get('/assets/images/logo_custom.png', (req, res) => {
+  const possiblePaths = [
+    path.join(process.cwd(), 'dist', 'assets', 'images', 'logo_custom.png'),
+    path.join(process.cwd(), 'public', 'assets', 'images', 'logo_custom.png'),
+    path.join(process.cwd(), 'public', 'logo.png')
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      return res.sendFile(p);
+    }
+  }
+  return res.status(404).send('Not Found');
+});
+
 // Admin lozinke za različite uloge (fallback-ovi)
 const ADMIN_PASSCODE = process.env.ADMIN_PASSCODE || 'deliverix2026'; // Promenjeno na deliverix2026 (stara: wolt2026)
 const ADMIN_PASSCODE_CANDIDATES = process.env.ADMIN_PASSCODE_CANDIDATES || 'admin2026'; // Samo upravljanje kandidatima
@@ -1129,16 +1144,13 @@ app.get('/api/marketing/seo', async (req, res) => {
       homepage_subtitle: "Odlična zarada, fleksibilno vreme i podrška mentora. Prijavi se za samo 2 minuta i kreni sa radom!",
       announcement_banner: "Slobodna mesta za nove dostavljače u Beogradu i Novom Sadu! Prijavi se već danas.",
       support_phone: "+381 60 123 4567",
-      logo_style: "flow",
-      logo_url: "",
+      logo_style: "custom",
+      logo_url: "/assets/images/logo_custom.png",
       logo_blend_mode: "normal",
-      footer_logo_style: "flow",
-      footer_logo_url: "",
-      footer_logo_blend_mode: "normal",
       hero_title: "Dostava koja se prilagođava tvojim pravilima",
       hero_platform_title: "Wolt i Glovo platforme u Srbiji",
       hero_right_mode: "image",
-      hero_image_url: "/src/assets/images/delivery_courier_hero_1783427588712.jpg",
+      hero_image_url: "/assets/images/delivery_courier_hero_1783427588712.jpg",
       hero_badge_title: "Dostupno odmah",
       hero_badge_text: "Pomoć oko zaposlenja je 100% besplatna!",
       hero_image_alt: "Dostavljač hrane - Wolt Glovo Srbija",
@@ -1399,10 +1411,8 @@ app.get('/api/marketing/seo-public', async (req, res) => {
       og_image: "/public/og-image.jpg",
       canonical: "https://deliverix.rs",
       ga_measurement_id: "G-XXXXXXXXXX",
-      logo_style: "flow",
-      logo_blend_mode: "normal",
-      footer_logo_style: "flow",
-      footer_logo_blend_mode: "normal"
+      logo_style: "custom",
+      logo_blend_mode: "normal"
     };
 
     if (docSnap.exists()) {
@@ -1415,9 +1425,7 @@ app.get('/api/marketing/seo-public', async (req, res) => {
         canonical: data.canonical || baseSettings.canonical,
         ga_measurement_id: data.ga_measurement_id || baseSettings.ga_measurement_id,
         logo_style: data.logo_style || baseSettings.logo_style,
-        logo_blend_mode: data.logo_blend_mode || baseSettings.logo_blend_mode,
-        footer_logo_style: data.footer_logo_style || baseSettings.footer_logo_style,
-        footer_logo_blend_mode: data.footer_logo_blend_mode || baseSettings.footer_logo_blend_mode
+        logo_blend_mode: data.logo_blend_mode || baseSettings.logo_blend_mode
       };
       
       const responsePayload = { success: true, settings: filtered };
@@ -1643,46 +1651,44 @@ app.post('/api/marketing/upload-logo', marketingAuthMiddleware, async (req, res)
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
-    // Limitiranje veličine na 600KB radi skladištenja u Firestore bazu
+    // Limitiranje veličine na 600KB
     if (buffer.length > 600 * 1024) {
       return res.status(400).json({ error: 'Slika je prevelika. Maksimalna veličina logotipa je 600KB.' });
     }
 
-    let ext = 'png';
-    if (mimeType.includes('jpeg') || mimeType.includes('jpg')) {
-      ext = 'jpg';
-    } else if (mimeType.includes('svg')) {
-      ext = 'svg';
-    } else if (mimeType.includes('webp')) {
-      ext = 'webp';
-    } else if (mimeType.includes('gif')) {
-      ext = 'gif';
-    }
+    const filename = 'logo_custom.png';
+    const stableUrl = '/assets/images/logo_custom.png';
 
-    // Uklanjanje starih logotipa kako se ne bi gomilali
-    const baseFileName = type === 'footer' ? 'custom_footer_logo' : 'custom_logo';
-    if (fs.existsSync(uploadsDir)) {
-      const files = fs.readdirSync(uploadsDir);
-      for (const file of files) {
-        if (file.startsWith(baseFileName)) {
-          try {
-            fs.unlinkSync(path.join(uploadsDir, file));
-          } catch (err) {
-            console.error('Greška pri brisanju starog logotipa:', err);
-          }
-        }
+    // 1. Snimanje u public folder (kako bi preživelo build/deploy/commit)
+    const publicImgDir = path.join(process.cwd(), 'public', 'assets', 'images');
+    if (!fs.existsSync(publicImgDir)) {
+      fs.mkdirSync(publicImgDir, { recursive: true });
+    }
+    const publicFilePath = path.join(publicImgDir, filename);
+    fs.writeFileSync(publicFilePath, buffer);
+
+    // 2. Snimanje u dist folder (kako bi bilo instant vidljivo na trenutno pokrenutom serveru)
+    const distImgDir = path.join(process.cwd(), 'dist', 'assets', 'images');
+    if (fs.existsSync(path.join(process.cwd(), 'dist'))) {
+      if (!fs.existsSync(distImgDir)) {
+        fs.mkdirSync(distImgDir, { recursive: true });
       }
+      const distFilePath = path.join(distImgDir, filename);
+      fs.writeFileSync(distFilePath, buffer);
     }
 
-    const fileName = `${baseFileName}.${ext}`;
-    const filePath = path.join(uploadsDir, fileName);
-    fs.writeFileSync(filePath, buffer);
+    // 3. Ažuriranje Firestore-a direktno na stabilnu putanju kako bi se sprečile greške
+    const settingsRef = doc(db, 'site_configs', 'settings');
+    const updateObj: any = {
+      logo_url: '/assets/images/logo_custom.png',
+      logo_style: 'custom'
+    };
+    await updateDoc(settingsRef, updateObj);
 
-    // Vraćamo base64 string direktno kako bi se trajno sačuvao u Firestore bazi i preživeo restarte kontejnera
     const currentPasscode = req.headers['x-admin-passcode'] as string;
-    await addAuditLog(currentPasscode, 'Upload logotipa', `Otpremljen je novi ${type === 'footer' ? 'footer logo' : 'zaglavlje logo'}.`);
+    await addAuditLog(currentPasscode, 'Upload logotipa', `Otpremljen je novi logotip i sačuvan na stabilnoj putanji.`);
 
-    res.json({ success: true, logoUrl: logoData });
+    res.json({ success: true, logoUrl: stableUrl });
   } catch (error) {
     console.error('Greška pri uploadu logotipa:', error);
     res.status(500).json({ error: 'Greška pri čuvanju logotipa na serveru.' });
@@ -2030,6 +2036,10 @@ async function startServer() {
       }
     }));
     app.get('*', async (req, res) => {
+      const ext = path.extname(req.path).toLowerCase();
+      if (['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.css', '.js', '.ico', '.woff', '.woff2'].includes(ext)) {
+        return res.status(404).send('Not Found');
+      }
       await serveIndexWithSEO(req, res, path.join(distPath, 'index.html'));
     });
   }

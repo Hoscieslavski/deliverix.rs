@@ -12,9 +12,7 @@ interface SeoTabFormProps {
   setSiteSettings: React.Dispatch<React.SetStateAction<any>>;
   onSave: (e: React.FormEvent) => void;
   isUploadingLogo: boolean;
-  isUploadingFooterLogo: boolean;
   handleLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleFooterLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export function SeoTabForm({
@@ -22,9 +20,7 @@ export function SeoTabForm({
   setSiteSettings,
   onSave,
   isUploadingLogo,
-  isUploadingFooterLogo,
-  handleLogoUpload,
-  handleFooterLogoUpload
+  handleLogoUpload
 }: SeoTabFormProps) {
   return (
     <div className="bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 shadow-sm w-full" id="seo-tab-form-root">
@@ -103,7 +99,7 @@ export function SeoTabForm({
           
           {/* HEADER LOGO */}
           <div className="space-y-3">
-            <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">1. Logotip u Zaglavlju (Header)</h5>
+            <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">Logotip sajta (Branding)</h5>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
               <div className="shrink-0 flex flex-col items-center gap-1.5">
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider font-sans">Pregled</span>
@@ -111,8 +107,8 @@ export function SeoTabForm({
                   className="w-16 h-16 rounded-xl shadow-xs border border-gray-150 flex items-center justify-center p-2.5 overflow-hidden bg-white"
                 >
                   <DeliverixLogo 
-                    style={(siteSettings.logo_style as any) || 'flow'} 
-                    customLogoUrl={siteSettings.logo_url} 
+                    style="custom" 
+                    customLogoUrl={siteSettings.logo_url || "/assets/images/logo_custom.png"} 
                     logoBlendMode={(siteSettings.logo_blend_mode as any) || 'normal'}
                     className="w-12 h-12" 
                   />
@@ -121,108 +117,39 @@ export function SeoTabForm({
 
               <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 uppercase font-sans">Izaberite Stil Logotipa</label>
-                  <select
-                    className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-sky-500 focus:outline-none font-semibold cursor-pointer"
-                    value={siteSettings.logo_style || 'flow'}
-                    onChange={e => setSiteSettings({ ...siteSettings, logo_style: e.target.value })}
-                  >
-                    <option value="flow">Aero-Speed (flow)</option>
-                    <option value="neon">Cyber-Neon (neon)</option>
-                    <option value="urban">Urban-Minimal (urban)</option>
-                    <option value="custom">Sopstvena slika (custom URL)</option>
-                  </select>
+                  <label className="text-xs font-bold text-gray-500 uppercase font-sans">Otpremite Vaš Logotip</label>
+                  <div className="flex items-center gap-2">
+                    <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-sky-500 hover:bg-sky-50/20 transition group">
+                      <div className="flex items-center gap-2">
+                        {isUploadingLogo ? (
+                          <Loader2 className="w-4 h-4 text-sky-500 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4 text-gray-400 group-hover:text-sky-500 transition" />
+                        )}
+                        <span className="text-xs font-bold text-gray-600 group-hover:text-sky-600 transition">
+                          {isUploadingLogo ? 'Otpremanje...' : 'Izaberite sliku logotipa'}
+                        </span>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleLogoUpload}
+                        disabled={isUploadingLogo}
+                      />
+                    </label>
+                  </div>
                 </div>
 
-                {siteSettings.logo_style === 'custom' && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase font-sans">Otpremite Vaš Logotip</label>
-                    <div className="flex items-center gap-2">
-                      <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-sky-500 hover:bg-sky-50/20 transition group">
-                        <div className="flex items-center gap-2">
-                          {isUploadingLogo ? (
-                            <Loader2 className="w-4 h-4 text-sky-500 animate-spin" />
-                          ) : (
-                            <Upload className="w-4 h-4 text-gray-400 group-hover:text-sky-500 transition" />
-                          )}
-                          <span className="text-xs font-bold text-gray-600 group-hover:text-sky-600 transition">
-                            {isUploadingLogo ? 'Otpremanje...' : 'Izaberite sliku logotipa'}
-                          </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleLogoUpload}
-                          disabled={isUploadingLogo}
-                        />
-                      </label>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* FOOTER LOGO */}
-          <div className="space-y-3 pt-4 border-t border-gray-100/60">
-            <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">2. Logotip u Podnožju (Footer Logo)</h5>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
-              <div className="shrink-0 flex flex-col items-center gap-1.5">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider font-sans">Pregled</span>
-                <div 
-                  className="w-16 h-16 rounded-xl shadow-xs border border-gray-150 flex items-center justify-center p-2.5 overflow-hidden bg-white"
-                >
-                  <DeliverixLogo 
-                    style={(siteSettings.footer_logo_style as any) || 'flow'} 
-                    customLogoUrl={siteSettings.footer_logo_url} 
-                    logoBlendMode={(siteSettings.footer_logo_blend_mode as any) || 'normal'}
-                    className="w-12 h-12" 
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase font-sans">Putanja fajla</label>
+                  <input
+                    type="text"
+                    disabled
+                    value="/assets/images/logo_custom.png"
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-400 font-mono font-semibold"
                   />
                 </div>
-              </div>
-
-              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-gray-500 uppercase font-sans">Izaberite Stil Logotipa za Podnožje</label>
-                  <select
-                    className="w-full px-3 py-2.5 bg-white border border-gray-200 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-sky-500 focus:outline-none font-semibold cursor-pointer"
-                    value={siteSettings.footer_logo_style || 'flow'}
-                    onChange={e => setSiteSettings({ ...siteSettings, footer_logo_style: e.target.value })}
-                  >
-                    <option value="flow">Aero-Speed (flow)</option>
-                    <option value="neon">Cyber-Neon (neon)</option>
-                    <option value="urban">Urban-Minimal (urban)</option>
-                    <option value="custom">Sopstvena slika (custom URL)</option>
-                  </select>
-                </div>
-
-                {siteSettings.footer_logo_style === 'custom' && (
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-bold text-gray-500 uppercase font-sans">Otpremite Logotip za Podnožje</label>
-                    <div className="flex items-center gap-2">
-                      <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-sky-500 hover:bg-sky-50/20 transition group">
-                        <div className="flex items-center gap-2">
-                          {isUploadingFooterLogo ? (
-                            <Loader2 className="w-4 h-4 text-sky-500 animate-spin" />
-                          ) : (
-                            <Upload className="w-4 h-4 text-gray-400 group-hover:text-sky-500 transition" />
-                          )}
-                          <span className="text-xs font-bold text-gray-600 group-hover:text-sky-600 transition">
-                            {isUploadingFooterLogo ? 'Otpremanje...' : 'Izaberite sliku'}
-                          </span>
-                        </div>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleFooterLogoUpload}
-                          disabled={isUploadingFooterLogo}
-                        />
-                      </label>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -463,7 +390,7 @@ export function HeroTabForm({
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider font-sans">Pregled</span>
                   <div className="w-20 h-20 rounded-xl shadow-xs border border-gray-150 flex items-center justify-center overflow-hidden bg-white">
                     <img 
-                      src={siteSettings.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.webp'} 
+                      src={siteSettings.hero_image_url || '/assets/images/delivery_courier_hero_1783427588712.webp'} 
                       alt="Hero pregled" 
                       className="w-full h-full object-cover"
                       referrerPolicy="no-referrer"

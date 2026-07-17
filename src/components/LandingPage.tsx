@@ -68,7 +68,7 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
 export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSettings: initialSettings, siteSettingsLoaded }: LandingPageProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
-  const [siteSettings, setSiteSettings] = useState<any>(initialSettings || DEFAULT_SITE_SETTINGS);
+  const [siteSettings, setSiteSettings] = useState<any>(initialSettings);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -391,7 +391,8 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
         { title: 'Brži početak rada', desc: 'Skraćujemo vreme čekanja kako bi počeo da zarađuješ već u roku od 24-48 sati.' }
       ];
 
-  if (siteSettingsLoaded === false) {
+  // Prikazujemo skelet ako nemamo učitana autentična podešavanja.
+  if (!siteSettings || siteSettingsLoaded === false) {
     return (
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse" id="landing-page-skeleton">
         {/* Skeleton for Announcement Banner */}
@@ -734,7 +735,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                   ) : (
                     /* Standardna pojedinačna slika u WebP formatu */
                     <img
-                      src={siteSettings?.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.webp'}
+                      src={siteSettings?.hero_image_url || '/assets/images/delivery_courier_hero_1783427588712.webp'}
                       alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
                       className="w-full h-full object-cover rounded-[1.75rem]"
                       referrerPolicy="no-referrer"

@@ -52,11 +52,10 @@ import { SeoTabForm, HeroTabForm, HomepageSectionsTabForm, FaqTabForm } from './
 interface AdminDashboardProps {
   appUrl: string;
   onLogoChange?: (style: 'flow' | 'neon' | 'urban' | 'custom', url: string, blendMode?: 'normal' | 'multiply') => void;
-  onFooterLogoChange?: (style: 'flow' | 'neon' | 'urban' | 'custom', url: string, blendMode?: 'normal' | 'multiply') => void;
   onLogout?: () => void;
 }
 
-export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChange, onLogout }: AdminDashboardProps) {
+export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: AdminDashboardProps) {
   const [passcode, setPasscode] = useState('');
   const [username, setUsername] = useState('admin');
   const [newUsername, setNewUsername] = useState('');
@@ -123,14 +122,11 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     homepage_subtitle: '',
     announcement_banner: '',
     support_phone: '',
-    logo_style: 'flow',
-    logo_url: '',
+    logo_style: 'custom',
+    logo_url: '/assets/images/logo_custom.png',
     logo_blend_mode: 'normal',
-    footer_logo_style: 'flow',
-    footer_logo_url: '',
-    footer_logo_blend_mode: 'normal',
     hero_right_mode: 'image',
-    hero_image_url: '/src/assets/images/delivery_courier_hero_1783427588712.webp',
+    hero_image_url: '/assets/images/delivery_courier_hero_1783427588712.webp',
     hero_slider_images: [] as string[],
     hero_slider_slides: [] as { image: string; badge_title: string; badge_text: string }[],
     hero_badge_title: 'Dostupno odmah',
@@ -177,7 +173,6 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
   });
 
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [isUploadingFooterLogo, setIsUploadingFooterLogo] = useState(false);
   const [isUploadingHeroImage, setIsUploadingHeroImage] = useState(false);
   const [isUploadingHeroSlide, setIsUploadingHeroSlide] = useState(false);
   const [isUploadingBlogImage, setIsUploadingBlogImage] = useState(false);
@@ -638,14 +633,11 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
           homepage_subtitle: data.settings.homepage_subtitle || '',
           announcement_banner: data.settings.announcement_banner || '',
           support_phone: data.settings.support_phone || '',
-          logo_style: data.settings.logo_style || 'flow',
-          logo_url: data.settings.logo_url || '',
+          logo_style: data.settings.logo_style || 'custom',
+          logo_url: data.settings.logo_url || '/assets/images/logo_custom.png',
           logo_blend_mode: data.settings.logo_blend_mode || 'normal',
-          footer_logo_style: data.settings.footer_logo_style || 'flow',
-          footer_logo_url: data.settings.footer_logo_url || '',
-          footer_logo_blend_mode: data.settings.footer_logo_blend_mode || 'normal',
           hero_right_mode: data.settings.hero_right_mode || 'image',
-          hero_image_url: data.settings.hero_image_url || '/src/assets/images/delivery_courier_hero_1783427588712.webp',
+          hero_image_url: data.settings.hero_image_url || '/assets/images/delivery_courier_hero_1783427588712.webp',
           hero_slider_images: data.settings.hero_slider_images || [],
           hero_slider_slides: data.settings.hero_slider_slides || (data.settings.hero_slider_images || []).map((img: string, idx: number) => ({
             image: img,
@@ -933,10 +925,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
       if (response.ok && data.success) {
         alert('Podešavanja su uspešno sačuvana!');
         if (onLogoChange) {
-          onLogoChange((siteSettings.logo_style as any) || 'flow', siteSettings.logo_url || '', (siteSettings.logo_blend_mode as any) || 'normal');
-        }
-        if (onFooterLogoChange) {
-          onFooterLogoChange((siteSettings.footer_logo_style as any) || 'flow', siteSettings.footer_logo_url || '', (siteSettings.footer_logo_blend_mode as any) || 'normal');
+          onLogoChange((siteSettings.logo_style as any) || 'custom', siteSettings.logo_url || '/assets/images/logo_custom.png', (siteSettings.logo_blend_mode as any) || 'normal');
         }
       } else {
         alert(data.error || 'Greška pri čuvanju podešavanja.');
@@ -1025,49 +1014,6 @@ export default function AdminDashboard({ appUrl, onLogoChange, onFooterLogoChang
     reader.onerror = () => {
       alert('Greška pri čitanju fajla.');
       setIsUploadingLogo(false);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleFooterLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploadingFooterLogo(true);
-    const reader = new FileReader();
-    reader.onloadend = async () => {
-      let base64String = reader.result as string;
-      try {
-        // Automatska kompresija i promena veličine slike na klijentskoj strani
-        base64String = await resizeImage(base64String, 600);
-
-        const response = await fetch('/api/marketing/upload-logo', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-passcode': passcode
-          },
-          body: JSON.stringify({ logoData: base64String, type: 'footer' })
-        });
-        const data = await response.json();
-        if (response.ok && data.success) {
-          setSiteSettings(prev => ({ ...prev, footer_logo_url: data.logoUrl }));
-          if (onFooterLogoChange) {
-            onFooterLogoChange('custom', data.logoUrl, (siteSettings.footer_logo_blend_mode as any) || 'normal');
-          }
-        } else {
-          alert(data.error || 'Greška pri otpremanju slike za podnožje.');
-        }
-      } catch (err) {
-        console.error('Greška pri uploadu logotipa za podnožje:', err);
-        alert('Došlo je do greške prilikom povezivanja sa serverom.');
-      } finally {
-        setIsUploadingFooterLogo(false);
-      }
-    };
-    reader.onerror = () => {
-      alert('Greška pri čitanju fajla.');
-      setIsUploadingFooterLogo(false);
     };
     reader.readAsDataURL(file);
   };
@@ -2715,9 +2661,7 @@ Postani Dostavljač Podrška`;
             setSiteSettings={setSiteSettings}
             onSave={handleSaveSeoSettings}
             isUploadingLogo={isUploadingLogo}
-            isUploadingFooterLogo={isUploadingFooterLogo}
             handleLogoUpload={handleLogoUpload}
-            handleFooterLogoUpload={handleFooterLogoUpload}
           />
 
           {/* Google SERP Preview Card */}
