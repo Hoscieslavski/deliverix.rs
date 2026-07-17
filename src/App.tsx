@@ -89,30 +89,45 @@ export default function App() {
   };
 
   const [logoStyle, setLogoStyle] = useState<'flow' | 'neon' | 'urban' | 'custom'>(() => {
+    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    if (initial?.logo_style) return initial.logo_style;
     return (localStorage.getItem('deliverix_logo_style') as any) || 'flow';
   });
 
   const [customLogoUrl, setCustomLogoUrl] = useState<string>(() => {
+    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    if (initial?.logo_url !== undefined) return initial.logo_url;
     return localStorage.getItem('deliverix_custom_logo') || '';
   });
 
   const [logoBlendMode, setLogoBlendMode] = useState<'normal' | 'multiply'>(() => {
+    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    if (initial?.logo_blend_mode) return initial.logo_blend_mode;
     return (localStorage.getItem('deliverix_logo_blend_mode') as any) || 'normal';
   });
 
   const [footerLogoStyle, setFooterLogoStyle] = useState<'flow' | 'neon' | 'urban' | 'custom'>(() => {
+    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    if (initial?.footer_logo_style) return initial.footer_logo_style;
     return (localStorage.getItem('deliverix_footer_logo_style') as any) || 'flow';
   });
 
   const [footerCustomLogoUrl, setFooterCustomLogoUrl] = useState<string>(() => {
+    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    if (initial?.footer_logo_url !== undefined) return initial.footer_logo_url;
     return localStorage.getItem('deliverix_footer_custom_logo') || '';
   });
 
   const [footerLogoBlendMode, setFooterLogoBlendMode] = useState<'normal' | 'multiply'>(() => {
+    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    if (initial?.footer_logo_blend_mode) return initial.footer_logo_blend_mode;
     return (localStorage.getItem('deliverix_footer_logo_blend_mode') as any) || 'normal';
   });
 
   const [isInitialLoading, setIsInitialLoading] = useState(false);
+  const [siteSettingsLoaded, setSiteSettingsLoaded] = useState<boolean>(() => {
+    return !!(window as any).__INITIAL_SITE_SETTINGS__;
+  });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Učitavanje logotipa i SEO podešavanja sa servera u pozadini (asinhrono i neblokirajuće)
@@ -222,6 +237,7 @@ export default function App() {
         .then(data => {
           if (data.success && data.settings) {
             setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
+            setSiteSettingsLoaded(true);
             if (data.settings.logo_style) {
               setLogoStyle(data.settings.logo_style);
             }
@@ -768,6 +784,7 @@ export default function App() {
               >
                 <LandingPage 
                   siteSettings={siteSettings}
+                  siteSettingsLoaded={siteSettingsLoaded}
                   onOpenApply={() => setIsApplyModalOpen(true)} 
                   onNavigateToBlog={() => setCurrentView('blog')}
                 />
