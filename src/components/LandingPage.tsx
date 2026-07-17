@@ -25,12 +25,12 @@ import {
 } from 'lucide-react';
 import ScooterIcon from './ScooterIcon';
 import { DEFAULT_SITE_SETTINGS } from '../constants';
-import { getSeoSettings } from '../App';
 
 interface LandingPageProps {
   onOpenApply: () => void;
   onNavigateToBlog: () => void;
   siteSettings?: any;
+  siteSettingsLoaded?: boolean;
 }
 
 function SafeBlogImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
@@ -65,7 +65,7 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
   );
 }
 
-export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSettings: initialSettings }: LandingPageProps) {
+export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSettings: initialSettings, siteSettingsLoaded }: LandingPageProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
   const [siteSettings, setSiteSettings] = useState<any>(initialSettings || DEFAULT_SITE_SETTINGS);
@@ -119,26 +119,6 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
   }, [initialSettings]);
 
   React.useEffect(() => {
-    // Učitaj SEO i podešavanja sajta u pozadini / osveži ih preko keširanog javnog SEO endpointa
-    getSeoSettings()
-      .then(data => {
-        if (data.success && data.settings) {
-          setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
-          if (data.settings.meta_title) {
-            document.title = data.settings.meta_title;
-          } else {
-            document.title = "Wolt i Glovo Dostavljač Beograd | Deliverix";
-          }
-          
-          // Dinamički ažuriraj meta description u dokumentu
-          const metaDesc = document.querySelector('meta[name="description"]');
-          if (metaDesc) {
-            metaDesc.setAttribute('content', data.settings.meta_description || "Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!");
-          }
-        }
-      })
-      .catch(err => console.error('Greška pri učitavanju SEO podešavanja:', err));
-
     // Učitaj najnovija 3 blog posta u pozadini sa odlaganjem (Faza 4)
     const loadBlogPosts = () => {
       fetch('/api/blog-posts')
@@ -410,6 +390,56 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
         { title: 'Mentor za sva pitanja', desc: 'Dobijaš svog mentora kome možeš da postavljaš pitanja u bilo koje doba dana.' },
         { title: 'Brži početak rada', desc: 'Skraćujemo vreme čekanja kako bi počeo da zarađuješ već u roku od 24-48 sati.' }
       ];
+
+  if (siteSettingsLoaded === false) {
+    return (
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-pulse" id="landing-page-skeleton">
+        {/* Skeleton for Announcement Banner */}
+        <div className="h-10 bg-gray-200/60 dark:bg-gray-200/30 rounded-2xl mb-8 w-full max-w-xl mx-auto"></div>
+
+        {/* Hero Section Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+          {/* Left Side (Text content) */}
+          <div className="lg:col-span-7 space-y-5">
+            {/* Badge */}
+            <div className="h-6 bg-gray-200/60 dark:bg-gray-200/30 rounded-full w-48"></div>
+            {/* H1 */}
+            <div className="space-y-3">
+              <div className="h-10 sm:h-12 bg-gray-200/60 dark:bg-gray-200/30 rounded-xl w-5/6"></div>
+              <div className="h-10 sm:h-12 bg-gray-200/60 dark:bg-gray-200/30 rounded-xl w-2/3"></div>
+            </div>
+            {/* H2 */}
+            <div className="h-6 bg-gray-200/60 dark:bg-gray-200/30 rounded-lg w-1/2"></div>
+            {/* Description */}
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200/60 dark:bg-gray-200/30 rounded-lg w-full"></div>
+              <div className="h-4 bg-gray-200/60 dark:bg-gray-200/30 rounded-lg w-11/12"></div>
+              <div className="h-4 bg-gray-200/60 dark:bg-gray-200/30 rounded-lg w-4/5"></div>
+            </div>
+            {/* Bullets */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <div className="w-5 h-5 rounded-full bg-gray-200/60 dark:bg-gray-200/30"></div>
+                  <div className="h-4 bg-gray-200/60 dark:bg-gray-200/30 rounded-lg w-28"></div>
+                </div>
+              ))}
+            </div>
+            {/* CTA Tabs / Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-50 border border-gray-150 rounded-2xl w-full max-w-lg">
+              <div className="flex-1 h-16 bg-gray-200/60 dark:bg-gray-200/30 rounded-xl"></div>
+              <div className="flex-1 h-16 bg-gray-200/60 dark:bg-gray-200/30 rounded-xl"></div>
+            </div>
+          </div>
+
+          {/* Right Side (Visual/Media) */}
+          <div className="lg:col-span-5 flex justify-center">
+            <div className="w-full aspect-[4/3] max-w-md bg-gray-200/60 dark:bg-gray-200/30 rounded-3xl"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
