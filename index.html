@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-  <head>
+<head>
     <!-- Optimized Local Font Preloading (Faza 6) -->
     <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/Inter-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
@@ -8,39 +8,42 @@
 
     <!-- Defer Google Tag Manager to first user interaction (Faza 6) -->
     <script>
-      (function() {
-        var gtmLoaded = false;
-        function loadGTM() {
-          if (gtmLoaded) return;
-          gtmLoaded = true;
+        (function () {
+            var gtmLoaded = false;
+            function loadGTM() {
+                if (gtmLoaded) return;
+                gtmLoaded = true;
 
-          // Remove interaction event listeners
-          window.removeEventListener('scroll', loadGTM);
-          window.removeEventListener('click', loadGTM);
-          window.removeEventListener('touchstart', loadGTM);
-          window.removeEventListener('mousemove', loadGTM);
-          window.removeEventListener('keydown', loadGTM);
+                // Remove interaction event listeners
+                window.removeEventListener('scroll', loadGTM);
+                window.removeEventListener('click', loadGTM);
+                window.removeEventListener('touchstart', loadGTM);
+                window.removeEventListener('mousemove', loadGTM);
+                window.removeEventListener('keydown', loadGTM);
 
-          // Standard GTM Loader script
-          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-          })(window,document,'script','dataLayer','GTM-P387C4XR');
-        }
+                // Standard GTM Loader script
+                (function (w, d, s, l, i) {
+                    w[l] = w[l] || []; w[l].push({
+                        'gtm.start':
+                            new Date().getTime(), event: 'gtm.js'
+                    }); var f = d.getElementsByTagName(s)[0],
+                        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+                })(window, document, 'script', 'dataLayer', 'GTM-P387C4XR');
+            }
 
-        // Trigger on interaction
-        window.addEventListener('scroll', loadGTM, { passive: true });
-        window.addEventListener('click', loadGTM, { passive: true });
-        window.addEventListener('touchstart', loadGTM, { passive: true });
-        window.addEventListener('mousemove', loadGTM, { passive: true });
-        window.addEventListener('keydown', loadGTM, { passive: true });
-      })();
+            // Trigger on interaction
+            window.addEventListener('scroll', loadGTM, { passive: true });
+            window.addEventListener('click', loadGTM, { passive: true });
+            window.addEventListener('touchstart', loadGTM, { passive: true });
+            window.addEventListener('mousemove', loadGTM, { passive: true });
+            window.addEventListener('keydown', loadGTM, { passive: true });
+        })();
     </script>
     <!-- End Google Tag Manager -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
+
     <!-- Primarni SEO Tagovi -->
     <title>Wolt i Glovo Dostavljač Beograd | Deliverix</title>
     <meta name="description" content="Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!" />
@@ -63,50 +66,53 @@
     <meta property="twitter:description" content="Započni posao već danas! Fleksibilno radno vreme, besplatna oprema, podrška 24/7 i brza isplata svake nedelje." />
     <meta property="twitter:image" content="https://deliverix.rs/og-image.jpg" />
 
-    <!-- Favicon i Tema -->
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta name="theme-color" content="#0ea5e9" />
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta name="theme-color" content="#0B47D8" />
 
     <!-- Google Structured Data / Rich Snippets (JobPosting) -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "JobPosting",
-      "title": "Wolt i Glovo Dostavljač",
-      "description": "Tražiš posao dostavljača hrane u Beogradu, Novom Sadu ili drugim gradovima Srbije? Postani Deliverix partner za Wolt i Glovo dostavu. Odlična zarada do 150.000 RSD, fleksibilno radno vreme, brza isplata svake nedelje i obezbeđen najam e-bicikala, skutera i automobila. Prijavi se za samo 60 sekundi i počni sa radom već danas!",
-      "datePosted": "2026-07-10",
-      "validThrough": "2027-07-10",
-      "employmentType": "FULL_TIME",
-      "hiringOrganization": {
-        "@type": "Organization",
-        "name": "Deliverix Srbija",
-        "sameAs": "https://deliverix.rs/",
-        "logo": "https://deliverix.rs/logo.png"
-      },
-      "jobLocation": {
-        "@type": "Place",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Beograd",
-          "addressRegion": "Srbija",
-          "addressCountry": "RS"
+        {
+          "@context": "https://schema.org",
+          "@type": "JobPosting",
+          "title": "Wolt i Glovo Dostavljač",
+          "description": "Tražiš posao dostavljača hrane u Beogradu, Novom Sadu ili drugim gradovima Srbije? Postani Deliverix partner za Wolt i Glovo dostavu. Odlična zarada do 150.000 RSD, fleksibilno radno vreme, brza isplata svake nedelje i obezbeđen najam e-bicikala, skutera i automobila. Prijavi se za samo 60 sekundi i počni sa radom već danas!",
+          "datePosted": "2026-07-10",
+          "validThrough": "2027-07-10",
+          "employmentType": "FULL_TIME",
+          "hiringOrganization": {
+            "@type": "Organization",
+            "name": "Deliverix Srbija",
+            "sameAs": "https://deliverix.rs/",
+            "logo": "https://deliverix.rs/logo.png"
+          },
+          "jobLocation": {
+            "@type": "Place",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Beograd",
+              "addressRegion": "Srbija",
+              "addressCountry": "RS"
+            }
+          },
+          "baseSalary": {
+            "@type": "MonetaryAmount",
+            "currency": "RSD",
+            "value": {
+              "@type": "QuantitativeValue",
+              "minValue": 80000,
+              "maxValue": 150000,
+              "unitText": "MONTH"
+            }
+          }
         }
-      },
-      "baseSalary": {
-        "@type": "MonetaryAmount",
-        "currency": "RSD",
-        "value": {
-          "@type": "QuantitativeValue",
-          "minValue": 80000,
-          "maxValue": 150000,
-          "unitText": "MONTH"
-        }
-      }
-    }
     </script>
-  </head>
+</head>
   <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P387C4XR"
