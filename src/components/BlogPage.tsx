@@ -43,7 +43,7 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
 
   if (error || !src) {
     return (
-      <div className={`${className} bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 flex flex-col items-center justify-center p-6 relative overflow-hidden text-white`}>
+      <div className={`${className} bg-gradient-to-br from-deliverix-400 via-deliverix-600 to-deliverix-800 flex flex-col items-center justify-center p-6 relative overflow-hidden text-white`}>
         <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
         <div className="absolute -left-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-lg"></div>
         <div className="relative z-10 flex flex-col items-center gap-2 text-center select-none">
@@ -330,7 +330,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
               onBackToLanding();
             }
           }}
-          className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-sky-500 transition cursor-pointer"
+          className="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-deliverix-500 transition cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" /> 
           {selectedPost ? 'Nazad na listu članaka' : 'Nazad na početnu'}
@@ -349,7 +349,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
 
       {isLoading ? (
         <div className="flex flex-col items-center justify-center py-20 space-y-4" id="blog-loading-spinner">
-          <div className="w-12 h-12 border-4 border-sky-500/20 border-t-sky-500 rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-deliverix-500/20 border-t-deliverix-500 rounded-full animate-spin"></div>
           <p className="text-sm font-medium text-gray-500">Učitavanje članaka...</p>
         </div>
       ) : selectedPost ? (
@@ -366,7 +366,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
             <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
               <div className="flex flex-wrap gap-2">
                 {selectedPost.tags?.map(tag => (
-                  <span key={tag} className="px-2.5 py-1 bg-sky-500/90 text-white rounded-lg text-xs font-black">
+                  <span key={tag} className="px-2.5 py-1 bg-deliverix-500/90 text-white rounded-lg text-xs font-black">
                     #{tag}
                   </span>
                 ))}
@@ -378,16 +378,16 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
           {/* Meta detalji */}
           <div className="px-6 py-4 bg-gray-50 border-b border-gray-100 flex flex-wrap gap-4 sm:gap-6 text-xs text-gray-500 font-bold justify-between items-center">
             <div className="flex flex-wrap gap-4 sm:gap-6">
-              <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-sky-500" /> {formatDate(selectedPost.created_at)}</span>
-              <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-sky-500" /> {selectedPost.author}</span>
-              <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-sky-500" /> {selectedPost.read_time} čitanja</span>
+              <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-deliverix-500" /> {formatDate(selectedPost.created_at)}</span>
+              <span className="flex items-center gap-1.5"><User className="w-4 h-4 text-deliverix-500" /> {selectedPost.author}</span>
+              <span className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-deliverix-500" /> {selectedPost.read_time} čitanja</span>
             </div>
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-sky-100 text-sky-700 rounded-lg"><Eye className="w-4 h-4" /> {selectedPost.views || 0} pregleda</span>
+            <span className="flex items-center gap-1.5 px-3 py-1 bg-deliverix-100 text-deliverix-700 rounded-lg"><Eye className="w-4 h-4" /> {selectedPost.views || 0} pregleda</span>
           </div>
 
           {/* Sadržaj posta */}
           <div className="p-6 sm:p-10 max-w-4xl mx-auto prose prose-slate">
-            <div className="mb-6 text-gray-500 italic font-medium border-l-4 border-sky-500 pl-4 text-base leading-relaxed">
+            <div className="mb-6 text-gray-500 italic font-medium border-l-4 border-deliverix-500 pl-4 text-base leading-relaxed">
               {selectedPost.summary}
             </div>
             <div className="space-y-4">
@@ -396,14 +396,14 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
           </div>
 
           {/* Podnožje članka sa pozivom na prijavu */}
-          <div className="p-8 sm:p-10 bg-sky-50 border-t border-sky-100 flex flex-col sm:flex-row justify-between items-center gap-6">
+          <div className="p-8 sm:p-10 bg-deliverix-50 border-t border-deliverix-100 flex flex-col sm:flex-row justify-between items-center gap-6">
             <div className="space-y-1 text-center sm:text-left">
               <h4 className="font-extrabold text-gray-900">Inspirisao te naš članak?</h4>
               <p className="text-xs text-gray-500">Prijavi se za rad kao Wolt dostavljač i kreni da zarađuješ već ove nedelje!</p>
             </div>
             <button
               onClick={onBackToLanding}
-              className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-black text-xs sm:text-sm rounded-xl shadow-md shadow-sky-500/10 cursor-pointer whitespace-nowrap"
+              className="px-6 py-3 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white font-black text-xs sm:text-sm rounded-xl shadow-md shadow-deliverix-500/10 cursor-pointer whitespace-nowrap focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
             >
               Prijavi se odmah
             </button>
@@ -415,7 +415,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
           
           {/* Header liste */}
           <div className="text-center max-w-2xl mx-auto space-y-3">
-            <span className="px-3 py-1 bg-sky-50 text-sky-800 rounded-full text-xs font-black uppercase tracking-widest border border-sky-100 inline-block">Službeni blog</span>
+            <span className="px-3 py-1 bg-deliverix-50 text-deliverix-800 rounded-full text-xs font-black uppercase tracking-widest border border-deliverix-100 inline-block">Službeni blog</span>
             <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight">Korisni saveti, vodiči i iskustva</h1>
             <p className="text-sm sm:text-base text-gray-500 leading-relaxed">
               Pomažemo ti da doneseš ispravne odluke, naučiš prečice i ostvariš maksimalnu zaradu na terenu u Srbiji.
@@ -432,7 +432,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
                 placeholder="Pretraži članke po naslovu ili opisu..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                className="w-full pl-10.5 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-sky-500/20 transition"
+                className="w-full pl-10.5 pr-4 py-2.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-deliverix-500/20 transition"
               />
             </div>
 
@@ -440,7 +440,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
             <div className="flex flex-wrap items-center gap-1.5 max-w-full md:max-w-xl">
               <button
                 onClick={() => setSelectedTag(null)}
-                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${!selectedTag ? 'bg-sky-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
+                className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${!selectedTag ? 'bg-deliverix-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
               >
                 Svi članci
               </button>
@@ -448,7 +448,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
                 <button
                   key={tag}
                   onClick={() => setSelectedTag(tag)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${selectedTag === tag ? 'bg-sky-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${selectedTag === tag ? 'bg-deliverix-500 text-white' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'}`}
                 >
                   #{tag}
                 </button>
@@ -463,7 +463,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
                 <div
                   key={post.id}
                   onClick={() => handleSelectPost(post)}
-                  className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-gray-200/80 transition duration-300 flex flex-col cursor-pointer group"
+                  className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-deliverix-200 hover:-translate-y-0.5 transition-all duration-200 ease-out flex flex-col cursor-pointer group"
                 >
                   {/* Slika */}
                   <div className="h-48 overflow-hidden bg-gray-100 relative shrink-0">
@@ -482,22 +482,22 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-1.5">
                         {post.tags?.map((tag: string) => (
-                          <span key={tag} className="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-md text-[10px] font-bold">
+                          <span key={tag} className="px-2 py-0.5 bg-deliverix-100 text-deliverix-700 rounded-md text-[10px] font-bold">
                             #{tag}
                           </span>
                         ))}
                       </div>
-                      <h3 className="font-extrabold text-sm sm:text-base text-gray-900 group-hover:text-sky-500 transition line-clamp-2 leading-snug">
+                      <h3 className="font-extrabold text-sm sm:text-base text-gray-900 group-hover:text-deliverix-500 transition line-clamp-2 leading-normal">
                         {post.title}
                       </h3>
-                      <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+                      <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">
                         {post.summary}
                       </p>
                     </div>
 
                     <div className="pt-3 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-500 font-bold">
                       <span className="flex items-center gap-1"><User className="w-3.5 h-3.5" /> {post.author}</span>
-                      <span className="text-sky-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0 font-extrabold">
+                      <span className="text-deliverix-500 transition-transform duration-200 flex items-center gap-1 shrink-0 font-extrabold group-hover:translate-x-[3px]">
                         Čitaj <ChevronRight className="w-3.5 h-3.5" />
                       </span>
                     </div>
@@ -517,7 +517,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
                   setSearchQuery('');
                   setSelectedTag(null);
                 }}
-                className="px-4 py-2 bg-sky-100 hover:bg-sky-200 text-sky-600 font-bold text-xs rounded-xl transition cursor-pointer"
+                className="px-4 py-2 bg-deliverix-100 hover:bg-deliverix-200 text-deliverix-600 font-bold text-xs rounded-xl transition cursor-pointer"
               >
                 Prikaži sve članke
               </button>

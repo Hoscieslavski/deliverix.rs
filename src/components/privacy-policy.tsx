@@ -11,7 +11,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
       {/* Back Button */}
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 hover:text-sky-500 bg-white hover:bg-gray-50 rounded-xl border border-gray-100 shadow-xs transition cursor-pointer mb-8"
+        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 hover:text-deliverix-500 bg-white hover:bg-gray-50 rounded-xl border border-gray-100 shadow-xs transition cursor-pointer mb-8"
         id="privacy-back-btn"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -22,7 +22,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
         {/* Header */}
         <div className="border-b border-gray-100 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-sky-50 text-sky-500 rounded-2xl">
+            <div className="p-3 bg-deliverix-50 text-deliverix-500 rounded-2xl">
               <ShieldCheck className="w-8 h-8" />
             </div>
             <div>
@@ -42,7 +42,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
           {/* Section 1 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-sky-500" />
+              <FileText className="w-5 h-5 text-deliverix-500" />
               1. Podaci koje prikupljamo
             </h2>
             <p>
@@ -61,7 +61,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
           {/* Section 2 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Eye className="w-5 h-5 text-sky-500" />
+              <Eye className="w-5 h-5 text-deliverix-500" />
               2. Svrha obrade podataka
             </h2>
             <p>
@@ -78,13 +78,13 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
           {/* Section 3 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Lock className="w-5 h-5 text-sky-500" />
+              <Lock className="w-5 h-5 text-deliverix-500" />
               3. Bezbednost i deljenje podataka
             </h2>
             <p>
               Vaši podaci se čuvaju u sigurnim cloud bazama zaštićenim savremenim sigurnosnim protokolima. Podatke delimo isključivo sa našim proverenim i registrovanim partnerskim flotama koje su direktno zadužene za vaše zapošljavanje na Wolt i Glovo platformama. 
             </p>
-            <p className="bg-sky-50/50 border border-sky-100 rounded-2xl p-4 text-sky-800 text-xs sm:text-sm">
+            <p className="bg-deliverix-50/50 border border-deliverix-100 rounded-2xl p-4 text-deliverix-800 text-xs sm:text-sm">
               <strong>Napomena:</strong> Deliverix nikada ne prodaje, ne iznajmljuje niti deli vaše privatne podatke trećim stranama u marketinške svrhe. Deljenje se vrši isključivo uz vaš pristanak radi uspostavljanja radnog odnosa sa partnerskom agencijom za dostavu.
             </p>
           </div>
@@ -92,7 +92,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
           {/* Section 4 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-sky-500" />
+              <Calendar className="w-5 h-5 text-deliverix-500" />
               4. Kolačići (Cookies) i Google servisi
             </h2>
             <p>
@@ -106,7 +106,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
           {/* Section 5 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-sky-500" />
+              <ShieldCheck className="w-5 h-5 text-deliverix-500" />
               5. Vaša prava
             </h2>
             <p>
@@ -123,7 +123,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
           {/* Contact */}
           <div className="space-y-3 pt-6 border-t border-gray-100">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-sky-500" />
+              <Mail className="w-5 h-5 text-deliverix-500" />
               6. Kontakt za pitanja i brisanje podataka
             </h2>
             <p>
@@ -131,7 +131,7 @@ export default function PrivacyPolicy({ onBack }: PrivacyPolicyProps) {
             </p>
             <div className="bg-gray-50 rounded-2xl p-4 inline-flex items-center gap-3 border border-gray-100">
               <Mail className="w-5 h-5 text-gray-400" />
-              <a href="mailto:info@deliverix.rs" className="font-mono text-xs sm:text-sm text-sky-600 hover:underline">
+              <a href="mailto:info@deliverix.rs" className="font-mono text-xs sm:text-sm text-deliverix-600 hover:underline">
                 info@deliverix.rs
               </a>
             </div>

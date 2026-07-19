@@ -112,7 +112,7 @@ export default function App() {
   const [customLogoUrl, setCustomLogoUrl] = useState<string>(() => {
     const initial = (window as any).__INITIAL_SITE_SETTINGS__;
     if (initial?.logo_url !== undefined) return initial.logo_url;
-    return '/assets/images/logo_custom.png';
+    return '/assets/images/logo_custom.webp';
   });
 
   const [logoBlendMode, setLogoBlendMode] = useState<'normal' | 'multiply'>(() => {
@@ -329,28 +329,7 @@ export default function App() {
     setMetaTag('property', 'twitter:url', canonical);
   }, [currentView, siteSettings]);
 
-  // Dinamičko ažuriranje favikona (favicon) u zavisnosti od izabranog logotipa
-  useEffect(() => {
-    let faviconUrl = '/logo.png';
 
-    // Koristimo prilagođeni logo za favikon samo ako je u pitanju ispravan base64 data URL koji preživljava restarte
-    if (logoStyle === 'custom' && customLogoUrl && customLogoUrl.startsWith('data:')) {
-      faviconUrl = customLogoUrl;
-    } else {
-      faviconUrl = '/logo.png';
-    }
-
-    const link: HTMLLinkElement | null = document.querySelector("link[rel~='icon']");
-    if (link) {
-      link.href = faviconUrl;
-    } else {
-      const newLink = document.createElement('link');
-      newLink.rel = 'icon';
-      newLink.type = 'image/png';
-      newLink.href = faviconUrl;
-      document.head.appendChild(newLink);
-    }
-  }, [logoStyle, customLogoUrl]);
 
   const handleLogoStyleChange = (style: 'flow' | 'neon' | 'urban' | 'custom') => {
     setLogoStyle(style);
@@ -420,7 +399,7 @@ export default function App() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-white" id="global-loading">
         <div className="relative flex items-center justify-center">
-          <div className="w-12 h-12 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
+          <div className="w-12 h-12 border-4 border-deliverix-100 border-t-deliverix-500 rounded-full animate-spin"></div>
         </div>
         <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">
           Učitavanje...
@@ -430,11 +409,11 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/20 text-gray-900 font-sans selection:bg-sky-500 selection:text-white relative overflow-x-hidden" id="main-application-root">
+    <div className="min-h-screen bg-slate-50/20 text-gray-900 font-sans selection:bg-deliverix-500 selection:text-white relative overflow-x-hidden" id="main-application-root">
       {/* Skip to Main Content Link for Keyboard / Screen Reader Accessibility */}
       <a 
         href="#glavni-sadrzaj" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-sky-600 focus:text-white focus:rounded-xl focus:font-bold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-sky-400"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2.5 focus:bg-deliverix-600 focus:text-white focus:rounded-xl focus:font-bold focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-deliverix-200"
         id="skip-to-content"
       >
         Preskoči na glavni sadržaj
@@ -452,7 +431,7 @@ export default function App() {
           >
             <DeliverixLogo style={logoStyle} customLogoUrl={customLogoUrl} logoBlendMode={logoBlendMode} className="w-10 h-10 sm:w-12 sm:h-12 group-hover:scale-105 transition-transform" />
             <div>
-              <span className="text-lg sm:text-2xl font-black tracking-wider text-sky-700 block leading-none font-sans uppercase">
+              <span className="text-lg sm:text-2xl font-black tracking-wider text-deliverix-500 block leading-none font-sans uppercase">
                 DELIVERIX
               </span>
               <span className="text-[10px] sm:text-xs text-gray-500 font-extrabold block uppercase tracking-[0.15em] mt-0.5 sm:mt-1">
@@ -472,10 +451,10 @@ export default function App() {
                     document.getElementById('section-sta-je-deliverix')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }}
-                className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
+                className="text-sm font-semibold text-gray-600 hover:text-deliverix-500 transition-colors relative group py-2 cursor-pointer"
               >
                 Šta je Deliverix?
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
               </button>
               
               <button
@@ -486,10 +465,10 @@ export default function App() {
                     document.getElementById('section-kome-je-namenjen')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }}
-                className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
+                className="text-sm font-semibold text-gray-600 hover:text-deliverix-500 transition-colors relative group py-2 cursor-pointer"
               >
                 Kome je namenjen?
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
               </button>
 
               {siteSettings?.steps_enabled !== false && (
@@ -501,10 +480,10 @@ export default function App() {
                       document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                   }}
-                  className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
+                  className="text-sm font-semibold text-gray-600 hover:text-deliverix-500 transition-colors relative group py-2 cursor-pointer"
                 >
                   Kako funkcioniše
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
                 </button>
               )}
 
@@ -516,10 +495,10 @@ export default function App() {
                     document.getElementById('zasto-se-prijaviti')?.scrollIntoView({ behavior: 'smooth' });
                   }, 100);
                 }}
-                className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
+                className="text-sm font-semibold text-gray-600 hover:text-deliverix-500 transition-colors relative group py-2 cursor-pointer"
               >
                 Zašto mi?
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
               </button>
 
               {siteSettings?.faq_enabled !== false && (
@@ -531,10 +510,10 @@ export default function App() {
                       document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
                     }, 100);
                   }}
-                  className="text-sm font-semibold text-gray-600 hover:text-sky-500 transition-colors relative group py-2 cursor-pointer"
+                  className="text-sm font-semibold text-gray-600 hover:text-deliverix-500 transition-colors relative group py-2 cursor-pointer"
                 >
                   FAQ
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sky-500 transition-all group-hover:w-full"></span>
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
                 </button>
               )}
 
@@ -542,10 +521,10 @@ export default function App() {
                 <button
                   id="nav-blog-btn"
                   onClick={() => setCurrentView('blog')}
-                  className={`text-sm font-semibold transition-colors relative group py-2 cursor-pointer ${currentView === 'blog' ? 'text-sky-500 font-black' : 'text-gray-600 hover:text-sky-500'}`}
+                  className={`text-sm font-semibold transition-colors relative group py-2 cursor-pointer ${currentView === 'blog' ? 'text-deliverix-500 font-black' : 'text-gray-600 hover:text-deliverix-500'}`}
                 >
                   Blog
-                  <span className={`absolute bottom-0 left-0 h-0.5 bg-sky-500 transition-all ${currentView === 'blog' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-deliverix-500 transition-all ${currentView === 'blog' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
                 </button>
               )}
             </div>
@@ -555,14 +534,14 @@ export default function App() {
                 <button
                   id="header-apply-btn"
                   onClick={() => setIsApplyModalOpen(true)}
-                  className="px-3 sm:px-5 py-2 sm:py-2.5 bg-sky-600 hover:bg-sky-700 text-white text-[11px] sm:text-sm font-black rounded-xl shadow-md sm:shadow-lg shadow-sky-600/15 active:translate-y-0.5 transition cursor-pointer whitespace-nowrap text-center shrink-0"
+                  className="px-3 sm:px-5 py-2 sm:py-2.5 bg-deliverix-500 hover:bg-deliverix-600 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-deliverix-600/20 active:bg-deliverix-700 text-white text-[11px] sm:text-sm font-black rounded-xl shadow-md sm:shadow-lg shadow-deliverix-600/15 active:translate-y-0.5 transition duration-200 cursor-pointer whitespace-nowrap text-center shrink-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
                 >
                   {siteSettings?.button_header_apply || "Prijavi se"}
                 </button>
                 <button
                   id="header-portal-btn"
                   onClick={() => setCurrentView('candidate')}
-                  className="hidden sm:flex px-3 sm:px-4 py-2 sm:py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-600 text-[11px] sm:text-sm font-black rounded-xl transition cursor-pointer items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0"
+                  className="hidden sm:flex px-3 sm:px-4 py-2 sm:py-2.5 bg-deliverix-5 hover:bg-deliverix-100 hover:-translate-y-[1px] hover:shadow-md hover:border-deliverix-200 text-deliverix-500 border border-deliverix-100 hover:text-deliverix-600 active:bg-deliverix-200 text-[11px] sm:text-sm font-black rounded-xl transition duration-200 cursor-pointer items-center justify-center gap-1 sm:gap-1.5 whitespace-nowrap shrink-0 focus-visible:ring-4 focus-visible:ring-deliverix-200"
                 >
                   <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" /> {siteSettings?.button_header_portal || "Prati prijavu"}
                 </button>
@@ -571,7 +550,7 @@ export default function App() {
                 <button
                   id="mobile-menu-toggle-btn"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="flex lg:hidden p-2 text-gray-500 hover:text-sky-500 hover:bg-sky-50 rounded-xl transition shrink-0 cursor-pointer"
+                  className="flex lg:hidden p-2 text-gray-500 hover:text-deliverix-500 hover:bg-deliverix-50 rounded-xl transition shrink-0 cursor-pointer"
                   aria-label="Meni"
                 >
                   {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -614,7 +593,7 @@ export default function App() {
                   <div className="flex items-center gap-2">
                     <DeliverixLogo style={logoStyle} customLogoUrl={customLogoUrl} logoBlendMode={logoBlendMode} className="w-8 h-8" />
                     <div>
-                      <span className="text-md font-black tracking-wider text-sky-700 block leading-none font-sans uppercase">
+                      <span className="text-md font-black tracking-wider text-deliverix-500 block leading-none font-sans uppercase">
                         DELIVERIX
                       </span>
                       <span className="text-[10px] text-gray-500 font-extrabold block uppercase tracking-[0.1em] mt-0.5">
@@ -641,9 +620,9 @@ export default function App() {
                         document.getElementById('section-sta-je-deliverix')?.scrollIntoView({ behavior: 'smooth' });
                       }, 150);
                     }}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-deliverix-500 hover:bg-deliverix-50 transition flex items-center gap-2.5 cursor-pointer"
                   >
-                    <Compass className="w-4 h-4 text-sky-500 shrink-0" />
+                    <Compass className="w-4 h-4 text-deliverix-500 shrink-0" />
                     <span>Šta je Deliverix?</span>
                   </button>
 
@@ -655,9 +634,9 @@ export default function App() {
                         document.getElementById('section-kome-je-namenjen')?.scrollIntoView({ behavior: 'smooth' });
                       }, 150);
                     }}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-deliverix-500 hover:bg-deliverix-50 transition flex items-center gap-2.5 cursor-pointer"
                   >
-                    <Users className="w-4 h-4 text-sky-500 shrink-0" />
+                    <Users className="w-4 h-4 text-deliverix-500 shrink-0" />
                     <span>Kome je namenjen?</span>
                   </button>
 
@@ -670,9 +649,9 @@ export default function App() {
                           document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
                         }, 150);
                       }}
-                      className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                      className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-deliverix-500 hover:bg-deliverix-50 transition flex items-center gap-2.5 cursor-pointer"
                     >
-                      <Clock className="w-4 h-4 text-sky-500 shrink-0" />
+                      <Clock className="w-4 h-4 text-deliverix-500 shrink-0" />
                       <span>Kako funkcioniše</span>
                     </button>
                   )}
@@ -685,9 +664,9 @@ export default function App() {
                         document.getElementById('zasto-se-prijaviti')?.scrollIntoView({ behavior: 'smooth' });
                       }, 150);
                     }}
-                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                    className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-deliverix-500 hover:bg-deliverix-50 transition flex items-center gap-2.5 cursor-pointer"
                   >
-                    <ShieldCheck className="w-4 h-4 text-sky-500 shrink-0" />
+                    <ShieldCheck className="w-4 h-4 text-deliverix-500 shrink-0" />
                     <span>Zašto mi?</span>
                   </button>
 
@@ -700,9 +679,9 @@ export default function App() {
                           document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
                         }, 150);
                       }}
-                      className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-sky-500 hover:bg-sky-50 transition flex items-center gap-2.5 cursor-pointer"
+                      className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-deliverix-500 hover:bg-deliverix-50 transition flex items-center gap-2.5 cursor-pointer"
                     >
-                      <HelpCircle className="w-4 h-4 text-sky-500 shrink-0" />
+                      <HelpCircle className="w-4 h-4 text-deliverix-500 shrink-0" />
                       <span>Česta pitanja (FAQ)</span>
                     </button>
                   )}
@@ -713,9 +692,9 @@ export default function App() {
                         setIsMobileMenuOpen(false);
                         setCurrentView('blog');
                       }}
-                      className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2.5 cursor-pointer ${currentView === 'blog' ? 'bg-sky-50 text-sky-600 font-extrabold' : 'text-gray-700 hover:text-sky-500 hover:bg-sky-50'}`}
+                      className={`w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold transition flex items-center gap-2.5 cursor-pointer ${currentView === 'blog' ? 'bg-deliverix-50 text-deliverix-500 font-extrabold' : 'text-gray-700 hover:text-deliverix-500 hover:bg-deliverix-50'}`}
                     >
-                      <MessageSquare className="w-4 h-4 text-sky-500 shrink-0" />
+                      <MessageSquare className="w-4 h-4 text-deliverix-500 shrink-0" />
                       <span>Blog vesti</span>
                     </button>
                   )}
@@ -729,7 +708,7 @@ export default function App() {
                     setIsMobileMenuOpen(false);
                     setIsApplyModalOpen(true);
                   }}
-                  className="w-full py-3.5 bg-sky-600 hover:bg-sky-700 text-white text-sm font-black rounded-xl shadow-lg shadow-sky-600/25 transition text-center flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white text-sm font-black rounded-xl shadow-lg shadow-deliverix-600/25 transition text-center flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
                 >
                   <span>Prijavi se odmah</span>
                 </button>
@@ -738,7 +717,7 @@ export default function App() {
                     setIsMobileMenuOpen(false);
                     setCurrentView('candidate');
                   }}
-                  className="w-full py-3.5 bg-sky-50 hover:bg-sky-100 text-sky-600 text-sm font-black rounded-xl transition text-center flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-3.5 bg-deliverix-50 hover:bg-deliverix-100 text-deliverix-500 border border-deliverix-100 hover:text-deliverix-600 active:bg-deliverix-200 text-sm font-black rounded-xl transition text-center flex items-center justify-center gap-2 cursor-pointer focus-visible:ring-4 focus-visible:ring-deliverix-200"
                 >
                   <Lock className="w-4 h-4 shrink-0" />
                   <span>Prati svoju prijavu</span>
@@ -753,7 +732,7 @@ export default function App() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10" id="glavni-sadrzaj">
         <Suspense fallback={
           <div className="flex flex-col items-center justify-center min-h-[400px] py-16" id="lazy-view-loading">
-            <div className="w-10 h-10 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
+            <div className="w-10 h-10 border-4 border-deliverix-100 border-t-deliverix-500 rounded-full animate-spin"></div>
             <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">Učitavanje stranice...</p>
           </div>
         }>
@@ -859,7 +838,7 @@ export default function App() {
 
               <Suspense fallback={
                 <div className="flex flex-col items-center justify-center min-h-[300px] py-12">
-                  <div className="w-10 h-10 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
+                  <div className="w-10 h-10 border-4 border-deliverix-100 border-t-deliverix-500 rounded-full animate-spin"></div>
                   <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">Učitavanje forme...</p>
                 </div>
               }>
@@ -879,7 +858,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Footer / Podnožje */}
-      <footer className="bg-gray-50 border-t border-gray-100 py-12 mt-16" id="main-footer">
+      <footer className="bg-[#F8FAFC] border-t-2 border-gray-200/50 py-12 mt-16" id="main-footer">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 pb-2">
             {/* Leva strana: Naziv i opis */}
@@ -940,26 +919,26 @@ export default function App() {
             <div className="flex flex-wrap justify-center md:justify-end gap-x-4 gap-y-2 text-xs font-bold text-gray-500">
               <button onClick={() => {
                 document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-sky-700 cursor-pointer">Kako radi</button>
+              }} className="hover:text-deliverix-500 cursor-pointer">Kako radi</button>
               <button onClick={() => {
                 document.getElementById('sta-je-potrebno')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-sky-700 cursor-pointer">Uslovi</button>
+              }} className="hover:text-deliverix-500 cursor-pointer">Uslovi</button>
               <button onClick={() => {
                 document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-sky-700 cursor-pointer">FAQ</button>
+              }} className="hover:text-deliverix-500 cursor-pointer">FAQ</button>
               {currentView === 'landing' ? (
                 <div className="flex flex-wrap items-center justify-center md:justify-end gap-3">
                   <button 
                     id="footer-portal-link"
                     onClick={() => setCurrentView('candidate')} 
-                    className="hover:text-sky-800 cursor-pointer text-sky-700 flex items-center gap-1 font-black"
+                    className="hover:text-deliverix-600 cursor-pointer text-deliverix-500 flex items-center gap-1 font-black"
                   >
                     <Lock className="w-3.5 h-3.5" /> Kandidat Portal
                   </button>
                   <button 
                     id="footer-admin-link"
                     onClick={() => setCurrentView('admin')} 
-                    className="hover:text-sky-700 cursor-pointer text-gray-500 flex items-center gap-1 font-bold"
+                    className="hover:text-deliverix-500 cursor-pointer text-gray-500 flex items-center gap-1 font-bold"
                   >
                     <Lock className="w-3.5 h-3.5" /> Admin Panel
                   </button>
@@ -968,7 +947,7 @@ export default function App() {
                 <button 
                   id="footer-back-link"
                   onClick={() => setCurrentView('landing')} 
-                  className="hover:text-sky-700 cursor-pointer flex items-center gap-1 font-black"
+                  className="hover:text-deliverix-500 cursor-pointer flex items-center gap-1 font-black"
                 >
                   Nazad na sajt
                 </button>
@@ -985,7 +964,7 @@ export default function App() {
                   setCurrentView('terms');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }} 
-                className="hover:text-sky-700 font-semibold cursor-pointer transition"
+                className="hover:text-deliverix-500 font-semibold cursor-pointer transition"
               >
                 {siteSettings?.footer_terms_text || 'Uslovi korišćenja'}
               </button>
@@ -995,7 +974,7 @@ export default function App() {
                   setCurrentView('privacy');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }} 
-                className="hover:text-sky-700 font-semibold cursor-pointer transition"
+                className="hover:text-deliverix-500 font-semibold cursor-pointer transition"
               >
                 {siteSettings?.footer_privacy_text || 'Politika privatnosti'}
               </button>
@@ -1018,13 +997,13 @@ export default function App() {
             id="cookie-consent-banner"
           >
             <div className="flex items-start gap-3">
-              <div className="p-2.5 bg-sky-50 text-sky-500 rounded-xl mt-0.5">
+              <div className="p-2.5 bg-deliverix-50 text-deliverix-500 rounded-xl mt-0.5">
                 <Cookie className="w-5 h-5" />
               </div>
               <div className="space-y-1">
                 <p className="text-sm font-bold text-gray-900">Kolačići i privatnost</p>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  Naš sajt koristi kolačiće (cookies) za poboljšanje iskustva i analitiku poseta (Google Analytics). Možete prihvatiti sve ili nastaviti bez njih. Pročitajte našu <button onClick={() => { setCurrentView('privacy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-sky-500 hover:underline font-semibold cursor-pointer">Politiku privatnosti</button>.
+                  Naš sajt koristi kolačiće (cookies) za poboljšanje iskustva i analitiku poseta (Google Analytics). Možete prihvatiti sve ili nastaviti bez njih. Pročitajte našu <button onClick={() => { setCurrentView('privacy'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-deliverix-500 hover:underline font-semibold cursor-pointer">Politiku privatnosti</button>.
                 </p>
               </div>
             </div>
@@ -1037,7 +1016,7 @@ export default function App() {
               </button>
               <button
                 onClick={handleAcceptCookies}
-                className="px-4 py-2 text-white bg-sky-500 hover:bg-sky-600 rounded-xl transition cursor-pointer shadow-md shadow-sky-500/10"
+                className="px-4 py-2 text-white bg-deliverix-500 hover:bg-deliverix-600 rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
                 aria-label="Prihvati kolačiće"
               >
                 Prihvati sve

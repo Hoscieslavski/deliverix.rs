@@ -138,8 +138,8 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
             <p className="text-gray-600 max-w-md mx-auto mb-6 text-sm leading-relaxed">
               Hvala ti na interesovanju za rad. Naš tim će te kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) putem telefona ili WhatsApp poruke sa daljim koracima.
             </p>
-            <div className="bg-sky-50 text-sky-800 text-xs p-4 rounded-xl max-w-sm mx-auto flex items-start gap-3 text-left border border-sky-100">
-              <Info className="w-5 h-5 shrink-0 mt-0.5 text-sky-500" />
+            <div className="bg-deliverix-50 text-deliverix-800 text-xs p-4 rounded-xl max-w-sm mx-auto flex items-start gap-3 text-left border border-deliverix-100">
+              <Info className="w-5 h-5 shrink-0 mt-0.5 text-deliverix-500" />
               <p className="leading-normal">
                 Pripremi ličnu kartu i, ukoliko voziš skuter ili automobil, vozačku dozvolu. Pomoći ćemo ti oko svega besplatno!
               </p>
@@ -149,7 +149,7 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
           <>
             <h3 className="text-2xl font-black text-gray-900 mb-2">Prijava uspešno zabeležena!</h3>
             <p className="text-gray-600 max-w-md mx-auto mb-6 text-sm leading-relaxed">
-              Hvala ti na prijavi! Trenutno u gradu <span className="font-extrabold text-sky-600">{submittedCity}</span> još uvek nemamo aktivnu saradnju sa kurirskim platformama, ali je tvoja prijava sačuvana u našoj bazi kandidata. Čim se otvori saradnja ili slobodno mesto za tvoj grad, odmah ćemo te kontaktirati!
+              Hvala ti na prijavi! Trenutno u gradu <span className="font-extrabold text-deliverix-600">{submittedCity}</span> još uvek nemamo aktivnu saradnju sa kurirskim platformama, ali je tvoja prijava sačuvana u našoj bazi kandidata. Čim se otvori saradnja ili slobodno mesto za tvoj grad, odmah ćemo te kontaktirati!
             </p>
             <div className="bg-amber-50/50 text-amber-800 text-xs p-4 rounded-xl max-w-sm mx-auto flex items-start gap-3 text-left border border-amber-100/50">
               <Info className="w-5 h-5 shrink-0 mt-0.5 text-amber-500" />
@@ -192,14 +192,14 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
       {/* Ime i Prezime */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-          <User className="w-4 h-4 text-sky-500" /> Ime i prezime
+          <User className="w-4 h-4 text-deliverix-500" /> Ime i prezime
         </label>
         <div className="relative">
           <input
             id="input-fullname"
             type="text"
             required
-            className="w-full pl-4 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-gray-900 placeholder-gray-400 transition"
+            className="w-full pl-4 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-deliverix-200 focus:border-deliverix-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200 focus-visible:border-deliverix-500 focus:bg-white text-gray-900 placeholder-gray-400 transition"
             placeholder="Petar Petrović"
             value={formData.ime}
             onChange={(e) => setFormData({ ...formData, ime: e.target.value })}
@@ -210,14 +210,14 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
       {/* Telefon */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-          <Phone className="w-4 h-4 text-sky-500" /> Telefon / Viber / WhatsApp
+          <Phone className="w-4 h-4 text-deliverix-500" /> Telefon / Viber / WhatsApp
         </label>
         <div>
           <input
             id="input-phone"
             type="tel"
             required
-            className="w-full pl-4 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-gray-900 placeholder-gray-400 transition"
+            className="w-full pl-4 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-deliverix-200 focus:border-deliverix-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200 focus-visible:border-deliverix-500 focus:bg-white text-gray-900 placeholder-gray-400 transition"
             placeholder="Npr. 061234567 ili +38161234567"
             value={formData.telefon}
             onChange={(e) => setFormData({ ...formData, telefon: e.target.value })}
@@ -229,13 +229,13 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
       {/* Grad */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-          <MapPin className="w-4 h-4 text-sky-500" /> Grad u kome želiš da radiš
+          <MapPin className="w-4 h-4 text-deliverix-500" /> Grad u kome želiš da radiš
         </label>
         <div className="space-y-3">
           <select
             id="select-city"
             required
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-gray-900 transition"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-deliverix-200 focus:border-deliverix-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200 focus-visible:border-deliverix-500 focus:bg-white text-gray-900 transition"
             value={formData.grad}
             onChange={(e) => setFormData({ ...formData, grad: e.target.value, customGrad: '' })}
           >
@@ -255,7 +255,7 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
                 id="input-custom-city"
                 type="text"
                 required
-                className="w-full pl-4 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-gray-900 placeholder-gray-400 transition"
+                className="w-full pl-4 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-deliverix-200 focus:border-deliverix-500 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200 focus-visible:border-deliverix-500 focus:bg-white text-gray-900 placeholder-gray-400 transition"
                 placeholder="Upiši svoj grad (npr. Zaječar, Kikinda...)"
                 value={formData.customGrad}
                 onChange={(e) => setFormData({ ...formData, customGrad: e.target.value })}
@@ -268,7 +268,7 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
       {/* Vozilo */}
       <div className="space-y-2">
         <label className="text-sm font-semibold text-gray-700 flex items-center gap-1.5">
-          <Briefcase className="w-4 h-4 text-sky-500" /> Prevozno sredstvo za rad
+          <Briefcase className="w-4 h-4 text-deliverix-500" /> Prevozno sredstvo za rad
         </label>
         <p className="text-xs text-gray-400 mb-2">Izaberi prevozno sredstvo koje planiraš da koristiš za vršenje dostava:</p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -286,13 +286,13 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
                 type="button"
                 className={`py-3 px-2 rounded-xl border flex flex-col items-center justify-center gap-1 cursor-pointer transition text-center ${
                   isSelected 
-                    ? 'border-sky-500 bg-sky-50 text-sky-900 ring-2 ring-sky-500/30' 
+                    ? 'border-deliverix-500 bg-deliverix-50 text-deliverix-900 ring-4 ring-deliverix-200' 
                     : 'border-gray-150 bg-white hover:bg-gray-50/50 text-gray-700'
                 }`}
                 onClick={() => setFormData({ ...formData, vozilo: v.id })}
               >
                 <div className="flex items-center gap-1.5">
-                  <Icon className={`w-4 h-4 ${isSelected ? 'text-sky-600' : 'text-gray-400'}`} />
+                  <Icon className={`w-4 h-4 ${isSelected ? 'text-deliverix-600' : 'text-gray-400'}`} />
                   <span className="text-[11px] sm:text-xs font-black">{v.label}</span>
                 </div>
                 <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-600">
@@ -309,7 +309,7 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
         id="btn-submit-application"
         type="submit"
         disabled={loading}
-        className="w-full py-4 bg-sky-500 hover:bg-sky-600 text-white rounded-xl font-black flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-sky-500/20 active:translate-y-0.5 transition disabled:opacity-50 text-sm sm:text-base"
+        className="w-full py-4 bg-deliverix-500 hover:bg-deliverix-600 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-deliverix-600/20 text-white rounded-xl font-black flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-deliverix-500/20 active:translate-y-0.5 transition duration-200 disabled:opacity-50 text-sm sm:text-base focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
       >
         {loading ? (
           <>

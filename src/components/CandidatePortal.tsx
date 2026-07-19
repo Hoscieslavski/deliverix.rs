@@ -232,9 +232,9 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
   // Renderovanje odgovarajuće ikone za vozilo
   const renderVehicleIcon = (vozilo: string, className = "w-5 h-5") => {
     switch (vozilo) {
-      case 'automobil': return <Car className={`${className} text-sky-500`} />;
-      case 'skuter': return <ScooterIcon className={`${className} text-sky-500`} />;
-      default: return <Bike className={`${className} text-sky-500`} />;
+      case 'automobil': return <Car className={`${className} text-deliverix-500`} />;
+      case 'skuter': return <ScooterIcon className={`${className} text-deliverix-500`} />;
+      default: return <Bike className={`${className} text-deliverix-500`} />;
     }
   };
 
@@ -253,7 +253,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
 
     if (isActive) {
       return (
-        <div className="w-8 h-8 rounded-full bg-sky-500 text-white flex items-center justify-center shadow-lg shadow-sky-500/30 z-10 animate-pulse">
+        <div className="w-8 h-8 rounded-full bg-deliverix-500 text-white flex items-center justify-center shadow-lg shadow-deliverix-500/30 z-10 animate-pulse">
           {stepStatus === 'NEW' && <FileCheck className="w-4 h-4" />}
           {stepStatus === 'CONTACTED' && <PhoneCall className="w-4 h-4" />}
           {stepStatus === 'DOCUMENTS_PENDING' && <FileText className="w-4 h-4" />}
@@ -279,7 +279,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
         <button 
           id="btn-portal-back"
           onClick={onBack}
-          className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-sky-500 hover:bg-sky-50/50 rounded-xl transition cursor-pointer flex items-center gap-2"
+          className="px-4 py-2 text-sm font-bold text-gray-600 hover:text-deliverix-600 hover:bg-deliverix-50 rounded-xl transition cursor-pointer flex items-center gap-2"
         >
           &larr; Nazad na početnu
         </button>
@@ -308,7 +308,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
             id="portal-login-phone-card"
           >
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center mx-auto shadow-md">
+              <div className="w-12 h-12 bg-deliverix-50 text-deliverix-500 rounded-2xl flex items-center justify-center mx-auto shadow-md">
                 <Lock className="w-6 h-6" />
               </div>
               <h2 className="text-2xl font-black text-gray-900 tracking-tight">Kandidat Portal</h2>
@@ -333,7 +333,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                     placeholder="npr. +381 60 1234567" 
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-base font-medium focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-base font-medium focus:outline-none focus:ring-2 focus:ring-deliverix-500 focus:bg-white transition"
                     required
                   />
                 </div>
@@ -343,7 +343,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                 id="btn-request-otp"
                 type="submit"
                 disabled={loading}
-                className="w-full py-4 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400 text-white font-black rounded-2xl shadow-lg shadow-sky-500/20 text-center cursor-pointer transition flex items-center justify-center gap-2"
+                className="w-full py-4 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 disabled:bg-deliverix-400 text-white font-black rounded-2xl shadow-lg shadow-deliverix-600/15 text-center cursor-pointer transition flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
               >
                 {loading ? (
                   <>
@@ -372,7 +372,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
             id="portal-login-otp-card"
           >
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center mx-auto shadow-md">
+              <div className="w-12 h-12 bg-deliverix-50 text-deliverix-500 rounded-2xl flex items-center justify-center mx-auto shadow-md">
                 <Smartphone className="w-6 h-6" />
               </div>
               <h2 className="text-2xl font-black text-gray-900 tracking-tight">Potvrdite vaš identitet</h2>
@@ -410,7 +410,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   placeholder="------" 
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full text-center py-4 bg-gray-50 border border-gray-200 rounded-2xl text-2xl font-black tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition"
+                  className="w-full text-center py-4 bg-gray-50 border border-gray-200 rounded-2xl text-2xl font-black tracking-widest font-mono focus:outline-none focus:ring-2 focus:ring-deliverix-500 focus:bg-white transition"
                   required
                   autoFocus
                 />
@@ -433,7 +433,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   id="btn-verify-otp"
                   type="submit"
                   disabled={loading}
-                  className="w-2/3 py-4 bg-sky-500 hover:bg-sky-600 disabled:bg-sky-400 text-white font-black rounded-2xl shadow-lg shadow-sky-500/20 text-center cursor-pointer transition flex items-center justify-center gap-2"
+                  className="w-2/3 py-4 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 disabled:bg-deliverix-400 text-white font-black rounded-2xl shadow-lg shadow-deliverix-600/15 text-center cursor-pointer transition flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -460,7 +460,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
             <div className="bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-md flex flex-col md:flex-row justify-between gap-6">
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-sky-50 text-sky-500 rounded-2xl flex items-center justify-center shadow-xs">
+                  <div className="w-12 h-12 bg-deliverix-50 text-deliverix-500 rounded-2xl flex items-center justify-center shadow-xs">
                     <User className="w-6 h-6" />
                   </div>
                   <div>
@@ -473,7 +473,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   <div className="bg-gray-50/80 p-3 rounded-2xl border border-gray-100">
                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Grad</span>
                     <span className="text-sm font-bold text-gray-800 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-4 h-4 text-sky-500 shrink-0" />
+                      <MapPin className="w-4 h-4 text-deliverix-500 shrink-0" />
                       {profile.grad}
                     </span>
                   </div>
@@ -487,7 +487,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   <div className="bg-gray-50/80 p-3 rounded-2xl border border-gray-100 col-span-2 sm:col-span-2">
                     <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">Datum prijave</span>
                     <span className="text-sm font-bold text-gray-800 flex items-center gap-1 mt-0.5">
-                      <Calendar className="w-4 h-4 text-sky-500 shrink-0" />
+                      <Calendar className="w-4 h-4 text-deliverix-500 shrink-0" />
                       {new Date(profile.datum_prijave).toLocaleDateString('sr-RS', {
                         day: 'numeric',
                         month: 'long',
@@ -506,7 +506,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
                   id="btn-portal-refresh"
                   onClick={handleManualRefresh}
                   disabled={isRefreshing}
-                  className="px-4 py-2.5 bg-sky-50 hover:bg-sky-100 disabled:opacity-50 text-sky-700 font-bold rounded-xl transition cursor-pointer flex items-center gap-2 text-xs"
+                  className="px-4 py-2.5 bg-deliverix-50 hover:bg-deliverix-100 disabled:opacity-50 text-deliverix-700 font-bold rounded-xl transition cursor-pointer flex items-center gap-2 text-xs"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
                   Osveži status
@@ -543,7 +543,7 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
               <div className="lg:col-span-8 bg-white border border-gray-100 rounded-3xl p-6 sm:p-8 shadow-md space-y-6">
                 <div>
                   <h3 className="text-lg font-black text-gray-900 tracking-tight flex items-center gap-2">
-                    <ClipboardList className="w-5 h-5 text-sky-500" /> Moj Status Prijave
+                    <ClipboardList className="w-5 h-5 text-deliverix-500" /> Moj Status Prijave
                   </h3>
                   <p className="text-xs text-gray-500 mt-0.5">Pratite trenutnu fazu vaše prijave u realnom vremenu.</p>
                 </div>
@@ -568,18 +568,18 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
 
                           {/* Sadržaj koraka */}
                           <div className={`space-y-1 rounded-2xl p-4 transition-all duration-300 w-full ${
-                            isActive ? 'bg-sky-50/60 border border-sky-100 shadow-xs' : 
+                            isActive ? 'bg-deliverix-50 border border-deliverix-100 shadow-xs' : 
                             isCompleted ? 'bg-emerald-50/10' : 'opacity-60'
                           }`}>
                             <div className="flex justify-between items-center">
                               <span className={`text-base font-black ${
-                                isActive ? 'text-sky-900' :
+                                isActive ? 'text-deliverix-900' :
                                 isCompleted ? 'text-emerald-700 font-extrabold' : 'text-gray-500 font-bold'
                               }`}>
                                 {step.label}
                               </span>
                               {isActive && (
-                                <span className="bg-sky-500 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full animate-pulse">
+                                <span className="bg-deliverix-500 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full animate-pulse">
                                   Trenutno
                                 </span>
                               )}
@@ -608,46 +608,46 @@ export default function CandidatePortal({ onBack }: CandidatePortalProps) {
               <div className="lg:col-span-4 space-y-6">
                 
                 {/* Kartica sa informacijom o trenutnom koraku */}
-                <div className="bg-gradient-to-tr from-sky-500 to-sky-600 rounded-3xl p-6 text-white shadow-lg shadow-sky-500/10 space-y-4">
+                <div className="bg-gradient-to-br from-deliverix-500 to-deliverix-accent rounded-3xl p-6 text-white shadow-lg shadow-deliverix-500/10 space-y-4">
                   <h4 className="font-black text-lg tracking-tight">Korisne informacije</h4>
                   
                   {profile.status === 'NEW' && (
-                    <p className="text-sm text-sky-50 leading-relaxed">
+                    <p className="text-sm text-white/90 leading-relaxed">
                       Zahvaljujemo se na prijavi! Naš tim za podršku vrši inicijalnu proveru prijava. Uskoro ćemo vas kontaktirati na navedeni broj telefona. Držite telefon u blizini.
                     </p>
                   )}
                   {profile.status === 'CONTACTED' && (
-                    <p className="text-sm text-sky-50 leading-relaxed">
+                    <p className="text-sm text-white/90 leading-relaxed">
                       Razgovarali smo ili ćemo vas uskoro pozvati! Pripremite se za sledeću fazu u kojoj ćemo vam objasniti potrebnu dokumentaciju i agencijske uslove.
                     </p>
                   )}
                   {profile.status === 'DOCUMENTS_PENDING' && (
-                    <p className="text-sm text-sky-50 leading-relaxed">
+                    <p className="text-sm text-white/90 leading-relaxed">
                       Potrebno je poslati dokumente kako bismo vas uspešno registrovali. Molimo vas da obezbedite važeću ličnu kartu (min. 18 godina) i vozačku dozvolu (ukoliko vozite automobil ili motor).
                     </p>
                   )}
                   {profile.status === 'SENT_TO_PARTNER' && (
-                    <p className="text-sm text-sky-50 leading-relaxed">
+                    <p className="text-sm text-white/90 leading-relaxed">
                       Vaša prijava je uspešno prosleđena našoj partnerskoj agenciji. Oni će obaviti ugovornu dokumentaciju i pomoći vam oko isplate na svakih 15 dana.
                     </p>
                   )}
                   {profile.status === 'REGISTRATION' && (
-                    <p className="text-sm text-sky-50 leading-relaxed">
+                    <p className="text-sm text-white/90 leading-relaxed">
                       Kreiranje vašeg Wolt naloga je u toku! Dobićete SMS poruku od Wolt-a sa uputstvima za aktivaciju i preuzimanje dostavljačke torbe i opreme u vašem gradu.
                     </p>
                   )}
                   {profile.status === 'ACTIVE' && (
-                    <p className="text-sm text-sky-50 leading-relaxed">
+                    <p className="text-sm text-white/90 leading-relaxed">
                       Nalog je aktivan i oprema je spremna! Možete pokrenuti aplikaciju, izabrati sopstveno radno vreme i početi sa dostavama već danas! Srećan rad!
                     </p>
                   )}
                   {profile.status === 'INACTIVE' && (
-                    <p className="text-sm text-sky-50 leading-relaxed">
+                    <p className="text-sm text-white/90 leading-relaxed">
                       Vaša prijava je privremeno stopirana ili deaktivirana. Ukoliko imate bilo kakvih pitanja, kontaktirajte naš tim za podršku.
                     </p>
                   )}
 
-                  <div className="border-t border-white/20 pt-4 text-xs text-sky-200 flex items-center gap-1">
+                  <div className="border-t border-white/20 pt-4 text-xs text-deliverix-100 flex items-center gap-1">
                     <span>Zadnje ažuriranje:</span>
                     <strong className="text-white">
                       {profile.last_updated_at ? new Date(profile.last_updated_at).toLocaleDateString('sr-RS') : 'Uskoro'}

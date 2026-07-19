@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Bike, 
   MapPin, 
@@ -42,7 +42,7 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
 
   if (error || !src) {
     return (
-      <div className={`${className} bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 flex flex-col items-center justify-center p-6 relative overflow-hidden text-white`}>
+      <div className={`${className} bg-gradient-to-br from-deliverix-500 to-deliverix-accent flex flex-col items-center justify-center p-6 relative overflow-hidden text-white`}>
         <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
         <div className="absolute -left-6 -top-6 w-20 h-20 rounded-full bg-white/10 blur-lg"></div>
         <div className="relative z-10 flex flex-col items-center gap-2 text-center select-none">
@@ -445,7 +445,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] py-20 animate-fade-in" id="landing-loading">
-        <div className="w-10 h-10 border-4 border-sky-200 border-t-sky-500 rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-deliverix-100 border-t-deliverix-500 rounded-full animate-spin"></div>
         <p className="mt-4 text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">
           Učitavanje...
         </p>
@@ -536,7 +536,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
       
       {/* Obaveštenje sa vrha (Samo ako postoji) */}
       {siteSettings?.announcement_banner && (
-        <div className="bg-amber-50 border border-amber-150 text-amber-900 px-4 py-3 rounded-2xl flex items-center justify-center gap-2 text-xs sm:text-sm font-bold shadow-sm">
+        <div className="bg-amber-50/40 border border-amber-100/80 text-amber-800/95 px-5 py-3.5 rounded-2xl flex items-center justify-center gap-2.5 text-xs sm:text-sm font-semibold shadow-xs mb-8 sm:mb-10 mt-2 sm:mt-4 transition duration-300 hover:border-amber-200/50" id="hero-announcement-banner">
           <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
           <span>{siteSettings?.announcement_banner}</span>
         </div>
@@ -544,13 +544,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
 
       {/* Hero Sekcija - Dve kolone */}
       {siteSettings?.hero_enabled !== false && (
-        <section className="relative overflow-hidden pt-4 pb-4 lg:pt-8 lg:pb-10" id="section-hero">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+        <section className="relative overflow-hidden pt-6 pb-6 lg:pt-12 lg:pb-14 mt-4 sm:mt-6" id="section-hero">
+        <div className="grid grid-cols-1 min-[900px]:grid-cols-12 gap-8 min-[900px]:gap-10 items-center">
           
           {/* Tekst Hero Sekcije (Leva strana) */}
-          <div className="lg:col-span-7 space-y-5 text-left flex flex-col items-start">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-sky-50 text-sky-800 rounded-full text-xs font-bold uppercase tracking-wider border border-sky-100">
-              <Sparkles className="w-3.5 h-3.5 text-sky-500" />
+          <div className="min-[900px]:col-span-7 space-y-5 text-left flex flex-col items-start">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-deliverix-50 text-deliverix-900 rounded-full text-xs font-bold uppercase tracking-wider border border-deliverix-100">
+              <Sparkles className="w-3.5 h-3.5 text-deliverix-accent" />
               <span>{siteSettings?.hero_badge_title || "Wolt i Glovo prijava za dostavljače"}</span>
             </div>
             
@@ -593,7 +593,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                 onClick={() => setActivePlatformTab('wolt')}
                 className={`flex-1 p-3.5 rounded-xl transition-all cursor-pointer text-left flex flex-col justify-between border ${
                   activePlatformTab === 'wolt'
-                    ? 'bg-sky-50 text-sky-900 border-sky-300 shadow-lg shadow-sky-500/10'
+                    ? 'bg-deliverix-50 text-deliverix-900 border-deliverix-300 shadow-lg shadow-deliverix-500/10'
                     : 'bg-white text-gray-800 border-gray-200 hover:bg-gray-50/50'
                 }`}
               >
@@ -601,11 +601,11 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                   <span className="text-sm font-black uppercase tracking-wider">
                     {siteSettings?.button_wolt_title || "Wolt"}
                   </span>
-                  <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${activePlatformTab === 'wolt' ? 'bg-white text-sky-700 border border-sky-200 shadow-xs' : 'bg-emerald-100 text-emerald-800 animate-pulse'}`}>
+                  <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${activePlatformTab === 'wolt' ? 'bg-white text-deliverix-700 border border-deliverix-200 shadow-xs' : 'bg-emerald-100 text-emerald-800 animate-pulse'}`}>
                     {siteSettings?.button_wolt_badge || "Aktivno / Prijavi se"}
                   </span>
                 </div>
-                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'wolt' ? 'text-sky-700' : 'text-gray-500'}`}>
+                <p className={`text-[10px] mt-1 font-semibold ${activePlatformTab === 'wolt' ? 'text-deliverix-700' : 'text-gray-500'}`}>
                   {siteSettings?.button_wolt_desc || "Isplate na 15 dana. Fleksibilno vreme."}
                 </p>
               </button>
@@ -644,7 +644,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                 siteSettings?.hero_bullet_4 || 'Besplatna podrška za start'
               ].map((text, idx) => (
                 <div key={idx} className="flex items-center gap-2 bg-gray-50 border border-gray-150/50 p-2.5 rounded-xl">
-                  <div className="w-4.5 h-4.5 bg-sky-100 text-sky-600 rounded-full flex items-center justify-center shrink-0">
+                  <div className="w-4.5 h-4.5 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
                     <Check className="w-2.5 h-2.5 stroke-[3]" />
                   </div>
                   <span className="text-xs font-semibold text-gray-700">
@@ -659,7 +659,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
               <button
                 id="hero-apply-btn"
                 onClick={onOpenApply}
-                className="flex-1 px-6 py-3.5 bg-sky-500 hover:bg-sky-600 text-white text-sm font-black rounded-xl shadow-lg shadow-sky-500/20 text-center active:translate-y-0.5 transition flex items-center justify-center gap-2 cursor-pointer"
+                className="flex-1 px-6 py-3.5 bg-deliverix-500 hover:bg-deliverix-600 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-deliverix-600/20 active:bg-deliverix-700 text-white text-sm font-black rounded-xl shadow-lg shadow-deliverix-600/15 text-center active:translate-y-0.5 transition duration-200 flex items-center justify-center gap-2 cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
               >
                 {siteSettings?.button_hero_cta || "Započni prijavu odmah"} <ArrowRight className="w-4 h-4" />
               </button>
@@ -674,7 +674,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     ? "#renta-vozila" 
                     : "#kontakt"
                 }
-                className="px-6 py-3.5 bg-gray-50 hover:bg-gray-100 text-gray-700 border border-gray-200 text-sm font-bold rounded-xl text-center transition flex items-center justify-center"
+                className="px-6 py-3.5 bg-gray-50 hover:bg-gray-100 hover:-translate-y-[1px] hover:shadow-md text-gray-700 border border-gray-200 text-sm font-bold rounded-xl text-center transition duration-200 flex items-center justify-center"
               >
                 {siteSettings?.button_hero_secondary_cta || "Kako funkcioniše?"}
               </a>
@@ -682,10 +682,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           </div>
 
           {/* Vizuelni desni deo (Slika dostavljača / Slajder) */}
-          <div className="lg:col-span-5 relative flex justify-center items-center">
-            <div className="relative w-full max-w-sm lg:max-w-none">
+          <div className="min-[900px]:col-span-5 relative flex justify-center items-center">
+            <div className="relative w-full max-w-sm min-[900px]:max-w-none">
               {/* Ukrasni pozadinski elementi (Ambijentalno blago svetlo) */}
-              <div className="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-sky-200/20 blur-3xl -z-10 animate-pulse duration-[8000ms]"></div>
+              <div className="absolute -right-10 -bottom-10 w-64 h-64 rounded-full bg-deliverix-200/20 blur-3xl -z-10 animate-pulse duration-[8000ms]"></div>
               <div className="absolute -left-10 -top-10 w-48 h-48 rounded-full bg-blue-100/15 blur-2xl -z-10"></div>
               
               <div className="relative bg-white p-2.5 rounded-[2rem] border border-gray-150/80 shadow-2xl overflow-hidden aspect-square group">
@@ -753,7 +753,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                   {/* Suptilan i elegantan overlay na dnu slike koji eliminiše osećaj reklame */}
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-5 sm:p-6 pt-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4 z-20">
                     <div className="min-w-0 text-left">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-sky-400">
+                      <p className="text-[10px] font-black uppercase tracking-widest text-deliverix-accent">
                         {siteSettings?.hero_slider_upper_text || "Započni posao lakše"}
                       </p>
                       <p className="text-xs sm:text-sm font-bold text-white mt-1 leading-snug">
@@ -791,10 +791,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
       {/* Sekcija: Šta je Deliverix? (Celina 2) */}
       {siteSettings?.about_enabled !== false && (
       <section className="bg-white border border-slate-100/90 p-8 sm:p-12 rounded-[2rem] space-y-8 shadow-xl relative overflow-hidden" id="section-sta-je-deliverix">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-sky-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-deliverix-500/5 rounded-full blur-2xl pointer-events-none"></div>
         <div className="space-y-6">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50/60 text-sky-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-sky-100/50">
-            <Compass className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-deliverix-50 text-deliverix-900 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-deliverix-100">
+            <Compass className="w-3.5 h-3.5 text-deliverix-accent shrink-0" />
             <span>Saznajte ko smo mi i šta radimo</span>
           </div>
           
@@ -833,7 +833,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     "dostavljač Srbija"
                   ]
                 ).map((tag: string, idx: number) => (
-                  <span key={idx} className="px-3 py-1 bg-sky-50/40 hover:bg-sky-50 text-sky-700 hover:text-sky-800 rounded-full text-xs font-semibold border border-sky-100/50 transition duration-200">
+                  <span key={idx} className="px-3 py-1 bg-deliverix-50/40 hover:bg-deliverix-50 text-deliverix-700 hover:text-deliverix-800 rounded-full text-xs font-semibold border border-deliverix-100/50 transition duration-200">
                     {tag}
                   </span>
                 ))}
@@ -863,13 +863,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           {targetAudienceCards.map((item: any, idx: number) => {
             const Icon = item.icon;
             return (
-              <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-sky-300 transition-all duration-300 space-y-3 flex flex-col justify-between">
+              <div key={idx} className="bg-white p-6 rounded-2xl border border-gray-100 hover:border-deliverix-200 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 ease-out space-y-3 flex flex-col justify-between">
                 <div className="space-y-3">
-                  <div className="w-10 h-10 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center shrink-0 border border-sky-100/50">
-                    <Icon className="w-5 h-5" />
+                  <div className="w-11 h-11 bg-deliverix-50 text-deliverix-500 rounded-xl flex items-center justify-center shrink-0 border border-deliverix-100/50">
+                    <Icon className="w-5.5 h-5.5" />
                   </div>
-                  <h3 className="font-bold text-gray-900 text-base">{item.title}</h3>
-                  <p className="text-gray-500 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
+                  <h3 className="font-bold text-gray-900 text-base leading-normal">{item.title}</h3>
+                  <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             );
@@ -877,21 +877,21 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
         </div>
       </section>
       {siteSettings?.why_choose_us_enabled !== false && (
-        <section className="bg-gradient-to-tr from-sky-500 to-sky-600 rounded-3xl p-6 sm:p-10 text-white shadow-2xl shadow-sky-500/10 space-y-6" id="zasto-nas-biraju">
+        <section className="bg-gradient-to-br from-deliverix-500 to-deliverix-accent rounded-3xl py-4.5 px-6 sm:py-7 sm:px-10 text-white shadow-2xl shadow-deliverix-500/15 space-y-5" id="zasto-nas-biraju">
         <div className="max-w-4xl mx-auto text-center space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/20 text-white rounded-full text-xs font-black uppercase tracking-wider border border-white/10">
-            <Bike className="w-4 h-4 shrink-0" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-amber-400 text-slate-950 rounded-full text-xs font-black uppercase tracking-wider border border-amber-300 shadow-md shadow-amber-400/10">
+            <Bike className="w-4 h-4 shrink-0 text-slate-950" />
             <span>100% Besplatno</span>
           </div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
             {siteSettings?.why_choose_us_title || "Zašto kandidati biraju nas?"}
           </h2>
-          <p className="text-xs sm:text-base text-sky-50 leading-relaxed max-w-3xl mx-auto font-medium">
+          <p className="text-xs sm:text-base text-white/90 leading-relaxed max-w-3xl mx-auto font-medium">
             {siteSettings?.why_choose_us_subtitle || "Naša usluga posredovanja, podrške i savetovanja je potpuno besplatna za sve kandidate. Nemamo nikakve skrivene naknade, članarine niti uzimamo procenat od tvoje zarade."}
           </p>
         </div>
 
-        <div className="border-t border-white/20 pt-6 max-w-5xl mx-auto">
+        <div className="border-t border-white/40 pt-5 max-w-5xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
             {(siteSettings?.why_choose_us_items && siteSettings.why_choose_us_items.length > 0
               ? siteSettings.why_choose_us_items
@@ -902,8 +902,8 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                 'Dostupni smo ti za sva pitanja – uvek besplatno'
               ]
             ).map((item: string, idx: number) => (
-              <div key={idx} className="bg-white/10 backdrop-blur-xs p-3.5 rounded-xl border border-white/10 flex items-center gap-3">
-                <div className="w-5.5 h-5.5 bg-white text-sky-600 rounded-full flex items-center justify-center shrink-0 shadow-xs">
+              <div key={idx} className="bg-white/8 backdrop-blur-xs p-3.5 rounded-xl border border-white/12 hover:bg-white/12 transition-all duration-200 flex items-center gap-3">
+                <div className="w-5.5 h-5.5 bg-white text-deliverix-600 rounded-full flex items-center justify-center shrink-0 shadow-xs">
                   <Check className="w-3 h-3 stroke-[3]" />
                 </div>
                 <span className="text-xs sm:text-sm font-semibold text-white antialiased">{item}</span>
@@ -936,10 +936,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             'grid-cols-1 md:grid-cols-3'
           }`}>
             {steps.map((step, idx) => (
-              <div key={idx} className="bg-white p-8 rounded-2xl shadow-xs border border-gray-100 relative space-y-4 hover:border-sky-300 transition-all duration-300 group">
-                <span className="text-5xl font-black text-sky-300 group-hover:text-sky-400 transition-colors absolute top-4 right-6">{step.number || `0${idx + 1}`}</span>
-                <h3 className="text-xl font-bold text-gray-900 pt-4">{step.title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{step.desc}</p>
+              <div key={idx} className="bg-white p-8 rounded-2xl shadow-xs border border-gray-100 hover:border-deliverix-200 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 ease-out relative space-y-4 group">
+                <span className="text-5xl font-black text-deliverix-200 group-hover:text-deliverix-400 transition-colors absolute top-4 right-6">{step.number || `0${idx + 1}`}</span>
+                <h3 className="text-xl font-bold text-gray-900 pt-4 leading-normal">{step.title}</h3>
+                <p className="text-gray-700 text-sm leading-relaxed">{step.desc}</p>
               </div>
             ))}
           </div>
@@ -963,12 +963,12 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             {requirements.map((req, idx) => {
               const ReqIcon = req.icon;
               return (
-                <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-100/80 hover:border-sky-300 hover:shadow-lg hover:shadow-sky-500/5 transition-all duration-300 space-y-4 flex flex-col items-center text-center">
-                  <div className="w-12 h-12 bg-sky-50 text-sky-500 rounded-xl flex items-center justify-center border border-sky-100/50">
-                    <ReqIcon className="w-6 h-6" />
+                <div key={idx} className="bg-white p-6 rounded-2xl border border-slate-100/80 hover:border-deliverix-200 hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 ease-out space-y-4 flex flex-col items-center text-center">
+                  <div className="w-13 h-13 bg-deliverix-50 text-deliverix-500 rounded-xl flex items-center justify-center border border-deliverix-100/50 shrink-0">
+                    <ReqIcon className="w-6.5 h-6.5" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900">{req.title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{req.desc}</p>
+                  <h3 className="text-lg font-bold text-gray-900 leading-normal">{req.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{req.desc}</p>
                 </div>
               );
             })}
@@ -978,7 +978,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
 
       {/* Sekcija: Nemaš Vozilo? Nema Problema! (Celina C - 3.2 i H3 2.2) */}
       {siteSettings?.rent_enabled === true && (
-        <section id="renta-vozila" className="bg-sky-50/20 rounded-[2rem] p-8 sm:p-12 border border-sky-100/30 space-y-8 shadow-xl">
+        <section id="renta-vozila" className="bg-deliverix-50/10 rounded-[2rem] p-8 sm:p-12 border border-deliverix-100/30 space-y-8 shadow-xl">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7 space-y-4">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50/60 text-amber-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-amber-100/50">
@@ -997,7 +997,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
                 onClick={onOpenApply}
-                className="px-6 py-3.5 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl shadow-lg shadow-sky-500/25 transition flex items-center justify-center gap-2 cursor-pointer text-sm"
+                className="px-6 py-3.5 bg-deliverix-500 hover:bg-deliverix-600 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-deliverix-600/20 active:bg-deliverix-700 text-white font-black rounded-xl shadow-lg shadow-deliverix-600/15 transition duration-200 flex items-center justify-center gap-2 cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
               >
                 Iznajmi vozilo i počni <ArrowRight className="w-4 h-4" />
               </button>
@@ -1008,18 +1008,18 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             {rentItems.filter(v => v.enabled).map((v, i) => {
               const Icon = v.icon;
               return (
-                <div key={i} className={`bg-white p-4.5 rounded-2xl border flex items-start gap-4 shadow-sm hover:shadow-xl hover:border-sky-200 transition duration-300 ${
+                <div key={i} className={`bg-white p-4.5 rounded-2xl border flex items-start gap-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-deliverix-200 transition-all duration-200 ease-out ${
                   v.available ? 'border-slate-100' : 'border-slate-200 bg-gray-50/50 opacity-90'
                 }`}>
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
-                    v.available ? 'bg-sky-50 text-sky-500 border-sky-100/50' : 'bg-gray-100 text-gray-500 border-gray-200'
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${
+                    v.available ? 'bg-deliverix-50 text-deliverix-500 border-deliverix-100/50' : 'bg-gray-100 text-gray-500 border-gray-200'
                   }`}>
-                    <Icon className="w-5 h-5" />
+                    <Icon className="w-5.5 h-5.5" />
                   </div>
                   <div className="space-y-1 flex-1">
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="font-bold text-gray-900 text-sm sm:text-base">{v.title}</h3>
+                        <h3 className="font-bold text-gray-900 text-sm sm:text-base leading-normal">{v.title}</h3>
                         {v.badge && (
                           <span className="text-[9px] font-extrabold bg-amber-50 text-amber-800 px-2 py-0.5 rounded-full uppercase tracking-wider border border-amber-100 shrink-0">
                             {v.badge}
@@ -1037,7 +1037,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                         {v.available ? 'Dostupno' : 'Zauzeto'}
                       </span>
                     </div>
-                    <p className="text-gray-500 text-xs leading-relaxed">{v.desc}</p>
+                    <p className="text-gray-600 text-xs leading-relaxed">{v.desc}</p>
                   </div>
                 </div>
               );
@@ -1051,8 +1051,8 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
       {siteSettings?.target_audience_enabled !== false && (
         <section id="zasto-se-prijaviti" className="bg-white border border-slate-100/90 rounded-[2rem] p-8 sm:p-12 space-y-8 shadow-xl">
           <div className="max-w-3xl space-y-4">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50/60 text-sky-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-sky-100/50">
-              <HeartHandshake className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-deliverix-50 text-deliverix-900 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-deliverix-100">
+              <HeartHandshake className="w-3.5 h-3.5 text-deliverix-accent shrink-0" />
               <span>Prednosti Deliverix Platforme</span>
             </div>
             
@@ -1073,13 +1073,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
           }`}>
             {whyApplyItems.map((item: any, idx: number) => (
-              <div key={idx} className="p-5 bg-slate-50/30 border border-slate-100 hover:border-sky-300 hover:bg-white hover:shadow-lg hover:shadow-sky-500/5 transition-all duration-300 rounded-2xl flex flex-col justify-between">
+              <div key={idx} className="p-5 bg-slate-50/30 border border-slate-100 hover:border-deliverix-200 hover:bg-white hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 ease-out rounded-2xl flex flex-col justify-between">
                 <div className="space-y-3">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/40">
-                    <Check className="w-4 h-4 stroke-[3]" />
+                  <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100/40">
+                    <Check className="w-4.5 h-4.5 stroke-[3]" />
                   </div>
-                  <h3 className="font-extrabold text-sm sm:text-base text-gray-900 leading-snug">{item.title}</h3>
-                  <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{item.desc}</p>
+                  <h3 className="font-extrabold text-sm sm:text-base text-gray-900 leading-normal">{item.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -1092,7 +1092,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             <button
               id="zasto-prijavi-se-btn"
               onClick={onOpenApply}
-              className="w-full sm:w-auto px-8 py-4 bg-sky-500 hover:bg-sky-600 text-white font-black rounded-xl shadow-lg shadow-sky-500/20 transition flex items-center justify-center gap-2 cursor-pointer text-sm"
+              className="w-full sm:w-auto px-8 py-4 bg-deliverix-500 hover:bg-deliverix-600 hover:-translate-y-[1px] hover:shadow-xl hover:shadow-deliverix-600/20 active:bg-deliverix-700 text-white font-black rounded-xl shadow-lg shadow-deliverix-600/15 transition duration-200 flex items-center justify-center gap-2 cursor-pointer text-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
             >
               {siteSettings?.button_requirements_cta || "Započni besplatnu prijavu"} <ArrowRight className="w-4 h-4" />
             </button>
@@ -1105,7 +1105,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
         <section id="najnovije-sa-bloga" className="space-y-10 py-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-gray-100 pb-5">
             <div className="space-y-2">
-              <span className="text-xs font-black text-sky-500 uppercase tracking-widest block">Korisni saveti & novosti</span>
+              <span className="text-xs font-black text-deliverix-500 uppercase tracking-widest block">Korisni saveti & novosti</span>
               <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight">Najnovije sa našeg bloga</h2>
               <p className="text-sm text-gray-500 max-w-xl">
                 Pročitaj stručne savete, vodiče i stvarna iskustva dostavljača kako bi maksimizovao svoju zaradu.
@@ -1114,7 +1114,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             <button
               id="view-all-blog-posts-teaser-btn"
               onClick={onNavigateToBlog}
-              className="text-sm font-black text-sky-500 hover:text-sky-600 transition flex items-center gap-1.5 cursor-pointer shrink-0"
+              className="text-sm font-black text-deliverix-500 hover:text-deliverix-600 transition flex items-center gap-1.5 cursor-pointer shrink-0"
             >
               {siteSettings?.button_blog_cta || "Poseti naš blog"} <ArrowRight className="w-4 h-4" />
             </button>
@@ -1151,7 +1151,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     </div>
                     <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
                       <div className="w-16 h-3 bg-gray-250 rounded-md"></div>
-                      <div className="w-20 h-3 bg-sky-200 rounded-md"></div>
+                      <div className="w-20 h-3 bg-deliverix-200 rounded-md"></div>
                     </div>
                   </div>
                 </div>
@@ -1161,7 +1161,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                 <div
                   key={post.id}
                   onClick={onNavigateToBlog}
-                  className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-gray-200/80 transition duration-300 flex flex-col cursor-pointer group snap-start shrink-0 w-[85%] sm:w-[60%] md:w-full"
+                  className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-xs hover:shadow-md hover:border-deliverix-200 hover:-translate-y-0.5 transition-all duration-200 ease-out flex flex-col cursor-pointer group snap-start shrink-0 w-[85%] sm:w-[60%] md:w-full"
                 >
                   {/* Slika */}
                   <div className="h-48 overflow-hidden bg-gray-100 relative shrink-0">
@@ -1181,24 +1181,24 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                       {/* Tagovi */}
                       <div className="flex flex-wrap gap-1.5">
                         {post.tags?.map((tag: string) => (
-                          <span key={tag} className="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-md text-[10px] font-bold">
+                          <span key={tag} className="px-2 py-0.5 bg-deliverix-50 text-deliverix-700 rounded-md text-[10px] font-bold">
                             #{tag}
                           </span>
                         ))}
                       </div>
                       {/* Naslov */}
-                      <h3 className="font-extrabold text-gray-900 group-hover:text-sky-500 transition line-clamp-2 leading-snug">
+                      <h3 className="font-extrabold text-gray-900 group-hover:text-deliverix-600 transition line-clamp-2 leading-normal">
                         {post.title}
                       </h3>
                       {/* Kratak opis */}
-                      <p className="text-xs text-gray-500 line-clamp-3 leading-relaxed">
+                      <p className="text-xs text-gray-600 line-clamp-3 leading-relaxed">
                         {post.summary}
                       </p>
                     </div>
 
                     <div className="pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] text-gray-500 font-bold">
                       <span>{post.author}</span>
-                      <span className="text-sky-500 group-hover:translate-x-1 transition-transform flex items-center gap-1 shrink-0 font-extrabold">
+                      <span className="text-deliverix-600 transition-transform duration-200 flex items-center gap-1 shrink-0 font-extrabold group-hover:translate-x-[3px]">
                         Pročitaj više <ArrowRight className="w-3.5 h-3.5" />
                       </span>
                     </div>
@@ -1220,7 +1220,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     className="w-8 h-8 flex items-center justify-center cursor-pointer"
                     aria-label={`Prikaži članak ${idx + 1}`}
                   >
-                    <span className={`h-2 rounded-full transition-all duration-300 ${landingBlogIndex === idx ? 'w-6 bg-sky-500' : 'w-2 bg-gray-200 hover:bg-gray-300'}`} />
+                    <span className={`h-2 rounded-full transition-all duration-300 ${landingBlogIndex === idx ? 'w-6 bg-deliverix-500' : 'w-2 bg-gray-200 hover:bg-gray-300'}`} />
                   </button>
                 ))}
               </div>
@@ -1253,8 +1253,8 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
       {siteSettings?.seo_article_enabled !== false && (
         <section className="bg-white border border-slate-100/90 rounded-[2rem] p-8 sm:p-12 space-y-8 shadow-xl" id="vodic-zasto-posao-dostavljaca">
           <div className="w-full space-y-6">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-sky-50/60 text-sky-800 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-sky-100/50">
-              <Sparkles className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-deliverix-50 text-deliverix-900 rounded-full text-[10px] font-extrabold uppercase tracking-widest border border-deliverix-100">
+              <Sparkles className="w-3.5 h-3.5 text-deliverix-accent shrink-0" />
               <span>{siteSettings?.seo_article_badge || "Karijerni vodič i saveti"}</span>
             </div>
             
@@ -1320,27 +1320,35 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
               return (
                 <div 
                   key={idx} 
-                  className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden transition-colors"
+                  className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden hover:border-deliverix-200 hover:shadow-md hover:shadow-deliverix-100/35 transition-all duration-200 group/faq"
                   id={`faq-item-${idx}`}
                 >
                   <button
                     type="button"
                     onClick={() => toggleFaq(idx)}
-                    className="w-full px-6 py-4 text-left font-bold text-gray-900 flex justify-between items-center hover:bg-gray-50/50 cursor-pointer transition text-sm sm:text-base"
+                    className="w-full px-6 py-5 text-left font-bold text-gray-900 flex justify-between items-center hover:bg-slate-50/40 cursor-pointer transition text-sm sm:text-base group"
                   >
-                    <span>{faq.q}</span>
-                    {isOpen ? <ChevronUp className="w-5 h-5 text-sky-500 shrink-0" /> : <ChevronDown className="w-5 h-5 text-gray-500 shrink-0" />}
+                    <span className="pr-4 leading-normal">{faq.q}</span>
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center bg-slate-50 border border-slate-100 text-gray-400 group-hover:text-deliverix-500 group-hover:bg-deliverix-50 group-hover:border-deliverix-100/30 transition duration-200 shrink-0">
+                      <ChevronDown className={`w-5 h-5 transition-transform duration-300 ease-out ${isOpen ? 'rotate-180 text-deliverix-500' : 'text-gray-500'}`} />
+                    </div>
                   </button>
                   
-                  {isOpen && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: 'auto', opacity: 1 }}
-                      className="px-6 pb-5 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-50"
-                    >
-                      {faq.a}
-                    </motion.div>
-                  )}
+                  <AnimatePresence initial={false}>
+                    {isOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="overflow-hidden"
+                      >
+                        <div className="px-6 pb-5 pt-1 text-sm text-gray-600 leading-relaxed border-t border-gray-100/80">
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               );
             })}
@@ -1350,7 +1358,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
 
       {/* Kontakt / Poziv na akciju */}
       {siteSettings?.footer_cta_enabled !== false && (
-        <section id="kontakt" className="bg-sky-500 rounded-3xl text-white p-8 sm:p-12 text-center space-y-8 relative overflow-hidden">
+        <section id="kontakt" className="bg-deliverix-500 rounded-3xl text-white p-8 sm:p-12 text-center space-y-8 relative overflow-hidden">
           {/* Dekorativni krugovi */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/5 rounded-full -ml-20 -mb-20 pointer-events-none"></div>
@@ -1359,7 +1367,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight">
               {siteSettings?.footer_cta_title || "Započni svoju dostavljačku karijeru danas"}
             </h2>
-            <p className="text-sky-200 text-sm sm:text-base">
+            <p className="text-deliverix-100 text-sm sm:text-base">
               {siteSettings?.footer_cta_desc || "Nemoj odlagati priliku za odličnu zaradu i potpunu slobodu. Registracija te ništa ne košta i ne obavezuje te ni na šta. Pomažemo ti oko celog procesa besplatno."}
             </p>
           </div>
@@ -1368,7 +1376,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             <button
               id="cta-footer-apply-btn"
               onClick={onOpenApply}
-              className="px-8 py-4 bg-white hover:bg-gray-50 text-sky-600 font-black rounded-2xl shadow-lg shadow-sky-950/20 transition cursor-pointer flex items-center gap-2"
+              className="px-8 py-4 bg-white hover:bg-white hover:-translate-y-[1px] hover:shadow-xl hover:shadow-white/10 text-deliverix-600 font-black rounded-2xl shadow-lg shadow-deliverix-950/20 transition duration-200 cursor-pointer flex items-center gap-2 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
             >
               {siteSettings?.button_footer_cta || "Započni prijavu odmah (Traje 1 min)"} <ArrowRight className="w-5 h-5" />
             </button>
@@ -1377,12 +1385,12 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
               href={`tel:${(siteSettings?.support_phone || "+381 60 123 4567").replace(/\s+/g, '')}`}
               className="flex items-center gap-2 px-5 py-3 bg-white/10 hover:bg-white/20 text-white rounded-2xl text-xs sm:text-sm font-semibold backdrop-blur-xs transition cursor-pointer"
             >
-              <Phone className="w-4 h-4 text-sky-200" />
+              <Phone className="w-4 h-4 text-deliverix-100" />
               <span>Podrška: {siteSettings?.support_phone || "+381 60 123 4567"}</span>
             </a>
           </div>
 
-          <p className="text-[11px] text-sky-200/90">
+          <p className="text-[11px] text-deliverix-100/90">
             {siteSettings?.footer_disclaimer || "Napomena: Mi nismo deo ni jedne dostavne mreže (Wolt, Glovo, itd.) već nezavisni posrednik za podršku, informacije i brzu regrutaciju u Srbiji. Sve informacije su neutralne i tačne."}
           </p>
         </section>

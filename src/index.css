@@ -27,6 +27,29 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-deliverix-50: #f0f5ff;
+  --color-deliverix-100: #dce7ff;
+  --color-deliverix-200: #b9ceff;
+  --color-deliverix-300: #8eaeff;
+  --color-deliverix-400: #5684f4;
+  --color-deliverix-500: #0b47d8;
+  --color-deliverix-600: #093cc0;
+  --color-deliverix-700: #07339f;
+  --color-deliverix-800: #082b7f;
+  --color-deliverix-900: #09245f;
+
+  --color-deliverix-accent: #38bdf8;
+
+  --color-deliverix-heading: #0f172a;
+  --color-deliverix-body: #334155;
+  --color-deliverix-muted: #64748b;
+  --color-deliverix-surface: #f8fafc;
+  --color-deliverix-border: #e2e8f0;
+
+  --color-deliverix-success: #16a34a;
+  --color-deliverix-warning: #d97706;
+  --color-deliverix-error: #dc2626;
 }
 
 /* Stabilizacija visine Hero sekcije radi eliminisanja CLS-a (Faza 3) */

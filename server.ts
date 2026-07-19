@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
+import sharp from 'sharp';
 import { initializeApp } from 'firebase/app';
 import { 
   getFirestore, 
@@ -100,14 +101,27 @@ app.use('/uploads', express.static(uploadsDir, {
 }));
 
 // Specijalno preusmeravanje / fallback za logotipe kako bi se sprečio 404 (stale first paint / missing assets)
-app.get('/assets/images/logo_custom.png', (req, res) => {
+app.get('/assets/images/logo_custom.webp', (req, res) => {
   const possiblePaths = [
-    path.join(process.cwd(), 'dist', 'assets', 'images', 'logo_custom.png'),
-    path.join(process.cwd(), 'public', 'assets', 'images', 'logo_custom.png'),
-    path.join(process.cwd(), 'public', 'logo.png')
+    path.join(process.cwd(), 'dist', 'assets', 'images', 'logo_custom.webp'),
+    path.join(process.cwd(), 'public', 'assets', 'images', 'logo_custom.webp')
   ];
   for (const p of possiblePaths) {
     if (fs.existsSync(p)) {
+      return res.sendFile(p);
+    }
+  }
+  return res.status(404).send('Not Found');
+});
+
+app.get('/assets/images/logo_custom.png', (req, res) => {
+  const possiblePaths = [
+    path.join(process.cwd(), 'dist', 'assets', 'images', 'logo_custom.webp'),
+    path.join(process.cwd(), 'public', 'assets', 'images', 'logo_custom.webp')
+  ];
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      res.setHeader('Content-Type', 'image/webp');
       return res.sendFile(p);
     }
   }
@@ -1145,7 +1159,7 @@ app.get('/api/marketing/seo', async (req, res) => {
       announcement_banner: "Slobodna mesta za nove dostavljače u Beogradu i Novom Sadu! Prijavi se već danas.",
       support_phone: "+381 60 123 4567",
       logo_style: "custom",
-      logo_url: "/assets/images/logo_custom.png",
+      logo_url: "/assets/images/logo_custom.webp",
       logo_blend_mode: "normal",
       hero_title: "Dostava koja se prilagođava tvojim pravilima",
       hero_platform_title: "Wolt i Glovo platforme u Srbiji",
@@ -1656,31 +1670,157 @@ app.post('/api/marketing/upload-logo', marketingAuthMiddleware, async (req, res)
       return res.status(400).json({ error: 'Slika je prevelika. Maksimalna veličina logotipa je 600KB.' });
     }
 
-    const filename = 'logo_custom.png';
-    const stableUrl = '/assets/images/logo_custom.png';
+    const filename = 'logo_custom.webp';
+    const stableUrl = '/assets/images/logo_custom.webp';
 
-    // 1. Snimanje u public folder (kako bi preživelo build/deploy/commit)
+    // 1. Provera stvarnog formata slike pomoću sharp
+    let metadata;
+    try {
+      metadata = await sharp(buffer).metadata();
+    } catch (e) {
+      console.error('Greška pri čitanju metapodataka slike:', e);
+      return res.status(400).json({ error: 'Format slike nije podržan ili je fajl oštećen.' });
+    }
+
+    const realFormat = metadata.format;
+    if (realFormat !== 'webp' && realFormat !== 'png' && realFormat !== 'jpeg') {
+      return res.status(400).json({ error: 'Dozvoljeni formati su samo WebP, PNG i JPEG/JPG.' });
+    }
+
+    let finalBuffer: Buffer;
+
+    if (realFormat === 'webp') {
+      const width = metadata.width || 0;
+      const height = metadata.height || 0;
+
+      if (width <= 300 && height <= 300) {
+        // Direktno čuvanje bez ikakve obrade, rekompresije ili promena
+        finalBuffer = buffer;
+      } else {
+        try {
+          finalBuffer = await sharp(buffer)
+            .resize({
+              width: 300,
+              height: 300,
+              fit: 'inside',
+              withoutEnlargement: true
+            })
+            .webp({ quality: 85 })
+            .toBuffer();
+        } catch (err) {
+          console.error('Greška pri resize-u WebP slike:', err);
+          return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
+        }
+      }
+    } else if (realFormat === 'png') {
+      try {
+        finalBuffer = await sharp(buffer)
+          .resize({
+            width: 300,
+            height: 300,
+            fit: 'inside',
+            withoutEnlargement: true
+          })
+          .webp({ quality: 85 })
+          .toBuffer();
+      } catch (err) {
+        console.error('Greška pri obradi PNG slike:', err);
+        return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
+      }
+    } else {
+      // JPG/JPEG
+      try {
+        finalBuffer = await sharp(buffer)
+          .resize({
+            width: 300,
+            height: 300,
+            fit: 'inside',
+            withoutEnlargement: true
+          })
+          .webp({ quality: 85 })
+          .toBuffer();
+      } catch (err) {
+        console.error('Greška pri obradi JPEG slike:', err);
+        return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
+      }
+    }
+
+    // Validacija finalnog WebP Buffera
+    try {
+      const finalMetadata = await sharp(finalBuffer).metadata();
+      if (finalMetadata.format !== 'webp') {
+        throw new Error('Generisani fajl nije u WebP formatu.');
+      }
+    } catch (err) {
+      console.error('Greška pri validaciji generisanog WebP fajla:', err);
+      return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
+    }
+
     const publicImgDir = path.join(process.cwd(), 'public', 'assets', 'images');
     if (!fs.existsSync(publicImgDir)) {
       fs.mkdirSync(publicImgDir, { recursive: true });
     }
-    const publicFilePath = path.join(publicImgDir, filename);
-    fs.writeFileSync(publicFilePath, buffer);
 
-    // 2. Snimanje u dist folder (kako bi bilo instant vidljivo na trenutno pokrenutom serveru)
+    const publicFilePath = path.join(publicImgDir, filename);
+
+    // Sačuvaj trenutno stanje za rollback
+    let originalPublicBuffer: Buffer | null = null;
+    if (fs.existsSync(publicFilePath)) {
+      originalPublicBuffer = fs.readFileSync(publicFilePath);
+    }
+
+    // Bezbedno (atomsko) pisanje u public folder
+    try {
+      const publicTmpPath = publicFilePath + '.tmp';
+      fs.writeFileSync(publicTmpPath, finalBuffer);
+      fs.renameSync(publicTmpPath, publicFilePath);
+    } catch (publicErr) {
+      console.error('Greška pri upisu u public folder:', publicErr);
+      return res.status(500).json({ error: 'Greška pri čuvanju logotipa na serveru.' });
+    }
+
+    // Bezbedno (atomsko) pisanje u dist folder
     const distImgDir = path.join(process.cwd(), 'dist', 'assets', 'images');
+    let distFilePath: string | null = null;
+    let originalDistBuffer: Buffer | null = null;
+
     if (fs.existsSync(path.join(process.cwd(), 'dist'))) {
       if (!fs.existsSync(distImgDir)) {
         fs.mkdirSync(distImgDir, { recursive: true });
       }
-      const distFilePath = path.join(distImgDir, filename);
-      fs.writeFileSync(distFilePath, buffer);
+      distFilePath = path.join(distImgDir, filename);
+      if (fs.existsSync(distFilePath)) {
+        originalDistBuffer = fs.readFileSync(distFilePath);
+      }
+
+      try {
+        const distTmpPath = distFilePath + '.tmp';
+        fs.writeFileSync(distTmpPath, finalBuffer);
+        fs.renameSync(distTmpPath, distFilePath);
+      } catch (distErr) {
+        console.error('Greška pri upisu u dist folder:', distErr);
+        
+        // Rollback public fajla
+        try {
+          if (originalPublicBuffer) {
+            const rollbackTmpPath = publicFilePath + '.tmp';
+            fs.writeFileSync(rollbackTmpPath, originalPublicBuffer);
+            fs.renameSync(rollbackTmpPath, publicFilePath);
+          } else if (fs.existsSync(publicFilePath)) {
+            fs.unlinkSync(publicFilePath);
+          }
+        } catch (rollbackErr) {
+          console.error('Greška tokom rollback-a public fajla:', rollbackErr);
+        }
+
+        return res.status(500).json({ error: 'Greška pri sinhronizaciji sa dist folderom.' });
+      }
     }
 
     // 3. Ažuriranje Firestore-a direktno na stabilnu putanju kako bi se sprečile greške
     const settingsRef = doc(db, 'site_configs', 'settings');
     const updateObj: any = {
-      logo_url: '/assets/images/logo_custom.png',
+      logo_url: '/assets/images/logo_custom.webp',
       logo_style: 'custom'
     };
     await updateDoc(settingsRef, updateObj);

@@ -123,7 +123,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
     announcement_banner: '',
     support_phone: '',
     logo_style: 'custom',
-    logo_url: '/assets/images/logo_custom.png',
+    logo_url: '/assets/images/logo_custom.webp',
     logo_blend_mode: 'normal',
     hero_right_mode: 'image',
     hero_image_url: '/assets/images/delivery_courier_hero_1783427588712.webp',
@@ -634,7 +634,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
           announcement_banner: data.settings.announcement_banner || '',
           support_phone: data.settings.support_phone || '',
           logo_style: data.settings.logo_style || 'custom',
-          logo_url: data.settings.logo_url || '/assets/images/logo_custom.png',
+          logo_url: data.settings.logo_url || '/assets/images/logo_custom.webp',
           logo_blend_mode: data.settings.logo_blend_mode || 'normal',
           hero_right_mode: data.settings.hero_right_mode || 'image',
           hero_image_url: data.settings.hero_image_url || '/assets/images/delivery_courier_hero_1783427588712.webp',
@@ -925,7 +925,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
       if (response.ok && data.success) {
         alert('Podešavanja su uspešno sačuvana!');
         if (onLogoChange) {
-          onLogoChange((siteSettings.logo_style as any) || 'custom', siteSettings.logo_url || '/assets/images/logo_custom.png', (siteSettings.logo_blend_mode as any) || 'normal');
+          onLogoChange((siteSettings.logo_style as any) || 'custom', siteSettings.logo_url || '/assets/images/logo_custom.webp', (siteSettings.logo_blend_mode as any) || 'normal');
         }
       } else {
         alert(data.error || 'Greška pri čuvanju podešavanja.');
@@ -1286,7 +1286,7 @@ Postani Dostavljač Podrška`;
       <div className="max-w-md mx-auto my-12" id="admin-auth-panel">
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-sky-50 text-sky-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-100">
+            <div className="w-16 h-16 bg-deliverix-50 text-deliverix-500 rounded-full flex items-center justify-center mx-auto mb-4 border border-deliverix-100">
               <Lock className="w-8 h-8" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 font-sans">Admin Portal</h2>
@@ -1308,7 +1308,7 @@ Postani Dostavljač Podrška`;
               <input
                 id="admin-username-input"
                 type="text"
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-gray-900 text-center font-semibold transition text-sm"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-deliverix-500 focus:bg-white text-gray-900 text-center font-semibold transition text-sm"
                 placeholder="npr. admin"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
@@ -1322,7 +1322,7 @@ Postani Dostavljač Podrška`;
                 id="admin-passcode-input"
                 type="password"
                 required
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white text-gray-900 text-center text-lg font-mono transition"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-deliverix-500 focus:bg-white text-gray-900 text-center text-lg font-mono transition"
                 placeholder="••••••••"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
@@ -1333,7 +1333,7 @@ Postani Dostavljač Podrška`;
               id="admin-login-btn"
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-lg shadow-sky-500/10 active:translate-y-0.5 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              className="w-full py-3 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold rounded-xl shadow-lg shadow-deliverix-500/10 active:translate-y-0.5 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
             >
               {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Prijavi se'}
             </button>
@@ -1382,7 +1382,7 @@ Postani Dostavljač Podrška`;
                 className="p-3 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl border border-gray-200 transition cursor-pointer flex items-center justify-center disabled:opacity-50"
                 title="Osveži bazu"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin text-sky-500" /> : <RefreshCw className="w-5 h-5" />}
+                {loading ? <Loader2 className="w-5 h-5 animate-spin text-deliverix-500" /> : <RefreshCw className="w-5 h-5" />}
               </button>
               <button
                 id="admin-export-btn"
@@ -1425,7 +1425,7 @@ Postani Dostavljač Podrška`;
               onClick={() => setActiveAdminTab('candidates')}
               className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
                 activeAdminTab === 'candidates'
-                  ? 'bg-sky-500 text-white shadow-sm'
+                  ? 'bg-deliverix-500 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
@@ -1439,7 +1439,7 @@ Postani Dostavljač Podrška`;
             }}
             className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
               activeAdminTab === 'seo_and_blog'
-                ? 'bg-sky-500 text-white shadow-sm'
+                ? 'bg-deliverix-500 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -1452,7 +1452,7 @@ Postani Dostavljač Podrška`;
             }}
             className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
               activeAdminTab === 'design'
-                ? 'bg-sky-500 text-white shadow-sm'
+                ? 'bg-deliverix-500 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -1465,7 +1465,7 @@ Postani Dostavljač Podrška`;
             }}
             className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
               activeAdminTab === 'marketing_analitika'
-                ? 'bg-sky-500 text-white shadow-sm'
+                ? 'bg-deliverix-500 text-white shadow-sm'
                 : 'text-gray-500 hover:text-gray-800'
             }`}
           >
@@ -1479,7 +1479,7 @@ Postani Dostavljač Podrška`;
               }}
               className={`px-5 py-2.5 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-2 ${
                 activeAdminTab === 'access_management'
-                  ? 'bg-sky-500 text-white shadow-sm'
+                  ? 'bg-deliverix-500 text-white shadow-sm'
                   : 'text-gray-500 hover:text-gray-800'
               }`}
             >
@@ -1511,7 +1511,7 @@ Postani Dostavljač Podrška`;
                   id={`stat-card-${idx}`}
                   onClick={() => setStatusFilter(card.status)}
                   className={`p-5 rounded-2xl border text-left cursor-pointer transition-all hover:shadow-md ${card.color} ${
-                    statusFilter === card.status ? 'ring-2 ring-sky-500' : ''
+                    statusFilter === card.status ? 'ring-2 ring-deliverix-500' : ''
                   }`}
                 >
                   <div className="flex justify-between items-start">
@@ -1542,7 +1542,7 @@ Postani Dostavljač Podrška`;
                   }}
                   className={`flex-1 py-3 text-xs sm:text-sm font-extrabold rounded-xl transition cursor-pointer flex items-center justify-center gap-2 ${
                     candidateSubTab === subTab.id
-                      ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                      ? 'bg-white text-deliverix-600 shadow-md shadow-gray-200/50'
                       : 'text-gray-500 hover:text-gray-900 hover:bg-white/50'
                   }`}
                 >
@@ -1621,11 +1621,11 @@ Postani Dostavljač Podrška`;
                       <div key={idx} className="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col justify-between">
                         <div className="flex justify-between items-start mb-2">
                           <span className="font-bold text-gray-800 text-sm">{city}</span>
-                          <span className="bg-sky-50 text-sky-700 text-xs font-bold px-2 py-0.5 rounded-md">{count} prijava</span>
+                          <span className="bg-deliverix-50 text-deliverix-700 text-xs font-bold px-2 py-0.5 rounded-md">{count} prijava</span>
                         </div>
                         <div>
                           <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                            <div className="bg-sky-500 h-full rounded-full" style={{ width: `${pct}%` }} />
+                            <div className="bg-deliverix-500 h-full rounded-full" style={{ width: `${pct}%` }} />
                           </div>
                           <p className="text-[10px] text-gray-400 mt-1">{pct}% od ukupnog broja</p>
                         </div>
@@ -1640,7 +1640,7 @@ Postani Dostavljač Podrška`;
                 <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider mb-4">Prethodno iskustvo dostavljača</h4>
                 <div className="flex gap-4 items-center justify-around h-32">
                   <div className="text-center">
-                    <span className="text-4xl font-extrabold text-sky-500 block">
+                    <span className="text-4xl font-extrabold text-deliverix-500 block">
                       {candidates.filter(c => c.iskustvo === 'da').length}
                     </span>
                     <span className="text-xs text-gray-500 font-medium">Sa iskustvom (DA)</span>
@@ -1684,7 +1684,7 @@ Postani Dostavljač Podrška`;
               {/* Srednji panel: Filteri */}
               <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-4 w-full">
             <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Filter className="w-5 h-5 text-sky-500" /> Pretraga i filtriranje kandidata
+              <Filter className="w-5 h-5 text-deliverix-500" /> Pretraga i filtriranje kandidata
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
@@ -1697,7 +1697,7 @@ Postani Dostavljač Podrška`;
                   id="search-input"
                   type="text"
                   placeholder="Pretraži po imenu, telefonu ili referral kodu..."
-                  className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm text-gray-900 placeholder-gray-400"
+                  className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-deliverix-500 text-sm text-gray-900 placeholder-gray-400"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -1706,7 +1706,7 @@ Postani Dostavljač Podrška`;
               {/* Filter po gradu */}
               <select
                 id="filter-city"
-                className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm text-gray-700 font-bold"
+                className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-deliverix-500 text-sm text-gray-700 font-bold"
                 value={cityFilter}
                 onChange={(e) => setCityFilter(e.target.value)}
               >
@@ -1719,7 +1719,7 @@ Postani Dostavljač Podrška`;
               {/* Filter po vozilu */}
               <select
                 id="filter-vehicle"
-                className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm text-gray-700 font-bold"
+                className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-deliverix-500 text-sm text-gray-700 font-bold"
                 value={vehicleFilter}
                 onChange={(e) => setVehicleFilter(e.target.value)}
               >
@@ -1733,25 +1733,25 @@ Postani Dostavljač Podrška`;
             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-50">
               <div className="flex gap-2">
                 {statusFilter && (
-                  <span className="bg-sky-50 text-sky-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                  <span className="bg-deliverix-50 text-deliverix-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
                     Status: {statusFilter}
                     <button onClick={() => setStatusFilter('')} className="hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
                   </span>
                 )}
                 {cityFilter && (
-                  <span className="bg-sky-50 text-sky-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                  <span className="bg-deliverix-50 text-deliverix-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
                     Grad: {cityFilter}
                     <button onClick={() => setCityFilter('')} className="hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
                   </span>
                 )}
                 {vehicleFilter && (
-                  <span className="bg-sky-50 text-sky-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                  <span className="bg-deliverix-50 text-deliverix-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
                     Vozilo: {vehicleFilter}
                     <button onClick={() => setVehicleFilter('')} className="hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
                   </span>
                 )}
                 {searchTerm && (
-                  <span className="bg-sky-50 text-sky-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
+                  <span className="bg-deliverix-50 text-deliverix-800 text-xs font-semibold px-2.5 py-1 rounded-lg flex items-center gap-1">
                     Pretraga: "{searchTerm}"
                     <button onClick={() => setSearchTerm('')} className="hover:text-rose-600"><X className="w-3.5 h-3.5" /></button>
                   </span>
@@ -1775,7 +1775,7 @@ Postani Dostavljač Podrška`;
             <p className="text-lg font-medium">Nema kandidata koji odgovaraju kriterijumima.</p>
             <button 
               onClick={() => { setSearchTerm(''); setCityFilter(''); setVehicleFilter(''); setStatusFilter(''); }} 
-              className="text-sky-500 text-sm underline font-bold mt-1 hover:text-sky-600"
+              className="text-deliverix-500 text-sm underline font-bold mt-1 hover:text-deliverix-600"
             >
               Poništi sve filtere
             </button>
@@ -1801,8 +1801,8 @@ Postani Dostavljač Podrška`;
                   return (
                     <tr 
                       key={candidate.id} 
-                      className={`hover:bg-sky-50/30 transition ${
-                        selectedCandidate?.id === candidate.id ? 'bg-sky-50/50' : ''
+                      className={`hover:bg-deliverix-50/10 transition ${
+                        selectedCandidate?.id === candidate.id ? 'bg-deliverix-50/20' : ''
                       }`}
                     >
                       {/* Kandidat */}
@@ -1810,8 +1810,8 @@ Postani Dostavljač Podrška`;
                         <div className="font-bold text-gray-900">{candidate.ime}</div>
                         <div className="text-xs text-gray-500 font-mono mt-0.5">{candidate.telefon}</div>
                         {candidate.email ? (
-                          <div className="text-[11px] text-sky-600 font-mono mt-0.5 break-all max-w-[200px] flex items-center gap-1">
-                            <Mail className="w-3.5 h-3.5 text-sky-400 flex-shrink-0" />
+                          <div className="text-[11px] text-deliverix-600 font-mono mt-0.5 break-all max-w-[200px] flex items-center gap-1">
+                            <Mail className="w-3.5 h-3.5 text-deliverix-400 flex-shrink-0" />
                             {candidate.email}
                           </div>
                         ) : (
@@ -1827,11 +1827,11 @@ Postani Dostavljač Podrška`;
                         </div>
                         <div className="text-xs text-gray-500 capitalize flex items-center gap-1 mt-0.5">
                           {candidate.vozilo === 'automobil' ? (
-                            <Car className="w-3.5 h-3.5 text-sky-500" />
+                            <Car className="w-3.5 h-3.5 text-deliverix-500" />
                           ) : candidate.vozilo === 'skuter' ? (
-                            <ScooterIcon className="w-3.5 h-3.5 text-sky-500" />
+                            <ScooterIcon className="w-3.5 h-3.5 text-deliverix-500" />
                           ) : (
-                            <Bike className="w-3.5 h-3.5 text-sky-500" />
+                            <Bike className="w-3.5 h-3.5 text-deliverix-500" />
                           )}
                           {candidate.vozilo}
                         </div>
@@ -1853,7 +1853,7 @@ Postani Dostavljač Podrška`;
                       <td className="py-4 px-4">
                         <div className="text-xs font-semibold text-gray-800 capitalize">{candidate.izvor}</div>
                         {candidate.referral_code && (
-                          <div className="text-[10px] text-sky-600 font-bold font-mono mt-0.5">Ref: {candidate.referral_code}</div>
+                          <div className="text-[10px] text-deliverix-600 font-bold font-mono mt-0.5">Ref: {candidate.referral_code}</div>
                         )}
                       </td>
 
@@ -1928,7 +1928,7 @@ Postani Dostavljač Podrška`;
                               setSendEmailError(null);
                               setSendEmailSuccess(null);
                             }}
-                            className="inline-flex p-2 bg-sky-50 hover:bg-sky-100 text-sky-600 rounded-xl border border-sky-100 transition"
+                            className="inline-flex p-2 bg-deliverix-50 hover:bg-deliverix-100 text-deliverix-600 rounded-xl border border-deliverix-100 transition"
                             title="Pošalji Email sa sajta"
                           >
                             <Mail className="w-4 h-4" />
@@ -1988,7 +1988,7 @@ Postani Dostavljač Podrška`;
               }}
               className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
                 accessSubTab === subTab.id
-                  ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                  ? 'bg-white text-deliverix-600 shadow-md shadow-gray-200/50'
                   : 'text-gray-500 hover:text-gray-900'
               }`}
             >
@@ -2005,7 +2005,7 @@ Postani Dostavljač Podrška`;
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
             <div>
               <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                <ShieldCheck className="w-6 h-6 text-sky-500" /> Korisnički Nalozi (Uloge i pristupi)
+                <ShieldCheck className="w-6 h-6 text-deliverix-500" /> Korisnički Nalozi (Uloge i pristupi)
               </h2>
               <p className="text-gray-500 text-xs sm:text-sm mt-1">
                 Kreirajte i upravljajte nalozima za marketing, administraciju kandidata ili dodajte nove Super Admin-e.
@@ -2013,7 +2013,7 @@ Postani Dostavljač Podrška`;
             </div>
             <button
               onClick={handleOpenCreateAccount}
-              className="px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10"
+              className="px-4 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white font-bold text-sm rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-deliverix-500/10 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
             >
               <Plus className="w-4 h-4" /> Kreiraj novi nalog
             </button>
@@ -2027,7 +2027,7 @@ Postani Dostavljač Podrška`;
 
           {accountsLoading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-sky-500" />
+              <Loader2 className="w-8 h-8 animate-spin text-deliverix-500" />
             </div>
           ) : (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -2129,7 +2129,7 @@ Postani Dostavljač Podrška`;
               name: 'Kandidati & Operacije',
               desc: 'Fokus na regrutaciju. Kompletan rad sa prijavama kandidata, ažuriranje statusa, upisivanje napomena i slanje e-mailova kandidatima.',
               role: 'candidate_admin',
-              color: 'border-sky-100 bg-sky-50/20 text-sky-700',
+              color: 'border-deliverix-100 bg-deliverix-50/20 text-deliverix-700',
               icon: Users,
               users: adminAccounts.filter(a => a.role === 'candidate_admin')
             },
@@ -2184,7 +2184,7 @@ Postani Dostavljač Podrška`;
         <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6 w-full animate-fade-in" id="mail-subtab-view">
           <div>
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-sky-500" /> Integracija i Podešavanje SMTP Mail-a
+              <Mail className="w-5 h-5 text-deliverix-500" /> Integracija i Podešavanje SMTP Mail-a
             </h3>
             <p className="text-xs text-gray-400 mt-1">Povežite vaš poslovni email nalog kako biste slali email poruke direktno kandidatima sa panela.</p>
           </div>
@@ -2203,12 +2203,12 @@ Postani Dostavljač Podrška`;
             </div>
           )}
 
-          <div className="bg-sky-50 text-sky-800 p-4 rounded-xl text-xs border border-sky-100 space-y-2 leading-relaxed font-medium">
-            <p className="font-bold flex items-center gap-1.5 text-sky-950">
-              <Sparkles className="w-4 h-4 text-sky-600" /> Kako funkcioniše slanje u ime info@deliverix.rs?
+          <div className="bg-deliverix-50 text-deliverix-900 p-4 rounded-xl text-xs border border-deliverix-100 space-y-2 leading-relaxed font-medium">
+            <p className="font-bold flex items-center gap-1.5 text-deliverix-950">
+              <Sparkles className="w-4 h-4 text-deliverix-accent animate-pulse" /> Kako funkcioniše slanje u ime info@deliverix.rs?
             </p>
-            <p>Da biste slali email-ove kandidatima pod brendom <strong className="text-sky-950 font-mono text-[11px]">info@deliverix.rs</strong>, iskoristite Gmail SMTP sa lozinkom aplikacije:</p>
-            <ol className="list-decimal pl-4 space-y-1 text-sky-900">
+            <p>Da biste slali email-ove kandidatima pod brendom <strong className="text-deliverix-950 font-mono text-[11px]">info@deliverix.rs</strong>, iskoristite Gmail SMTP sa lozinkom aplikacije:</p>
+            <ol className="list-decimal pl-4 space-y-1 text-deliverix-900">
               <li>Uključite <strong>Verifikaciju u 2 koraka</strong> na vašem Google nalogu.</li>
               <li>Generišite 16-cifrenu <strong>Lozinku za aplikacije</strong> (App Password).</li>
               <li>Unesite te podatke dole kako bi sistem automatski koristio bezbednu vezu za slanje.</li>
@@ -2222,7 +2222,7 @@ Postani Dostavljač Podrška`;
                 <input
                   type="email"
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                   placeholder="npr. daniel.hoscieslavski@gmail.com"
                   value={mailConfig.smtp_email}
                   onChange={e => setMailConfig({ ...mailConfig, smtp_email: e.target.value })}
@@ -2233,7 +2233,7 @@ Postani Dostavljač Podrška`;
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Lozinka aplikacije (App Password)</label>
                 <input
                   type="password"
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-mono"
                   placeholder={mailConfig.has_password ? "•••••••••••••••• (Sačuvana lozinka)" : "Unesite 16-cifrenu šifru aplikacije"}
                   value={mailConfigPassword}
                   onChange={e => setMailConfigPassword(e.target.value)}
@@ -2247,7 +2247,7 @@ Postani Dostavljač Podrška`;
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                   placeholder="npr. Deliverix Podrška"
                   value={mailConfig.sender_name}
                   onChange={e => setMailConfig({ ...mailConfig, sender_name: e.target.value })}
@@ -2259,7 +2259,7 @@ Postani Dostavljač Podrška`;
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium font-mono"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium font-mono"
                   placeholder="npr. info@deliverix.rs"
                   value={mailConfig.sender_alias}
                   onChange={e => setMailConfig({ ...mailConfig, sender_alias: e.target.value })}
@@ -2271,7 +2271,7 @@ Postani Dostavljač Podrška`;
               <button
                 type="submit"
                 disabled={saveMailLoading}
-                className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10 disabled:opacity-50"
+                className="px-5 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-deliverix-500/10 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
               >
                 {saveMailLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sačuvaj podešavanja mail-a'}
               </button>
@@ -2286,7 +2286,7 @@ Postani Dostavljač Podrška`;
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-50 pb-4">
             <div>
               <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-                <ClipboardList className="w-5 h-5 text-sky-500" /> Dnevnik Aktivnosti (Audit Log)
+                <ClipboardList className="w-5 h-5 text-deliverix-500" /> Dnevnik Aktivnosti (Audit Log)
               </h3>
               <p className="text-xs text-gray-400 mt-1">Hronološki zapis svih izmena i akcija koje su administratori izvršili u sistemu.</p>
             </div>
@@ -2296,7 +2296,7 @@ Postani Dostavljač Podrška`;
               className="px-4 py-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 text-gray-700 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-2 disabled:opacity-50"
             >
               {loadingAuditLogs ? (
-                <Loader2 className="w-4 h-4 animate-spin text-sky-500" />
+                <Loader2 className="w-4 h-4 animate-spin text-deliverix-500" />
               ) : (
                 <RotateCw className="w-4 h-4 text-gray-500" />
               )}
@@ -2397,7 +2397,7 @@ Postani Dostavljač Podrška`;
                 onClick={() => setSeoSubTab(subTab.id as any)}
                 className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
                   seoSubTab === subTab.id
-                    ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                    ? 'bg-white text-deliverix-600 shadow-md shadow-gray-200/50'
                     : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
@@ -2424,7 +2424,7 @@ Postani Dostavljač Podrška`;
                 onClick={() => setDesignSubTab(subTab.id as any)}
                 className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
                   designSubTab === subTab.id
-                    ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                    ? 'bg-white text-deliverix-600 shadow-md shadow-gray-200/50'
                     : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
@@ -2450,7 +2450,7 @@ Postani Dostavljač Podrška`;
                 onClick={() => setActiveMarketingSubTab(subTab.id as any)}
                 className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition cursor-pointer ${
                   activeMarketingSubTab === subTab.id
-                    ? 'bg-white text-sky-600 shadow-md shadow-gray-200/50'
+                    ? 'bg-white text-deliverix-600 shadow-md shadow-gray-200/50'
                     : 'text-gray-500 hover:text-gray-900'
                 }`}
               >
@@ -2498,7 +2498,7 @@ Postani Dostavljač Podrška`;
 
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-2">
               <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">Google Analytics ID</span>
-              <div className="text-lg font-mono font-bold text-sky-600">
+              <div className="text-lg font-mono font-bold text-deliverix-600">
                 {siteSettings.ga_measurement_id || 'Nije konfigurisan'}
               </div>
               <p className="text-[10px] text-gray-400">Merenje eksternog saobraćaja aktivno</p>
@@ -2511,7 +2511,7 @@ Postani Dostavljač Podrška`;
             {/* Kanali akvizicije (UTM Source) */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
               <h4 className="font-extrabold text-gray-900 flex items-center gap-1.5 text-sm uppercase tracking-wider text-gray-500">
-                <TrendingUp className="w-4 h-4 text-sky-500" /> Kanali akvizicije (UTM Source)
+                <TrendingUp className="w-4 h-4 text-deliverix-500" /> Kanali akvizicije (UTM Source)
               </h4>
               <p className="text-xs text-gray-400">Udeo pojedinačnih oglasnih kampanja u ukupnom broju prijava:</p>
               
@@ -2526,7 +2526,7 @@ Postani Dostavljač Podrška`;
                           <span>{count} ({pct}%)</span>
                         </div>
                         <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                          <div className="bg-sky-500 h-full rounded-full" style={{ width: `${pct}%` }}></div>
+                          <div className="bg-deliverix-500 h-full rounded-full" style={{ width: `${pct}%` }}></div>
                         </div>
                       </div>
                     );
@@ -2540,7 +2540,7 @@ Postani Dostavljač Podrška`;
             {/* Raspodela po gradovima */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
               <h4 className="font-extrabold text-gray-900 flex items-center gap-1.5 text-sm uppercase tracking-wider text-gray-500">
-                <MapPin className="w-4 h-4 text-sky-500" /> Geografska struktura
+                <MapPin className="w-4 h-4 text-deliverix-500" /> Geografska struktura
               </h4>
               <p className="text-xs text-gray-400">Gradovi sa najviše novih registrovanih dostavljača:</p>
               
@@ -2569,7 +2569,7 @@ Postani Dostavljač Podrška`;
             {/* Struktura po vozilima */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
               <h4 className="font-extrabold text-gray-900 flex items-center gap-1.5 text-sm uppercase tracking-wider text-gray-500">
-                <Bike className="w-4 h-4 text-sky-500" /> Tip prevoza
+                <Bike className="w-4 h-4 text-deliverix-500" /> Tip prevoza
               </h4>
               <p className="text-xs text-gray-400">Vozila koja kandidati planiraju da koriste za rad:</p>
               
@@ -2603,7 +2603,7 @@ Postani Dostavljač Podrška`;
         <div className="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm space-y-5 w-full" id="marketing-subtab-linkgen">
           <div className="border-b border-gray-100 pb-3">
             <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-sky-500" /> Generator linkova za oglase
+              <TrendingUp className="w-5 h-5 text-deliverix-500" /> Generator linkova za oglase
             </h3>
             <p className="text-xs text-gray-400 mt-1">Kreirajte unikatne partnerske linkove sa UTM parametrima kako biste tačno znali odakle dolaze vaši najkvalitetniji kandidati.</p>
           </div>
@@ -2612,7 +2612,7 @@ Postani Dostavljač Podrška`;
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-500 uppercase">Izvor kampanje (Source)</label>
               <select
-                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
                 value={genSource}
                 onChange={(e) => setGenSource(e.target.value)}
               >
@@ -2630,22 +2630,22 @@ Postani Dostavljač Podrška`;
               <input
                 type="text"
                 placeholder="npr. petar123"
-                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
                 value={genRef}
                 onChange={(e) => setGenRef(e.target.value)}
               />
             </div>
           </div>
 
-          <div className="p-4 bg-sky-50 border border-sky-100 rounded-xl space-y-3">
+          <div className="p-4 bg-deliverix-50 border border-deliverix-100 rounded-xl space-y-3">
             <div className="space-y-1">
-              <span className="text-[10px] font-bold text-sky-800 uppercase block">Generisani URL Link za praćenje</span>
+              <span className="text-[10px] font-bold text-deliverix-800 uppercase block">Generisani URL Link za praćenje</span>
               <p className="text-xs font-mono break-all text-gray-700 font-bold">{generatedLink}</p>
             </div>
             <button
               onClick={copyGeneratedLink}
               className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 transition cursor-pointer w-full ${
-                linkCopied ? 'bg-emerald-500 text-white' : 'bg-sky-500 hover:bg-sky-600 text-white shadow-xs'
+                linkCopied ? 'bg-emerald-500 text-white' : 'bg-deliverix-500 hover:bg-deliverix-600 text-white shadow-xs focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200'
               }`}
             >
               {linkCopied ? 'Link uspešno kopiran!' : <><Copy className="w-4 h-4" /> Kopiraj link za kampanje</>}
@@ -2667,7 +2667,7 @@ Postani Dostavljač Podrška`;
           {/* Google SERP Preview Card */}
           <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4" id="google-serp-preview">
             <h4 className="text-sm font-black text-gray-400 uppercase tracking-wider flex items-center gap-2">
-              <Globe className="w-4 h-4 text-sky-500" /> Google Search Preview (Izgled u pretrazi)
+              <Globe className="w-4 h-4 text-deliverix-500" /> Google Search Preview (Izgled u pretrazi)
             </h4>
             <p className="text-xs text-gray-400 leading-relaxed">
               Ovako će vaš sajt izgledati kada ga korisnici pronađu putem Google pretrage. Dobar naslov i opis privlače više kandidata.
@@ -2740,7 +2740,7 @@ Postani Dostavljač Podrška`;
                 });
                 setIsBlogModalOpen(true);
               }}
-              className="px-4 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-sm"
+              className="px-4 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer flex items-center gap-1.5 shadow-sm focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
             >
               <Plus className="w-4 h-4" /> Novi članak
             </button>
@@ -2776,7 +2776,7 @@ Postani Dostavljač Podrška`;
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-wrap gap-1">
                           {post.tags?.map((tag: string) => (
-                            <span key={tag} className="px-2 py-0.5 bg-sky-100 text-sky-700 rounded-md text-[10px] font-bold">
+                            <span key={tag} className="px-2 py-0.5 bg-deliverix-100 text-deliverix-700 rounded-md text-[10px] font-bold">
                               #{tag}
                             </span>
                           ))}
@@ -2792,7 +2792,7 @@ Postani Dostavljač Podrška`;
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleEditBlogPostClick(post)}
-                            className="p-1.5 hover:bg-sky-50 text-sky-500 hover:text-sky-600 rounded-lg transition cursor-pointer"
+                            className="p-1.5 hover:bg-deliverix-50 text-deliverix-500 hover:text-deliverix-600 rounded-lg transition cursor-pointer"
                             title="Uredi"
                           >
                             <Edit className="w-4 h-4" />
@@ -2907,7 +2907,7 @@ Postani Dostavljač Podrška`;
           <div className="space-y-2 p-4 bg-gray-50/50 rounded-2xl border border-gray-100">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <label className="text-xs font-black text-gray-600 uppercase tracking-wider flex items-center gap-1.5">
-                <Image className="w-4 h-4 text-sky-500" /> Naslovna slika
+                <Image className="w-4 h-4 text-deliverix-500" /> Naslovna slika
               </label>
               <span className="text-[10px] text-gray-400 font-bold">
                 (Preporučene dimenzije slike za blog: 1200x630 px ili razmera 16:9)
@@ -2938,11 +2938,11 @@ Postani Dostavljač Podrška`;
                   />
                   <button
                     type="button"
-                    className="w-full px-3 py-2 bg-white hover:bg-gray-50 text-gray-700 hover:text-sky-600 border border-gray-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
+                    className="w-full px-3 py-2 bg-white hover:bg-gray-50 text-gray-700 hover:text-deliverix-600 border border-gray-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5"
                   >
                     {isUploadingBlogImage ? (
                       <>
-                        <div className="w-3 h-3 border-2 border-sky-500 border-t-transparent rounded-full animate-spin" />
+                        <div className="w-3 h-3 border-2 border-deliverix-500 border-t-transparent rounded-full animate-spin" />
                         Obrada...
                       </>
                     ) : (
@@ -3012,7 +3012,7 @@ Postani Dostavljač Podrška`;
             </button>
             <button
               type="submit"
-              className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-sky-500/10 transition cursor-pointer"
+              className="px-5 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-deliverix-500/10 transition cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
             >
               {editingPostId ? 'Sačuvaj izmene' : 'Objavi članak'}
             </button>
@@ -3047,7 +3047,7 @@ Postani Dostavljač Podrška`;
               <label className="text-xs font-bold text-gray-500 uppercase">Email adresa kandidata</label>
               <input
                 type="email"
-                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm text-gray-900 placeholder-gray-400 font-mono"
+                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-deliverix-500 text-sm text-gray-900 placeholder-gray-400 font-mono"
                 placeholder="npr. ime@primer.com"
                 value={candidateEmailInput}
                 onChange={(e) => setCandidateEmailInput(e.target.value)}
@@ -3059,7 +3059,7 @@ Postani Dostavljač Podrška`;
               <textarea
                 id="notes-textarea"
                 rows={4}
-                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 text-sm text-gray-900 placeholder-gray-400"
+                className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-deliverix-500 text-sm text-gray-900 placeholder-gray-400"
                 placeholder="Upišite detalje razgovora, nivo spremnosti, provere i sl."
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
@@ -3082,7 +3082,7 @@ Postani Dostavljač Podrška`;
                   updateCandidate(selectedCandidate.id, undefined, noteText, candidateEmailInput);
                   setSelectedCandidate(null);
                 }}
-                className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-500/15 transition cursor-pointer"
+                className="px-4 py-2 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white text-xs font-bold rounded-xl shadow-md shadow-deliverix-500/15 transition cursor-pointer focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
               >
                 Sačuvaj izmene
               </button>
@@ -3102,7 +3102,7 @@ Postani Dostavljač Podrška`;
             <div className="flex justify-between items-start border-b border-gray-100 pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-sky-500" /> Pošalji Email Kandidatu
+                  <Mail className="w-5 h-5 text-deliverix-500" /> Pošalji Email Kandidatu
                 </h3>
                 <p className="text-xs text-gray-400">Kandidat: <strong className="text-gray-700">{emailCandidate.ime}</strong> ({emailCandidate.telefon})</p>
               </div>
@@ -3138,7 +3138,7 @@ Postani Dostavljač Podrška`;
                 <input
                   type="email"
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-mono"
                   placeholder="npr. klijent@primer.com"
                   value={emailTo}
                   onChange={e => setEmailTo(e.target.value)}
@@ -3161,11 +3161,11 @@ Postani Dostavljač Podrška`;
                   </div>
                 )}
                 {emailCandidate.email && emailTo !== emailCandidate.email && (
-                  <div className="bg-sky-50 text-sky-800 p-2.5 rounded-lg text-xs border border-sky-100 space-y-1 mt-1 font-medium">
-                    <label className="flex items-center gap-2 text-sky-900 cursor-pointer select-none">
+                  <div className="bg-deliverix-50 text-deliverix-800 p-2.5 rounded-lg text-xs border border-deliverix-100 space-y-1 mt-1 font-medium">
+                    <label className="flex items-center gap-2 text-deliverix-900 cursor-pointer select-none">
                       <input
                         type="checkbox"
-                        className="rounded border-sky-300 text-sky-600 focus:ring-sky-500 h-3.5 w-3.5"
+                        className="rounded border-deliverix-300 text-deliverix-600 focus:ring-deliverix-500 h-3.5 w-3.5"
                         checked={emailCandidateSaveEmail}
                         onChange={e => setEmailCandidateSaveEmail(e.target.checked)}
                       />
@@ -3180,7 +3180,7 @@ Postani Dostavljač Podrška`;
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                   placeholder="Naslov email poruke"
                   value={emailSubject}
                   onChange={e => setEmailSubject(e.target.value)}
@@ -3192,7 +3192,7 @@ Postani Dostavljač Podrška`;
                 <textarea
                   required
                   rows={8}
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                   placeholder="Ovde ide sadržaj šablona..."
                   value={emailBody}
                   onChange={e => setEmailBody(e.target.value)}
@@ -3225,7 +3225,7 @@ Postani Dostavljač Podrška`;
                 <button
                   type="submit"
                   disabled={isSendingEmail || !mailConfig.smtp_email}
-                  className={`px-5 py-2.5 bg-sky-500 hover:bg-sky-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs shadow-md shadow-sky-500/15 transition cursor-pointer flex items-center gap-1.5`}
+                  className={`px-5 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white font-bold rounded-xl text-xs shadow-md shadow-deliverix-500/15 transition cursor-pointer flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200`}
                 >
                   {isSendingEmail ? (
                     <>
@@ -3278,7 +3278,7 @@ Postani Dostavljač Podrška`;
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                   placeholder="npr. petar_marketing"
                   value={accountForm.username}
                   onChange={(e) => setAccountForm({ ...accountForm, username: e.target.value })}
@@ -3290,7 +3290,7 @@ Postani Dostavljač Podrška`;
                 <input
                   type="text"
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-mono"
                   placeholder="Napišite sigurnu lozinku (min. 6 karaktera)"
                   value={accountForm.passcode}
                   onChange={(e) => setAccountForm({ ...accountForm, passcode: e.target.value })}
@@ -3301,7 +3301,7 @@ Postani Dostavljač Podrška`;
                 <label className="text-xs font-bold text-gray-500 uppercase">Uloga naloza (Role)</label>
                 <select
                   required
-                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
+                  className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-bold"
                   value={accountForm.role}
                   onChange={(e) => setAccountForm({ ...accountForm, role: e.target.value as any })}
                 >
@@ -3322,7 +3322,7 @@ Postani Dostavljač Podrška`;
                 <button
                   type="submit"
                   disabled={saveAccountLoading}
-                  className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold rounded-xl shadow-md shadow-sky-500/10 transition cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
+                  className="px-5 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white text-xs font-bold rounded-xl shadow-md shadow-deliverix-500/10 transition cursor-pointer disabled:opacity-50 flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
                 >
                   {saveAccountLoading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -3347,7 +3347,7 @@ Postani Dostavljač Podrška`;
             <div className="flex justify-between items-start border-b border-gray-100 pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-sky-500" /> Podešavanje Mog Naloga
+                  <Settings className="w-5 h-5 text-deliverix-500" /> Podešavanje Mog Naloga
                 </h3>
                 <p className="text-xs text-gray-400">Podesite pristupne parametre i integraciju za email.</p>
               </div>
@@ -3368,7 +3368,7 @@ Postani Dostavljač Podrška`;
                   onClick={() => setActiveSettingsTab('account')}
                   className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer ${
                     activeSettingsTab === 'account'
-                      ? 'border-sky-500 text-sky-600'
+                      ? 'border-deliverix-500 text-deliverix-600'
                       : 'border-transparent text-gray-400 hover:text-gray-600'
                   }`}
                 >
@@ -3383,7 +3383,7 @@ Postani Dostavljač Podrška`;
                   }}
                   className={`pb-2.5 text-xs sm:text-sm font-bold border-b-2 transition cursor-pointer ${
                     activeSettingsTab === 'email'
-                      ? 'border-sky-500 text-sky-600'
+                      ? 'border-deliverix-500 text-deliverix-600'
                       : 'border-transparent text-gray-400 hover:text-gray-600'
                   }`}
                 >
@@ -3414,7 +3414,7 @@ Postani Dostavljač Podrška`;
                     <input
                       type="text"
                       required
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                       placeholder="npr. admin"
                       value={newUsername}
                       onChange={e => setNewUsername(e.target.value)}
@@ -3426,7 +3426,7 @@ Postani Dostavljač Podrška`;
                     <input
                       type="password"
                       required
-                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                      className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-mono"
                       placeholder="••••••••"
                       value={newPassword}
                       onChange={e => setNewPassword(e.target.value)}
@@ -3445,7 +3445,7 @@ Postani Dostavljač Podrška`;
                     <button
                       type="submit"
                       disabled={changeLoading}
-                      className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10 disabled:opacity-50"
+                      className="px-5 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-deliverix-500/10 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
                     >
                       {changeLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sačuvaj izmene'}
                     </button>
@@ -3468,13 +3468,13 @@ Postani Dostavljač Podrška`;
                   </div>
                 )}
 
-                <div className="bg-sky-50 text-sky-800 p-3.5 rounded-xl text-xs border border-sky-100 space-y-1.5 leading-relaxed font-medium">
-                  <p className="font-bold flex items-center gap-1.5 text-sky-950">
-                    <Sparkles className="w-4 h-4 text-sky-600" /> Kako podesiti Gmail slanje?
+                <div className="bg-deliverix-50 text-deliverix-900 p-3.5 rounded-xl text-xs border border-deliverix-100 space-y-1.5 leading-relaxed font-medium">
+                  <p className="font-bold flex items-center gap-1.5 text-deliverix-950">
+                    <Sparkles className="w-4 h-4 text-deliverix-accent animate-pulse" /> Kako podesiti Gmail slanje?
                   </p>
-                  <p>Da biste slali email-ove sa sajta u ime adrese <strong className="text-sky-950 font-mono text-[11px]">info@deliverix.rs</strong>, povežite svoj Gmail nalog:</p>
-                  <ol className="list-decimal pl-4 space-y-1 text-sky-900">
-                    <li>Idite na podešavanja vašeg Google naloga (<a href="https://myaccount.google.com" target="_blank" rel="noreferrer" className="underline font-bold hover:text-sky-950">myaccount.google.com</a>)</li>
+                  <p>Da biste slali email-ove sa sajta u ime adrese <strong className="text-deliverix-950 font-mono text-[11px]">info@deliverix.rs</strong>, povežite svoj Gmail nalog:</p>
+                  <ol className="list-decimal pl-4 space-y-1 text-deliverix-900">
+                    <li>Idite na podešavanja vašeg Google naloga (<a href="https://myaccount.google.com" target="_blank" rel="noreferrer" className="underline font-bold hover:text-deliverix-950">myaccount.google.com</a>)</li>
                     <li>Uključite <strong>Verifikaciju u 2 koraka</strong> u sekciji "Sigurnost"</li>
                     <li>U pretrazi naloga potražite <strong>Lozinke za aplikacije</strong> (App Passwords) i kreirajte novu (npr. unesite naziv "Sajt Deliverix")</li>
                     <li>Kopirajte generisanu šifru od 16 karaktera i unesite je u polje ispod</li>
@@ -3488,7 +3488,7 @@ Postani Dostavljač Podrška`;
                       <input
                         type="email"
                         required
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                         placeholder="npr. daniel.hoscieslavski@gmail.com"
                         value={mailConfig.smtp_email}
                         onChange={e => setMailConfig({ ...mailConfig, smtp_email: e.target.value })}
@@ -3499,7 +3499,7 @@ Postani Dostavljač Podrška`;
                       <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Lozinka aplikacije (App Password)</label>
                       <input
                         type="password"
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-mono"
                         placeholder={mailConfig.has_password ? "•••••••••••••••• (Sačuvana lozinka)" : "Unesite 16-cifrenu šifru aplikacije"}
                         value={mailConfigPassword}
                         onChange={e => setMailConfigPassword(e.target.value)}
@@ -3513,7 +3513,7 @@ Postani Dostavljač Podrška`;
                       <input
                         type="text"
                         required
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                         placeholder="npr. Deliverix Podrška"
                         value={mailConfig.sender_name}
                         onChange={e => setMailConfig({ ...mailConfig, sender_name: e.target.value })}
@@ -3525,7 +3525,7 @@ Postani Dostavljač Podrška`;
                       <input
                         type="text"
                         required
-                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium font-mono"
+                        className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium font-mono"
                         placeholder="npr. info@deliverix.rs"
                         value={mailConfig.sender_alias}
                         onChange={e => setMailConfig({ ...mailConfig, sender_alias: e.target.value })}
@@ -3544,7 +3544,7 @@ Postani Dostavljač Podrška`;
                     <button
                       type="submit"
                       disabled={saveMailLoading}
-                      className="px-5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-sky-500/10 disabled:opacity-50"
+                      className="px-5 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 active:bg-deliverix-700 text-white font-bold text-xs rounded-xl transition cursor-pointer flex items-center gap-2 shadow-md shadow-deliverix-500/10 disabled:opacity-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-deliverix-200"
                     >
                       {saveMailLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Sačuvaj podešavanja'}
                     </button>

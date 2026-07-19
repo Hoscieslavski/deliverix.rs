@@ -11,7 +11,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
       {/* Back Button */}
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 hover:text-sky-500 bg-white hover:bg-gray-50 rounded-xl border border-gray-100 shadow-xs transition cursor-pointer mb-8"
+        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-600 hover:text-deliverix-500 bg-white hover:bg-gray-50 rounded-xl border border-gray-100 shadow-xs transition cursor-pointer mb-8"
         id="terms-back-btn"
       >
         <ArrowLeft className="w-4 h-4" />
@@ -22,7 +22,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
         {/* Header */}
         <div className="border-b border-gray-100 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-sky-50 text-sky-500 rounded-2xl">
+            <div className="p-3 bg-deliverix-50 text-deliverix-500 rounded-2xl">
               <Scale className="w-8 h-8" />
             </div>
             <div>
@@ -42,7 +42,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
           {/* Section 1 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Info className="w-5 h-5 text-sky-500" />
+              <Info className="w-5 h-5 text-deliverix-500" />
               1. Opis usluge i uloga Deliverix portala
             </h2>
             <p>
@@ -59,7 +59,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
           {/* Section 2 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-sky-500" />
+              <CheckCircle className="w-5 h-5 text-deliverix-500" />
               2. Uslovi za podnošenje prijave
             </h2>
             <p>
@@ -75,7 +75,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
           {/* Section 3 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <FileText className="w-5 h-5 text-sky-500" />
+              <FileText className="w-5 h-5 text-deliverix-500" />
               3. Ograničenje odgovornosti i garancija
             </h2>
             <p>
@@ -91,7 +91,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
           {/* Section 4 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <HelpCircle className="w-5 h-5 text-sky-500" />
+              <HelpCircle className="w-5 h-5 text-deliverix-500" />
               4. Zloupotreba i zaštita sistema
             </h2>
             <p>
@@ -105,7 +105,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
           {/* Section 5 */}
           <div className="space-y-3 pt-4">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Scale className="w-5 h-5 text-sky-500" />
+              <Scale className="w-5 h-5 text-deliverix-500" />
               5. Izmene uslova korišćenja
             </h2>
             <p>
@@ -116,7 +116,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
           {/* Contact */}
           <div className="space-y-3 pt-6 border-t border-gray-100">
             <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <Mail className="w-5 h-5 text-sky-500" />
+              <Mail className="w-5 h-5 text-deliverix-500" />
               6. Kontakt za podršku i primedbe
             </h2>
             <p>
@@ -124,7 +124,7 @@ export default function TermsOfService({ onBack }: TermsOfServiceProps) {
             </p>
             <div className="bg-gray-50 rounded-2xl p-4 inline-flex items-center gap-3 border border-gray-100">
               <Mail className="w-5 h-5 text-gray-400" />
-              <a href="mailto:info@deliverix.rs" className="font-mono text-xs sm:text-sm text-sky-600 hover:underline">
+              <a href="mailto:info@deliverix.rs" className="font-mono text-xs sm:text-sm text-deliverix-600 hover:underline">
                 info@deliverix.rs
               </a>
             </div>

@@ -37,7 +37,7 @@ export function SeoTabForm({
               type="text"
               required
               placeholder="npr. Deliverix | Postani Wolt Dostavljač u Srbiji"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-bold"
               value={siteSettings.meta_title || ''}
               onChange={e => setSiteSettings({ ...siteSettings, meta_title: e.target.value })}
             />
@@ -49,7 +49,7 @@ export function SeoTabForm({
               rows={3}
               required
               placeholder="npr. Prijavi se za rad kao dostavljač i ostvari odličnu zaradu uz 100% fleksibilno vreme..."
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
               value={siteSettings.meta_description || ''}
               onChange={e => setSiteSettings({ ...siteSettings, meta_description: e.target.value })}
             />
@@ -60,7 +60,7 @@ export function SeoTabForm({
             <input
               type="text"
               placeholder="npr. G-XXXXXXXXXX ili GTM-XXXXXXX"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-mono text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
               value={siteSettings.ga_measurement_id || ''}
               onChange={e => setSiteSettings({ ...siteSettings, ga_measurement_id: e.target.value })}
             />
@@ -68,12 +68,12 @@ export function SeoTabForm({
 
           <div className="space-y-1.5">
             <label className="text-xs font-bold text-gray-500 uppercase flex items-center gap-1">
-              Važno Obaveštenje na vrhu sajta <span className="text-[10px] bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded font-black">OPCIONO</span>
+              Važno Obaveštenje na vrhu sajta <span className="text-[10px] bg-deliverix-100 text-deliverix-700 px-1.5 py-0.5 rounded font-black">OPCIONO</span>
             </label>
             <input
               type="text"
               placeholder="npr. HITNO: Otvorene prijave za dostavljače sa sopstvenim motorom u Beogradu!"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
               value={siteSettings.announcement_banner || ''}
               onChange={e => setSiteSettings({ ...siteSettings, announcement_banner: e.target.value })}
             />
@@ -86,7 +86,7 @@ export function SeoTabForm({
               type="text"
               required
               placeholder="npr. +381 60 123 4567"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-bold"
               value={siteSettings.support_phone || ''}
               onChange={e => setSiteSettings({ ...siteSettings, support_phone: e.target.value })}
             />
@@ -95,7 +95,7 @@ export function SeoTabForm({
 
         {/* Podešavanje Izgleda Logotipa */}
         <div className="pt-5 border-t border-gray-100 space-y-6">
-          <h4 className="text-xs font-extrabold text-sky-600 uppercase tracking-wider font-sans">Izgled Logotipa i Brending</h4>
+          <h4 className="text-xs font-extrabold text-deliverix-600 uppercase tracking-wider font-sans">Izgled Logotipa i Brending</h4>
           
           {/* HEADER LOGO */}
           <div className="space-y-3">
@@ -108,7 +108,7 @@ export function SeoTabForm({
                 >
                   <DeliverixLogo 
                     style="custom" 
-                    customLogoUrl={siteSettings.logo_url || "/assets/images/logo_custom.png"} 
+                    customLogoUrl={siteSettings.logo_url || "/assets/images/logo_custom.webp"} 
                     logoBlendMode={(siteSettings.logo_blend_mode as any) || 'normal'}
                     className="w-12 h-12" 
                   />
@@ -119,14 +119,14 @@ export function SeoTabForm({
                 <div className="space-y-1.5">
                   <label className="text-xs font-bold text-gray-500 uppercase font-sans">Otpremite Vaš Logotip</label>
                   <div className="flex items-center gap-2">
-                    <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-sky-500 hover:bg-sky-50/20 transition group">
+                    <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-deliverix-500 hover:bg-deliverix-50/20 transition group">
                       <div className="flex items-center gap-2">
                         {isUploadingLogo ? (
-                          <Loader2 className="w-4 h-4 text-sky-500 animate-spin" />
+                          <Loader2 className="w-4 h-4 text-deliverix-500 animate-spin" />
                         ) : (
-                          <Upload className="w-4 h-4 text-gray-400 group-hover:text-sky-500 transition" />
+                          <Upload className="w-4 h-4 text-gray-400 group-hover:text-deliverix-500 transition" />
                         )}
-                        <span className="text-xs font-bold text-gray-600 group-hover:text-sky-600 transition">
+                        <span className="text-xs font-bold text-gray-600 group-hover:text-deliverix-600 transition">
                           {isUploadingLogo ? 'Otpremanje...' : 'Izaberite sliku logotipa'}
                         </span>
                       </div>
@@ -146,7 +146,7 @@ export function SeoTabForm({
                   <input
                     type="text"
                     disabled
-                    value="/assets/images/logo_custom.png"
+                    value="/assets/images/logo_custom.webp"
                     className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-400 font-mono font-semibold"
                   />
                 </div>
@@ -158,7 +158,7 @@ export function SeoTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-sky-500/10"
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
           >
             Sačuvaj opšta podešavanja
           </button>
@@ -249,7 +249,7 @@ export function HeroTabForm({
               type="text"
               required
               placeholder="npr. Pronađi posao dostavljača uz Deliverix"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-bold"
               value={siteSettings.hero_h1 || ''}
               onChange={e => setSiteSettings({ ...siteSettings, hero_h1: e.target.value })}
             />
@@ -261,7 +261,7 @@ export function HeroTabForm({
               type="text"
               required
               placeholder="npr. Tvoja vožnja. Tvoja zarada. Tvoj tempo."
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-bold"
               value={siteSettings.hero_title || ''}
               onChange={e => setSiteSettings({ ...siteSettings, hero_title: e.target.value })}
             />
@@ -273,7 +273,7 @@ export function HeroTabForm({
               rows={2}
               required
               placeholder="Upišite podnaslov..."
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
               value={siteSettings.homepage_subtitle || ''}
               onChange={e => setSiteSettings({ ...siteSettings, homepage_subtitle: e.target.value })}
             />
@@ -285,7 +285,7 @@ export function HeroTabForm({
               type="text"
               required
               placeholder="npr. Izaberi platformu za rad:"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-bold"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-bold"
               value={siteSettings.hero_platform_title || ''}
               onChange={e => setSiteSettings({ ...siteSettings, hero_platform_title: e.target.value })}
             />
@@ -294,7 +294,7 @@ export function HeroTabForm({
 
         {/* Hero ključne prednosti (Faza 5) */}
         <div className="pt-4 border-t border-gray-100 space-y-4">
-          <h4 className="text-xs font-extrabold text-sky-600 uppercase tracking-wider font-sans flex items-center gap-1.5">
+          <h4 className="text-xs font-extrabold text-deliverix-600 uppercase tracking-wider font-sans flex items-center gap-1.5">
             <Check className="w-4 h-4 stroke-[3]" /> Hero ključne prednosti
           </h4>
           <div className="space-y-2">
@@ -305,7 +305,7 @@ export function HeroTabForm({
                   type="text"
                   required
                   placeholder="Upišite stavku prednosti..."
-                  className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                  className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
                   value={bullet?.text || bullet || ''}
                   onChange={e => handleUpdateBulletText(idx, e.target.value)}
                 />
@@ -345,14 +345,14 @@ export function HeroTabForm({
           <button
             type="button"
             onClick={handleAddBullet}
-            className="text-xs font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 cursor-pointer"
+            className="text-xs font-bold text-deliverix-600 hover:text-deliverix-700 flex items-center gap-1 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" /> Dodaj novu stavku prednosti
           </button>
         </div>
 
         <div className="pt-4 border-t border-gray-100 space-y-4">
-          <h4 className="text-xs font-extrabold text-sky-600 uppercase tracking-wider font-sans flex items-center gap-1">
+          <h4 className="text-xs font-extrabold text-deliverix-600 uppercase tracking-wider font-sans flex items-center gap-1">
             <Sparkles className="w-4 h-4" /> Desna strana Hero sekcije (Slika / Slajder)
           </h4>
 
@@ -360,7 +360,7 @@ export function HeroTabForm({
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-gray-500 uppercase font-sans">Tip desnog vizuelnog prikaza</label>
               <select
-                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-sky-500 focus:outline-none font-semibold cursor-pointer"
+                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-semibold cursor-pointer"
                 value={siteSettings.hero_right_mode || 'image'}
                 onChange={e => setSiteSettings({ ...siteSettings, hero_right_mode: e.target.value })}
               >
@@ -375,7 +375,7 @@ export function HeroTabForm({
                 type="text"
                 required
                 placeholder="npr. Dostavljač hrane - Wolt Glovo Srbija"
-                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-sky-500 focus:outline-none font-medium"
+                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-medium"
                 value={siteSettings.hero_image_alt || ''}
                 onChange={e => setSiteSettings({ ...siteSettings, hero_image_alt: e.target.value })}
               />
@@ -402,14 +402,14 @@ export function HeroTabForm({
                   <div className="space-y-1.5">
                     <label className="text-xs font-bold text-gray-500 uppercase font-sans">Otpremite sliku dostavljača</label>
                     <div className="flex items-center gap-2">
-                      <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-sky-500 hover:bg-sky-50/20 transition group">
+                      <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-deliverix-500 hover:bg-deliverix-50/20 transition group">
                         <div className="flex items-center gap-2">
                           {isUploadingHeroImage ? (
-                            <Loader2 className="w-4 h-4 text-sky-500 animate-spin" />
+                            <Loader2 className="w-4 h-4 text-deliverix-500 animate-spin" />
                           ) : (
-                            <Upload className="w-4 h-4 text-gray-400 group-hover:text-sky-500 transition" />
+                            <Upload className="w-4 h-4 text-gray-400 group-hover:text-deliverix-500 transition" />
                           )}
-                          <span className="text-xs font-bold text-gray-600 group-hover:text-sky-600 transition">
+                          <span className="text-xs font-bold text-gray-600 group-hover:text-deliverix-600 transition">
                             {isUploadingHeroImage ? 'Otpremanje...' : 'Izaberite sliku'}
                           </span>
                         </div>
@@ -429,7 +429,7 @@ export function HeroTabForm({
                     <input
                       type="text"
                       placeholder="https://images.unsplash.com/..."
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-700 focus:ring-2 focus:ring-sky-500 focus:outline-none font-mono"
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-700 focus:ring-2 focus:ring-deliverix-500 focus:outline-none font-mono"
                       value={siteSettings.hero_image_url || ''}
                       onChange={e => setSiteSettings({ ...siteSettings, hero_image_url: e.target.value })}
                     />
@@ -446,7 +446,7 @@ export function HeroTabForm({
                       type="text"
                       required
                       placeholder="npr. Dostupno odmah"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-extrabold text-sky-600 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-extrabold text-deliverix-600 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
                       value={siteSettings.hero_badge_title || ''}
                       onChange={e => setSiteSettings({ ...siteSettings, hero_badge_title: e.target.value })}
                     />
@@ -458,7 +458,7 @@ export function HeroTabForm({
                       type="text"
                       required
                       placeholder="npr. Pomoć oko zaposlenja je 100% besplatna!"
-                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-black text-gray-800 focus:ring-2 focus:ring-sky-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-black text-gray-800 focus:ring-2 focus:ring-deliverix-500 focus:outline-none"
                       value={siteSettings.hero_badge_text || ''}
                       onChange={e => setSiteSettings({ ...siteSettings, hero_badge_text: e.target.value })}
                     />
@@ -473,7 +473,7 @@ export function HeroTabForm({
             <div className="space-y-4 p-4 bg-gray-50/50 rounded-xl border border-gray-100 animate-fade-in">
               <div className="flex justify-between items-center">
                 <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">Slike i tekstovi u slajderu</h5>
-                <span className="text-[10px] bg-sky-50 text-sky-700 font-extrabold px-2 py-0.5 rounded-full">
+                <span className="text-[10px] bg-deliverix-50 text-deliverix-700 font-extrabold px-2 py-0.5 rounded-full">
                   Broj slika: {siteSettings.hero_slider_images?.length || 0}
                 </span>
               </div>
@@ -542,14 +542,14 @@ export function HeroTabForm({
               <div className="space-y-1.5 pt-2">
                 <label className="text-xs font-bold text-gray-500 uppercase font-sans">Dodaj novu sliku u slajder</label>
                 <div className="flex items-center gap-2">
-                  <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-sky-500 hover:bg-sky-50/20 transition group">
+                  <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-deliverix-500 hover:bg-deliverix-50/20 transition group">
                     <div className="flex items-center gap-2">
                       {isUploadingHeroSlide ? (
-                        <Loader2 className="w-4 h-4 text-sky-500 animate-spin" />
+                        <Loader2 className="w-4 h-4 text-deliverix-500 animate-spin" />
                       ) : (
-                        <Plus className="w-4 h-4 text-gray-400 group-hover:text-sky-500 transition" />
+                        <Plus className="w-4 h-4 text-gray-400 group-hover:text-deliverix-500 transition" />
                       )}
-                      <span className="text-xs font-bold text-gray-600 group-hover:text-sky-600 transition">
+                      <span className="text-xs font-bold text-gray-600 group-hover:text-deliverix-600 transition">
                         {isUploadingHeroSlide ? 'Otpremanje...' : 'Izaberite sliku slajda'}
                       </span>
                     </div>
@@ -570,7 +570,7 @@ export function HeroTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-sky-500/10"
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
           >
             Sačuvaj izmene u Hero delu
           </button>
@@ -1033,7 +1033,7 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA 0: ŠTA JE DELIVERIX? */}
         <div className={`space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border transition-all ${siteSettings.about_enabled !== false ? 'border-gray-100 opacity-100' : 'border-gray-200/80 bg-gray-100/30'}`}>
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <Compass className="w-4 h-4" /> Sekcija: Šta je Deliverix?
             </h4>
             <div className="flex items-center gap-2">
@@ -1042,7 +1042,7 @@ export function HomepageSectionsTabForm({
                 type="button"
                 onClick={() => setSiteSettings({ ...siteSettings, about_enabled: siteSettings.about_enabled !== false ? false : true })}
                 className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  siteSettings.about_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                  siteSettings.about_enabled !== false ? 'bg-deliverix-500' : 'bg-gray-300'
                 }`}
               >
                 <span
@@ -1069,7 +1069,7 @@ export function HomepageSectionsTabForm({
               <label className="text-xs font-bold text-gray-500 uppercase">Popularne pretrage (oznake, odvojene zarezom)</label>
               <input
                 type="text"
-                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-sky-700 font-mono"
+                className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-deliverix-700 font-mono"
                 value={(siteSettings.about_tags || []).join(', ')}
                 onChange={e => setSiteSettings({ ...siteSettings, about_tags: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
                 placeholder="posao dostavljača, prijava za dostavljača, dostavljač Wolt"
@@ -1113,7 +1113,7 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA 1: ZAŠTO NAS BIRAJU */}
         <div className={`space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border transition-all ${siteSettings.why_choose_us_enabled !== false ? 'border-gray-100 opacity-100' : 'border-gray-200/80 bg-gray-100/30'}`}>
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <Check className="w-4 h-4 stroke-[3]" /> Sekcija: Zašto nas biraju (Prednosti)
             </h4>
             <div className="flex items-center gap-2">
@@ -1122,7 +1122,7 @@ export function HomepageSectionsTabForm({
                 type="button"
                 onClick={() => setSiteSettings({ ...siteSettings, why_choose_us_enabled: siteSettings.why_choose_us_enabled !== false ? false : true })}
                 className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  siteSettings.why_choose_us_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                  siteSettings.why_choose_us_enabled !== false ? 'bg-deliverix-500' : 'bg-gray-300'
                 }`}
               >
                 <span
@@ -1183,7 +1183,7 @@ export function HomepageSectionsTabForm({
             <button
               type="button"
               onClick={handleAddBullet}
-              className="mt-2 text-xs font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 cursor-pointer"
+              className="mt-2 text-xs font-bold text-deliverix-600 hover:text-deliverix-700 flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" /> Dodaj novu prednost
             </button>
@@ -1193,7 +1193,7 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA 2: KAKO FUNKCIONIŠE */}
         <div className={`space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border transition-all ${siteSettings.steps_enabled !== false ? 'border-gray-100 opacity-100' : 'border-gray-200/80 bg-gray-100/30'}`}>
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <Compass className="w-4 h-4" /> Sekcija: Kako funkcioniše (Koraci)
             </h4>
             <div className="flex items-center gap-3">
@@ -1201,7 +1201,7 @@ export function HomepageSectionsTabForm({
                 <button
                   type="button"
                   onClick={handleAddStep}
-                  className="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" /> Dodaj Korak
                 </button>
@@ -1212,7 +1212,7 @@ export function HomepageSectionsTabForm({
                   type="button"
                   onClick={() => setSiteSettings({ ...siteSettings, steps_enabled: siteSettings.steps_enabled !== false ? false : true })}
                   className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    siteSettings.steps_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                    siteSettings.steps_enabled !== false ? 'bg-deliverix-500' : 'bg-gray-300'
                   }`}
                 >
                   <span
@@ -1252,7 +1252,7 @@ export function HomepageSectionsTabForm({
                 <div key={idx} className="bg-white p-4 rounded-xl border border-gray-150 space-y-3 relative">
                   <div className="flex justify-between items-center border-b border-gray-50 pb-2">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-black bg-sky-50 text-sky-600 px-2 py-0.5 rounded-md font-mono">Korak {idx + 1}</span>
+                      <span className="text-xs font-black bg-deliverix-50 text-deliverix-600 px-2 py-0.5 rounded-md font-mono">Korak {idx + 1}</span>
                       <input
                         type="text"
                         className="w-12 px-2 py-0.5 bg-gray-50 border border-gray-200 rounded text-center text-xs font-bold font-mono"
@@ -1298,7 +1298,7 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA 3: USLOVI ZA RAD */}
         <div className={`space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border transition-all ${siteSettings.requirements_enabled !== false ? 'border-gray-100 opacity-100' : 'border-gray-200/80 bg-gray-100/30'}`}>
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <ShieldCheck className="w-4 h-4" /> Sekcija: Uslovi za rad
             </h4>
             <div className="flex items-center gap-3">
@@ -1306,7 +1306,7 @@ export function HomepageSectionsTabForm({
                 <button
                   type="button"
                   onClick={handleAddReq}
-                  className="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" /> Dodaj Uslov
                 </button>
@@ -1317,7 +1317,7 @@ export function HomepageSectionsTabForm({
                   type="button"
                   onClick={() => setSiteSettings({ ...siteSettings, requirements_enabled: siteSettings.requirements_enabled !== false ? false : true })}
                   className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    siteSettings.requirements_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                    siteSettings.requirements_enabled !== false ? 'bg-deliverix-500' : 'bg-gray-300'
                   }`}
                 >
                   <span
@@ -1411,7 +1411,7 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA 4: RENTA VOZILA */}
         <div className={`space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border transition-all ${siteSettings.rent_enabled !== false ? 'border-gray-100 opacity-100' : 'border-gray-200/80 bg-gray-100/30'}`}>
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <Bike className="w-4 h-4" /> Sekcija: Renta vozila & Ponuda
             </h4>
             <div className="flex items-center gap-3">
@@ -1419,7 +1419,7 @@ export function HomepageSectionsTabForm({
                 <button
                   type="button"
                   onClick={handleAddRentItem}
-                  className="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3 h-3" /> Dodaj Vozilo
                 </button>
@@ -1430,7 +1430,7 @@ export function HomepageSectionsTabForm({
                   type="button"
                   onClick={() => setSiteSettings({ ...siteSettings, rent_enabled: siteSettings.rent_enabled !== false ? false : true })}
                   className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                    siteSettings.rent_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                    siteSettings.rent_enabled !== false ? 'bg-deliverix-500' : 'bg-gray-300'
                   }`}
                 >
                   <span
@@ -1470,7 +1470,7 @@ export function HomepageSectionsTabForm({
                 <div key={idx} className="bg-white p-4 rounded-xl border border-gray-150 space-y-3 relative">
                   <div className="flex items-center justify-between border-b border-gray-50 pb-2">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-xs font-black text-sky-600 uppercase">Vozilo #{idx + 1}</span>
+                      <span className="text-xs font-black text-deliverix-600 uppercase">Vozilo #{idx + 1}</span>
                       <select
                         className="px-2 py-0.5 bg-gray-50 border border-gray-200 rounded text-[10px] font-bold cursor-pointer font-sans"
                         value={item.icon || 'Bike'}
@@ -1531,7 +1531,7 @@ export function HomepageSectionsTabForm({
                         type="button"
                         onClick={() => handleUpdateRentItem(idx, 'enabled', item.enabled !== false ? false : true)}
                         className={`relative inline-flex h-4 w-8 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                          item.enabled !== false ? 'bg-sky-500' : 'bg-gray-200'
+                          item.enabled !== false ? 'bg-deliverix-500' : 'bg-gray-200'
                         }`}
                       >
                         <span
@@ -1568,13 +1568,13 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA 5: ZA KOGA JE OVAJ POSAO? */}
         <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <Compass className="w-4 h-4" /> Sekcija: Za koga je ovaj posao?
             </h4>
             <button
               type="button"
               onClick={handleAddAudienceItem}
-              className="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3 h-3" /> Dodaj Stavku
             </button>
@@ -1630,13 +1630,13 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA 6: ZAŠTO SE PRIJAVITI PREKO NAS? */}
         <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <HeartHandshake className="w-4 h-4" /> Sekcija: Zašto se prijaviti preko nas?
             </h4>
             <button
               type="button"
               onClick={handleAddWhyApplyItem}
-              className="px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-xs rounded-lg transition flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3 h-3" /> Dodaj Karticu
             </button>
@@ -1668,7 +1668,7 @@ export function HomepageSectionsTabForm({
               {whyApplyItems.map((item: any, idx: number) => (
                 <div key={idx} className="bg-white p-4 rounded-xl border border-gray-150 space-y-3 relative">
                   <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                    <span className="text-xs font-black text-sky-600">Razlog #{idx + 1}</span>
+                    <span className="text-xs font-black text-deliverix-600">Razlog #{idx + 1}</span>
                     {whyApplyItems.length > 1 && (
                       <button
                         type="button"
@@ -1705,7 +1705,7 @@ export function HomepageSectionsTabForm({
 
         {/* SEKCIJA ZA KOME JE NAMENJEN DELIVERIX (8 KARTICA) */}
         <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
-          <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
+          <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
             <Compass className="w-4 h-4" /> Sekcija: Kome je namenjen Deliverix (8 Kartica)
           </h4>
           <div className="space-y-4">
@@ -1713,7 +1713,7 @@ export function HomepageSectionsTabForm({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {targetAudienceCards.map((card: any, idx: number) => (
                 <div key={idx} className="bg-white p-4 rounded-xl border border-gray-150 space-y-3 relative">
-                  <span className="text-xs font-black text-sky-600">Kartica #{idx + 1}</span>
+                  <span className="text-xs font-black text-deliverix-600">Kartica #{idx + 1}</span>
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-gray-400 uppercase">Naslov</label>
                     <input
@@ -1741,7 +1741,7 @@ export function HomepageSectionsTabForm({
         {/* SEKCIJA ZA SEO ARTIKAL */}
         <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
-            <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5">
+            <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles className="w-4 h-4" /> Sekcija: SEO Karijerni vodič / Artikal
             </h4>
             <div className="flex items-center gap-2">
@@ -1750,7 +1750,7 @@ export function HomepageSectionsTabForm({
                 type="button"
                 onClick={() => setSiteSettings({ ...siteSettings, seo_article_enabled: siteSettings.seo_article_enabled !== false ? false : true })}
                 className={`relative inline-flex h-5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                  siteSettings.seo_article_enabled !== false ? 'bg-sky-500' : 'bg-gray-300'
+                  siteSettings.seo_article_enabled !== false ? 'bg-deliverix-500' : 'bg-gray-300'
                 }`}
               >
                 <span
@@ -1910,7 +1910,7 @@ export function HomepageSectionsTabForm({
 
         {/* SEKCIJA 7: DONJI CTA, KONTAKT & NAPOMENA */}
         <div className="space-y-4 p-4 sm:p-6 bg-gray-50/50 rounded-2xl border border-gray-100">
-          <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
+          <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-gray-100 pb-2">
             <Phone className="w-4 h-4" /> Sekcija: Donji Poziv na Akciju (CTA) & Napomene
           </h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -1954,8 +1954,8 @@ export function HomepageSectionsTabForm({
         </div>
 
         {/* SEKCIJA 6: POZIVI NA AKCIJU (CTA DUGMAD) & PLATFORME */}
-        <div className="space-y-6 p-4 sm:p-6 bg-sky-50/25 rounded-2xl border border-sky-100">
-          <h4 className="text-xs font-black text-sky-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-sky-100/50 pb-2">
+        <div className="space-y-6 p-4 sm:p-6 bg-deliverix-50/25 rounded-2xl border border-deliverix-100">
+          <h4 className="text-xs font-black text-deliverix-600 uppercase tracking-wider flex items-center gap-1.5 border-b border-deliverix-100/50 pb-2">
             <Sparkles className="w-4 h-4" /> Uređivanje CTA Dugmadi i Tabova Platformi
           </h4>
 
@@ -2044,10 +2044,10 @@ export function HomepageSectionsTabForm({
 
             {/* Platforme Tabovi Grupa */}
             <div className="space-y-4">
-              <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider text-sky-700">Wolt & Glovo Tabovi na vrhu</h5>
+              <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider text-deliverix-700">Wolt & Glovo Tabovi na vrhu</h5>
 
               <div className="p-3 bg-white/60 border border-gray-150 rounded-xl space-y-3">
-                <span className="text-[10px] font-extrabold text-sky-600 uppercase">Wolt podešavanja</span>
+                <span className="text-[10px] font-extrabold text-deliverix-600 uppercase">Wolt podešavanja</span>
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-gray-500 uppercase">Naslov platforme</label>
                   <input
@@ -2122,7 +2122,7 @@ export function HomepageSectionsTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-sky-500/10"
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
           >
             Sačuvaj izmene delova sajta
           </button>
@@ -2267,7 +2267,7 @@ export function FaqTabForm({
           <button
             type="button"
             onClick={handleAddFaq}
-            className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 cursor-pointer"
+            className="px-4 py-2 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" /> Dodaj FAQ
           </button>
@@ -2298,7 +2298,7 @@ export function FaqTabForm({
           {faqs.map((faq: any, idx: number) => (
             <div key={idx} className="p-4 bg-gray-50/50 rounded-xl border border-gray-150 space-y-3 relative group">
               <div className="flex justify-between items-center">
-                <span className="text-xs font-black text-sky-600 uppercase">Pitanje #{idx + 1}</span>
+                <span className="text-xs font-black text-deliverix-600 uppercase">Pitanje #{idx + 1}</span>
                 <button
                   type="button"
                   onClick={() => handleRemoveFaq(idx)}
@@ -2339,7 +2339,7 @@ export function FaqTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-sky-500/10"
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
           >
             Sačuvaj česta pitanja (FAQ)
           </button>
