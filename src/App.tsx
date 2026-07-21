@@ -37,6 +37,7 @@ const TermsOfService = lazy(() => import('./components/terms-of-service'));
 
 import { DeliverixLogo } from './components/DeliverixLogo';
 import { DEFAULT_SITE_SETTINGS } from './constants';
+import { DeliverixInitialData, SiteSettings } from './types';
 
 let seoCache: any = null;
 
@@ -54,22 +55,58 @@ export async function getSeoSettings() {
   }
 }
 
-export default function App() {
+export function getViewFromRoute(route: string): 'landing' | 'admin' | 'candidate' | 'blog' | 'privacy' | 'terms' {
+  if (route.startsWith('/admin')) return 'admin';
+  if (route.startsWith('/portal')) return 'candidate';
+  if (route.startsWith('/blog')) return 'blog';
+  if (route.startsWith('/privacy')) return 'privacy';
+  if (route.startsWith('/terms')) return 'terms';
+  return 'landing';
+}
+
+export function getBlogPostSlugFromPath(pathname: string): string | undefined {
+  if (pathname.startsWith('/blog/')) {
+    const parts = pathname.split('/');
+    if (parts.length > 2 && parts[2]) {
+      return parts[2];
+    }
+  }
+  return undefined;
+}
+
+export default function App({ initialData }: { initialData?: DeliverixInitialData } = {}) {
   const [currentView, setCurrentView] = useState<'landing' | 'admin' | 'candidate' | 'blog' | 'privacy' | 'terms'>(() => {
-    const saved = localStorage.getItem('current_view');
-    if (saved === 'admin' || saved === 'candidate' || saved === 'blog' || saved === 'landing' || saved === 'privacy' || saved === 'terms') {
-      return saved as any;
+    if (initialData?.currentView) {
+      return initialData.currentView;
+    }
+    if (typeof window !== 'undefined') {
+      const gData = (window as any).__DELIVERIX_INITIAL_DATA__;
+      if (gData?.currentView) return gData.currentView;
+      return getViewFromRoute(window.location.pathname);
     }
     return 'landing';
+  });
+  const [blogPostSlug, setBlogPostSlug] = useState<string | undefined>(() => {
+    if (initialData?.route) {
+      return getBlogPostSlugFromPath(initialData.route);
+    }
+    if (typeof window !== 'undefined') {
+      const gData = (window as any).__DELIVERIX_INITIAL_DATA__;
+      if (gData?.route) return getBlogPostSlugFromPath(gData.route);
+      return getBlogPostSlugFromPath(window.location.pathname);
+    }
+    return undefined;
   });
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   
   // Pomoćna funkcija za dobijanje keširanih podešavanja (most recent safe CMS state)
   const getCachedSettings = () => {
     try {
-      const cached = localStorage.getItem('deliverix_cached_site_settings');
-      if (cached) {
-        return JSON.parse(cached);
+      if (typeof window !== 'undefined') {
+        const cached = localStorage.getItem('deliverix_cached_site_settings');
+        if (cached) {
+          return JSON.parse(cached);
+        }
       }
     } catch (e) {
       console.error('Greška pri čitanju keširanih podešavanja:', e);
@@ -77,58 +114,145 @@ export default function App() {
     return null;
   };
 
-  const [siteSettings, setSiteSettings] = useState<any>(() => {
-    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(() => {
+    const initial = initialData?.siteSettings || (typeof window !== 'undefined' ? ((window as any).__DELIVERIX_INITIAL_DATA__)?.siteSettings : null);
     if (initial) {
       return { ...DEFAULT_SITE_SETTINGS, ...initial };
     }
-    // Return null so we render the skeleton on first paint when __INITIAL_SITE_SETTINGS__ is not present
+    // Return null so we render the skeleton on first paint when __DELIVERIX_INITIAL_DATA__ is not present
     return null;
   });
-  const [cookieConsent, setCookieConsent] = useState<'accepted' | 'rejected' | null>(() => {
-    const saved = localStorage.getItem('deliverix_cookie_consent');
-    if (saved === 'accepted' || saved === 'rejected') {
-      return saved as any;
-    }
-    return null;
-  });
+  const [cookieConsent, setCookieConsent] = useState<'accepted' | 'rejected' | null>(null);
 
   const handleAcceptCookies = () => {
     setCookieConsent('accepted');
-    localStorage.setItem('deliverix_cookie_consent', 'accepted');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('deliverix_cookie_consent', 'accepted');
+    }
   };
 
   const handleRejectCookies = () => {
     setCookieConsent('rejected');
-    localStorage.setItem('deliverix_cookie_consent', 'rejected');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('deliverix_cookie_consent', 'rejected');
+    }
   };
 
   const [logoStyle, setLogoStyle] = useState<'flow' | 'neon' | 'urban' | 'custom'>(() => {
-    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    const initial = initialData?.siteSettings || (typeof window !== 'undefined' ? ((window as any).__DELIVERIX_INITIAL_DATA__)?.siteSettings : null);
     if (initial?.logo_style) return initial.logo_style;
     return 'custom';
   });
 
   const [customLogoUrl, setCustomLogoUrl] = useState<string>(() => {
-    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    const initial = initialData?.siteSettings || (typeof window !== 'undefined' ? ((window as any).__DELIVERIX_INITIAL_DATA__)?.siteSettings : null);
     if (initial?.logo_url !== undefined) return initial.logo_url;
     return '/assets/images/logo_custom.webp';
   });
 
   const [logoBlendMode, setLogoBlendMode] = useState<'normal' | 'multiply'>(() => {
-    const initial = (window as any).__INITIAL_SITE_SETTINGS__;
+    const initial = initialData?.siteSettings || (typeof window !== 'undefined' ? ((window as any).__DELIVERIX_INITIAL_DATA__)?.siteSettings : null);
     if (initial?.logo_blend_mode) return initial.logo_blend_mode;
     return 'normal';
   });
 
   const [isInitialLoading, setIsInitialLoading] = useState(false);
   const [siteSettingsLoaded, setSiteSettingsLoaded] = useState<boolean>(() => {
-    return !!(window as any).__INITIAL_SITE_SETTINGS__;
+    return !!(initialData?.siteSettings || (typeof window !== 'undefined' && ((window as any).__DELIVERIX_INITIAL_DATA__)?.siteSettings));
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  // Učitavanje perzistentnih klijentskih stanja na mount-u (izbegava hydration mismatch)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedConsent = localStorage.getItem('deliverix_cookie_consent');
+      if (savedConsent === 'accepted' || savedConsent === 'rejected') {
+        setCookieConsent(savedConsent as any);
+      }
+    }
+  }, []);
+
+  // Sinhronizacija URL-a sa browser back/forward (popstate) dugmićima
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const view = getViewFromRoute(path);
+      setCurrentView(view);
+      
+      const slug = getBlogPostSlugFromPath(path);
+      setBlogPostSlug(slug);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  // Kad god se promeni currentView iz klijentskog koda, ažuriramo URL u browseru
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const path = window.location.pathname;
+    const expectedView = getViewFromRoute(path);
+
+    if (expectedView !== currentView) {
+      let targetPath = '/';
+      if (currentView === 'admin') targetPath = '/admin';
+      else if (currentView === 'candidate') targetPath = '/portal';
+      else if (currentView === 'blog') {
+        targetPath = blogPostSlug ? `/blog/${blogPostSlug}` : '/blog';
+      }
+      else if (currentView === 'privacy') targetPath = '/privacy';
+      else if (currentView === 'terms') targetPath = '/terms';
+
+      window.history.pushState(null, '', targetPath);
+    }
+  }, [currentView, blogPostSlug]);
+
+  const handleSelectBlogPost = (slug: string | null) => {
+    setBlogPostSlug(slug || undefined);
+    if (typeof window !== 'undefined') {
+      const targetPath = slug ? `/blog/${slug}` : '/blog';
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState(null, '', targetPath);
+      }
+    }
+  };
+
+  // Dinamičko ažuriranje favicon linkova u browseru nakon izmena u CMS-u bez osvežavanja stranice
+  useEffect(() => {
+    if (siteSettings?.favicon_url) {
+      const favIconUrl = siteSettings.favicon_url;
+      const favIcoUrl = siteSettings.favicon_ico_url || '/favicon.ico';
+      const appleTouchUrl = siteSettings.apple_touch_icon_url || '/apple-touch-icon.png';
+      const version = siteSettings.favicon_version || '1';
+
+      const links = document.getElementsByTagName('link');
+      for (let i = 0; i < links.length; i++) {
+        const link = links[i];
+        const rel = link.getAttribute('rel');
+        const sizes = link.getAttribute('sizes');
+        
+        if (rel === 'icon' && sizes === 'any') {
+          link.setAttribute('href', `${favIcoUrl}?v=${version}`);
+        } else if (rel === 'icon' && (sizes === '32x32' || !sizes)) {
+          link.setAttribute('href', `${favIconUrl}?v=${version}`);
+        } else if (rel === 'apple-touch-icon') {
+          link.setAttribute('href', `${appleTouchUrl}?v=${version}`);
+        } else if (rel === 'manifest') {
+          link.setAttribute('href', `/site.webmanifest?v=${version}`);
+        }
+      }
+    }
+  }, [siteSettings?.favicon_url, siteSettings?.favicon_ico_url, siteSettings?.apple_touch_icon_url, siteSettings?.favicon_version]);
+
   // Učitavanje logotipa i SEO podešavanja sa servera u pozadini (asinhrono i neblokirajuće)
   useEffect(() => {
+    // Sprečavanje duplog fetch-a ako su podaci već učitani preko SSR
+    if (siteSettingsLoaded) {
+      return;
+    }
     getSeoSettings()
       .then(data => {
         if (data.success && data.settings) {
@@ -220,6 +344,9 @@ export default function App() {
 
     // Učitavanje kompletnih podešavanja sajta u pozadini (asinhrono i neblokirajuće)
     const loadFullSettings = () => {
+      if (siteSettingsLoaded) {
+        return;
+      }
       fetch('/api/marketing/seo')
         .then(res => res.json())
         .then(data => {
@@ -760,7 +887,12 @@ export default function App() {
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.25 }}
               >
-                <BlogPage onBackToLanding={() => setCurrentView('landing')} />
+                <BlogPage 
+                  onBackToLanding={() => setCurrentView('landing')} 
+                  siteSettings={siteSettings} 
+                  initialPostSlug={blogPostSlug}
+                  onSelectPost={handleSelectBlogPost}
+                />
               </motion.div>
             ) : currentView === 'admin' ? (
               <motion.div
@@ -778,6 +910,14 @@ export default function App() {
                     setCustomLogoUrl(url);
                     if (blendMode) {
                       setLogoBlendMode(blendMode);
+                    }
+                  }}
+                  onSaveSettings={(updatedSettings) => {
+                    setSiteSettings(updatedSettings);
+                    try {
+                      localStorage.setItem('deliverix_cached_site_settings', JSON.stringify(updatedSettings));
+                    } catch (e) {
+                      console.error('Greška pri keširanju podešavanja:', e);
                     }
                   }}
                 />

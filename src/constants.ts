@@ -149,7 +149,7 @@ export const DEFAULT_SITE_SETTINGS = {
   announcement_banner: "",
   
   logo_style: "custom",
-  logo_url: "/assets/images/logo_custom.webp",
+  logo_url: "",
   logo_blend_mode: "normal",
   ga_measurement_id: "G-XXXXXXXXXX",
 

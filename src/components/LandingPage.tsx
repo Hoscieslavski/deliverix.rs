@@ -69,6 +69,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
   const [siteSettings, setSiteSettings] = useState<any>(initialSettings);
+
+  const absoluteLogoUrl = siteSettings?.logo_url
+    ? (siteSettings.logo_url.startsWith('http') ? siteSettings.logo_url : `https://deliverix.rs${siteSettings.logo_url}`)
+    : 'https://deliverix.rs/logo.png';
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -475,10 +479,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           "@context": "https://schema.org",
           "@type": "EmploymentAgency",
           "name": "Deliverix Srbija",
-          "image": "https://deliverix.rs/logo.png",
+          "image": absoluteLogoUrl,
           "url": "https://deliverix.rs/",
           "telephone": siteSettings?.support_phone || "+381600000000",
-          "logo": "https://deliverix.rs/logo.png",
+          "logo": absoluteLogoUrl,
           "description": "Besplatni regrutacioni partner i vodič za rad na Wolt i Glovo dostavnim platformama u Beogradu i celoj Srbiji.",
           "address": {
             "@type": "PostalAddress",
@@ -520,7 +524,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             "@type": "Organization",
             "name": "Deliverix Srbija",
             "sameAs": "https://deliverix.rs/",
-            "logo": "https://deliverix.rs/logo.png"
+            "logo": absoluteLogoUrl
           },
           "jobLocation": {
             "@type": "Place",
@@ -549,25 +553,27 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           
           {/* Tekst Hero Sekcije (Leva strana) */}
           <div className="min-[900px]:col-span-7 space-y-5 text-left flex flex-col items-start">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-deliverix-50 text-deliverix-900 rounded-full text-xs font-bold uppercase tracking-wider border border-deliverix-100">
-              <Sparkles className="w-3.5 h-3.5 text-deliverix-accent" />
-              <span>{siteSettings?.hero_badge_title || "Wolt i Glovo prijava za dostavljače"}</span>
+            <div className="flex flex-col items-start gap-1.5 w-full">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-deliverix-50 text-deliverix-900 rounded-full text-xs font-bold uppercase tracking-wider border border-deliverix-100">
+                <Sparkles className="w-3.5 h-3.5 text-deliverix-accent" />
+                <span>{siteSettings?.hero_badge_title || "Wolt i Glovo prijava za dostavljače"}</span>
+              </div>
+              
+              <h1 className="text-[25px] sm:text-4xl lg:text-5.5xl font-black text-gray-900 tracking-tight leading-[1.12] text-left">
+                {siteSettings?.hero_h1 || "Pronađi posao dostavljača uz Deliverix"}
+              </h1>
             </div>
-            
-            <h1 className="text-3xl sm:text-4xl lg:text-5.5xl font-black text-gray-900 tracking-tight leading-[1.12] text-left">
-              {siteSettings?.hero_h1 || "Pronađi posao dostavljača uz Deliverix"}
-            </h1>
 
             <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight text-left">
               {siteSettings?.hero_title || "Tvoja vožnja. Tvoja zarada. Tvoj tempo."}
             </h2>
             
-            <p className="text-sm sm:text-base text-gray-500 leading-snug sm:leading-relaxed max-w-xl text-left">
+            <p className="text-sm sm:text-base text-gray-500 leading-snug sm:leading-relaxed max-w-3xl text-left">
               {siteSettings?.homepage_subtitle || "Deliverix je nezavisna platforma koja besplatno povezuje buduće dostavljače sa proverenim partnerskim agencijama za Wolt, Glovo i druge dostavne platforme u Srbiji."}
             </p>
 
             {/* Ključne stavke u Hero sekciji (Celina 1) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl w-full pt-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-3xl w-full pt-1">
               {(siteSettings?.hero_bullets && siteSettings.hero_bullets.length > 0
                 ? siteSettings.hero_bullets
                 : [
@@ -587,7 +593,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             </div>
 
             {/* Isticanje Partnerskih Platformi (Celina C - 3.1) */}
-            <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-50 border border-gray-150 rounded-2xl max-w-lg w-full">
+            <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-50 border border-gray-150 rounded-2xl max-w-2xl w-full">
               <button
                 type="button"
                 onClick={() => setActivePlatformTab('wolt')}
@@ -634,7 +640,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             </div>
 
             {/* Ključne stavke odmah vidljive */}
-            <div className="grid grid-cols-2 gap-2 text-left w-full max-w-lg">
+            <div className="grid grid-cols-2 gap-2 text-left w-full max-w-2xl">
               {[
                 activePlatformTab === 'wolt' 
                   ? (siteSettings?.hero_wolt_bullet_1 || 'Fleksibilno radno vreme') 
@@ -655,7 +661,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             </div>
 
             {/* CTA dugmad */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-2xl">
               <button
                 id="hero-apply-btn"
                 onClick={onOpenApply}
@@ -742,37 +748,33 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                     />
                   )}
 
-                  {/* Moderni statusni tag - zajednički za oba moda */}
-                  <div className="absolute top-4 left-4 z-20 px-3 py-1.5 bg-slate-900/80 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-1.5 shadow-lg">
-                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse shrink-0"></span>
-                    <span className="text-[10px] font-black text-white uppercase tracking-wider">
-                      {activeSlide?.badge_title || 'Besplatna Podrška'}
-                    </span>
-                  </div>
-
                   {/* Suptilan i elegantan overlay na dnu slike koji eliminiše osećaj reklame */}
                   <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent p-5 sm:p-6 pt-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4 z-20">
                     <div className="min-w-0 text-left">
-                      <p className="text-[10px] font-black uppercase tracking-widest text-deliverix-accent">
-                        {siteSettings?.hero_slider_upper_text || "Započni posao lakše"}
-                      </p>
-                      <p className="text-xs sm:text-sm font-bold text-white mt-1 leading-snug">
-                        {activeSlide?.badge_text || 'Pomažemo ti od prijave do prve dostave.'}
-                      </p>
+                      {activeSlide?.badge_text && (
+                        <p className="text-[10px] font-black uppercase tracking-widest text-deliverix-accent">
+                          {activeSlide.badge_text}
+                        </p>
+                      )}
+                      {activeSlide?.description && (
+                        <p className="text-xs sm:text-sm font-bold text-white mt-1 leading-snug">
+                          {activeSlide.description}
+                        </p>
+                      )}
                     </div>
                     
                     {/* Indikatori u vidu tačkica integrisani u desni ugao (samo ako je slider) */}
                     {siteSettings?.hero_right_mode === 'slider' && slides.length > 1 && (
-                      <div className="flex gap-1 shrink-0 bg-white/10 backdrop-blur-md px-2 py-1.5 rounded-lg border border-white/5 self-start sm:self-auto">
+                      <div className="flex gap-0.5 shrink-0 bg-white/5 backdrop-blur-xs px-1.5 py-1 rounded-md border border-white/5 self-start sm:self-auto">
                         {slides.map((_: any, idx: number) => (
                           <button
                             key={idx}
                             type="button"
                             onClick={() => setCurrentSlide(idx)}
-                            className="w-8 h-8 flex items-center justify-center cursor-pointer"
+                            className="w-3.5 h-3.5 flex items-center justify-center cursor-pointer"
                             aria-label={`Slajd ${idx + 1}`}
                           >
-                            <span className={`h-1.5 rounded-full transition-all duration-300 ${currentSlide === idx ? 'bg-white w-3' : 'bg-white/40 w-1.5'}`} />
+                            <span className={`h-1 rounded-full transition-all duration-300 ${currentSlide === idx ? 'bg-white w-2' : 'bg-white/35 w-1'}`} />
                           </button>
                         ))}
                       </div>

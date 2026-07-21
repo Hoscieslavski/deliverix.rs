@@ -13,6 +13,11 @@ interface SeoTabFormProps {
   onSave: (e: React.FormEvent) => void;
   isUploadingLogo: boolean;
   handleLogoUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isUploadingFavicon?: boolean;
+  handleFaviconUpload?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  pendingLogo?: { file: File; previewUrl: string; base64: string } | null;
+  pendingFavicon?: { file: File; previewUrl: string; base64: string } | null;
+  isSaving?: boolean;
 }
 
 export function SeoTabForm({
@@ -20,7 +25,12 @@ export function SeoTabForm({
   setSiteSettings,
   onSave,
   isUploadingLogo,
-  handleLogoUpload
+  handleLogoUpload,
+  isUploadingFavicon = false,
+  handleFaviconUpload,
+  pendingLogo = null,
+  pendingFavicon = null,
+  isSaving = false
 }: SeoTabFormProps) {
   return (
     <div className="bg-white p-4 sm:p-8 rounded-2xl border border-gray-100 shadow-sm w-full" id="seo-tab-form-root">
@@ -108,7 +118,7 @@ export function SeoTabForm({
                 >
                   <DeliverixLogo 
                     style="custom" 
-                    customLogoUrl={siteSettings.logo_url || "/assets/images/logo_custom.webp"} 
+                    customLogoUrl={pendingLogo ? pendingLogo.previewUrl : (siteSettings.logo_url || "")} 
                     logoBlendMode={(siteSettings.logo_blend_mode as any) || 'normal'}
                     className="w-12 h-12" 
                   />
@@ -127,7 +137,7 @@ export function SeoTabForm({
                           <Upload className="w-4 h-4 text-gray-400 group-hover:text-deliverix-500 transition" />
                         )}
                         <span className="text-xs font-bold text-gray-600 group-hover:text-deliverix-600 transition">
-                          {isUploadingLogo ? 'Otpremanje...' : 'Izaberite sliku logotipa'}
+                          {pendingLogo ? `Izabran: ${pendingLogo.file.name}` : (isUploadingLogo ? 'Otpremanje...' : 'Izaberite sliku logotipa')}
                         </span>
                       </div>
                       <input
@@ -146,7 +156,77 @@ export function SeoTabForm({
                   <input
                     type="text"
                     disabled
-                    value="/assets/images/logo_custom.webp"
+                    value={pendingLogo ? `[Lokalno izabran: ${pendingLogo.file.name}]` : (siteSettings.logo_url || "Nema postavljenog logotipa")}
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-400 font-mono font-semibold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* FAVICON / APP IKONICA */}
+          <div className="space-y-3">
+            <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">Favicon / App ikonica</h5>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 bg-gray-50/50 p-4 rounded-xl border border-gray-100">
+              <div className="shrink-0 flex items-center gap-4">
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider font-sans">Preview 32x32</span>
+                  <div className="w-10 h-10 rounded-lg shadow-xs border border-gray-150 flex items-center justify-center bg-white overflow-hidden">
+                    {pendingFavicon ? (
+                      <img src={pendingFavicon.previewUrl} className="w-8 h-8 object-contain" alt="32x32" referrerPolicy="no-referrer" />
+                    ) : siteSettings.favicon_url ? (
+                      <img src={siteSettings.favicon_url} className="w-8 h-8 object-contain" alt="32x32" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="text-xs font-bold text-gray-300">32x32</span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-wider font-sans">Preview 64x64</span>
+                  <div className="w-16 h-16 rounded-xl shadow-xs border border-gray-150 flex items-center justify-center bg-white overflow-hidden">
+                    {pendingFavicon ? (
+                      <img src={pendingFavicon.previewUrl} className="w-12 h-12 object-contain" alt="64x64" referrerPolicy="no-referrer" />
+                    ) : siteSettings.favicon_url ? (
+                      <img src={siteSettings.favicon_url} className="w-12 h-12 object-contain" alt="64x64" referrerPolicy="no-referrer" />
+                    ) : (
+                      <span className="text-xs font-bold text-gray-300">64x64</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase font-sans">Otpremite Favicon</label>
+                  <div className="flex items-center gap-2">
+                    <label className="flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white border border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-deliverix-500 hover:bg-deliverix-50/20 transition group">
+                      <div className="flex items-center gap-2">
+                        {isUploadingFavicon ? (
+                          <Loader2 className="w-4 h-4 text-deliverix-500 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4 text-gray-400 group-hover:text-deliverix-500 transition" />
+                        )}
+                        <span className="text-xs font-bold text-gray-600 group-hover:text-deliverix-600 transition">
+                          {pendingFavicon ? `Izabran: ${pendingFavicon.file.name}` : (isUploadingFavicon ? 'Otpremanje...' : 'Izaberite sliku ikone')}
+                        </span>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/png, image/jpeg, image/webp, image/svg+xml"
+                        className="hidden"
+                        onChange={handleFaviconUpload}
+                        disabled={isUploadingFavicon}
+                      />
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-bold text-gray-500 uppercase font-sans">Putanja ikone</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={pendingFavicon ? `[Lokalno izabran: ${pendingFavicon.file.name}]` : (siteSettings.favicon_url || "Nema postavljene ikone")}
                     className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-400 font-mono font-semibold"
                   />
                 </div>
@@ -158,9 +238,11 @@ export function SeoTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
+            disabled={isSaving}
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 disabled:bg-deliverix-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10 flex items-center gap-2"
           >
-            Sačuvaj opšta podešavanja
+            {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isSaving ? 'Čuvanje...' : 'Sačuvaj opšta podešavanja'}
           </button>
         </div>
       </form>
@@ -177,7 +259,9 @@ interface HeroTabFormProps {
   handleHeroImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleHeroSlideUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleRemoveHeroSlide: (idx: number) => void;
-  handleUpdateSlideText: (idx: number, field: 'badge_title' | 'badge_text' | 'seo_alt', value: string) => void;
+  handleReplaceSlideImage: (idx: number, e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleUpdateSlideText: (idx: number, field: 'badge_title' | 'badge_text' | 'description' | 'seo_alt', value: string) => void;
+  isSaving?: boolean;
 }
 
 export function HeroTabForm({
@@ -189,7 +273,9 @@ export function HeroTabForm({
   handleHeroImageUpload,
   handleHeroSlideUpload,
   handleRemoveHeroSlide,
-  handleUpdateSlideText
+  handleReplaceSlideImage,
+  handleUpdateSlideText,
+  isSaving = false
 }: HeroTabFormProps) {
   const bullets = siteSettings.hero_bullets && siteSettings.hero_bullets.length > 0
     ? siteSettings.hero_bullets
@@ -486,17 +572,30 @@ export function HeroTabForm({
                 <div className="space-y-4">
                   {(siteSettings.hero_slider_slides || []).map((slide: any, idx: number) => (
                     <div key={idx} className="bg-white p-4 rounded-xl border border-gray-150 shadow-xs space-y-4 md:space-y-0 md:flex md:gap-4 items-start">
-                      <div className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video w-full md:w-40 bg-gray-50 shrink-0">
+                      <div className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video w-full md:w-40 bg-gray-50 shrink-0 group">
                         <img 
                           src={slide.image} 
                           alt={`Slajd ${idx + 1}`} 
                           className="w-full h-full object-cover"
                           referrerPolicy="no-referrer"
                         />
+                        
+                        {/* Zameni sliku hover overlay */}
+                        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[10px] font-bold cursor-pointer transition-opacity duration-200">
+                          <Upload className="w-4 h-4 mb-1 text-white animate-pulse" />
+                          Zameni sliku
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={e => handleReplaceSlideImage(idx, e)}
+                          />
+                        </label>
+
                         <button
                           type="button"
                           onClick={() => handleRemoveHeroSlide(idx)}
-                          className="absolute top-1.5 right-1.5 p-1 bg-rose-500 hover:bg-rose-600 text-white rounded-md transition cursor-pointer"
+                          className="absolute top-1.5 right-1.5 p-1 bg-rose-500 hover:bg-rose-600 text-white rounded-md transition cursor-pointer z-10"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -514,12 +613,23 @@ export function HeroTabForm({
                             />
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Glavni tekst</label>
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Badge tekst</label>
                             <input
                               type="text"
                               className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
                               value={slide.badge_text || ''}
                               onChange={e => handleUpdateSlideText(idx, 'badge_text', e.target.value)}
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-1 gap-2">
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Glavni tekst</label>
+                            <input
+                              type="text"
+                              className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
+                              value={slide.description || ''}
+                              onChange={e => handleUpdateSlideText(idx, 'description', e.target.value)}
                             />
                           </div>
                         </div>
@@ -570,9 +680,11 @@ export function HeroTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
+            disabled={isSaving}
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 disabled:bg-deliverix-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10 flex items-center gap-2"
           >
-            Sačuvaj izmene u Hero delu
+            {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isSaving ? 'Čuvanje...' : 'Sačuvaj izmene u Hero delu'}
           </button>
         </div>
       </form>
@@ -584,12 +696,14 @@ interface HomepageSectionsTabFormProps {
   siteSettings: any;
   setSiteSettings: React.Dispatch<React.SetStateAction<any>>;
   onSave: (e: React.FormEvent) => void;
+  isSaving?: boolean;
 }
 
 export function HomepageSectionsTabForm({
   siteSettings,
   setSiteSettings,
-  onSave
+  onSave,
+  isSaving = false
 }: HomepageSectionsTabFormProps) {
   // Automatski inicijalizuj prazna ili nedefinisana polja sa podrazumevanim vrednostima sa sajta
   React.useEffect(() => {
@@ -2122,9 +2236,11 @@ export function HomepageSectionsTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
+            disabled={isSaving}
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 disabled:bg-deliverix-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10 flex items-center gap-2"
           >
-            Sačuvaj izmene delova sajta
+            {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isSaving ? 'Čuvanje...' : 'Sačuvaj izmene delova sajta'}
           </button>
         </div>
       </form>
@@ -2136,12 +2252,14 @@ interface FaqTabFormProps {
   siteSettings: any;
   setSiteSettings: React.Dispatch<React.SetStateAction<any>>;
   onSave: (e: React.FormEvent) => void;
+  isSaving?: boolean;
 }
 
 export function FaqTabForm({
   siteSettings,
   setSiteSettings,
-  onSave
+  onSave,
+  isSaving = false
  }: FaqTabFormProps) {
   // Automatski inicijalizuj prazna ili nedefinisana polja sa podrazumevanim vrednostima sa sajta
   React.useEffect(() => {
@@ -2339,9 +2457,11 @@ export function FaqTabForm({
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
             type="submit"
-            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10"
+            disabled={isSaving}
+            className="px-6 py-2.5 bg-deliverix-500 hover:bg-deliverix-600 disabled:bg-deliverix-300 disabled:cursor-not-allowed text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-md shadow-deliverix-500/10 flex items-center gap-2"
           >
-            Sačuvaj česta pitanja (FAQ)
+            {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+            {isSaving ? 'Čuvanje...' : 'Sačuvaj česta pitanja (FAQ)'}
           </button>
         </div>
       </form>

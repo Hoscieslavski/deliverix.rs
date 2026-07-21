@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-<head>
+  <head>
     <!-- Optimized Local Font Preloading (Faza 6) -->
     <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/Inter-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
@@ -8,42 +8,39 @@
 
     <!-- Defer Google Tag Manager to first user interaction (Faza 6) -->
     <script>
-        (function () {
-            var gtmLoaded = false;
-            function loadGTM() {
-                if (gtmLoaded) return;
-                gtmLoaded = true;
+      (function() {
+        var gtmLoaded = false;
+        function loadGTM() {
+          if (gtmLoaded) return;
+          gtmLoaded = true;
 
-                // Remove interaction event listeners
-                window.removeEventListener('scroll', loadGTM);
-                window.removeEventListener('click', loadGTM);
-                window.removeEventListener('touchstart', loadGTM);
-                window.removeEventListener('mousemove', loadGTM);
-                window.removeEventListener('keydown', loadGTM);
+          // Remove interaction event listeners
+          window.removeEventListener('scroll', loadGTM);
+          window.removeEventListener('click', loadGTM);
+          window.removeEventListener('touchstart', loadGTM);
+          window.removeEventListener('mousemove', loadGTM);
+          window.removeEventListener('keydown', loadGTM);
 
-                // Standard GTM Loader script
-                (function (w, d, s, l, i) {
-                    w[l] = w[l] || []; w[l].push({
-                        'gtm.start':
-                            new Date().getTime(), event: 'gtm.js'
-                    }); var f = d.getElementsByTagName(s)[0],
-                        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-                            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-                })(window, document, 'script', 'dataLayer', 'GTM-P387C4XR');
-            }
+          // Standard GTM Loader script
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+          new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+          j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+          'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+          })(window,document,'script','dataLayer','GTM-P387C4XR');
+        }
 
-            // Trigger on interaction
-            window.addEventListener('scroll', loadGTM, { passive: true });
-            window.addEventListener('click', loadGTM, { passive: true });
-            window.addEventListener('touchstart', loadGTM, { passive: true });
-            window.addEventListener('mousemove', loadGTM, { passive: true });
-            window.addEventListener('keydown', loadGTM, { passive: true });
-        })();
+        // Trigger on interaction
+        window.addEventListener('scroll', loadGTM, { passive: true });
+        window.addEventListener('click', loadGTM, { passive: true });
+        window.addEventListener('touchstart', loadGTM, { passive: true });
+        window.addEventListener('mousemove', loadGTM, { passive: true });
+        window.addEventListener('keydown', loadGTM, { passive: true });
+      })();
     </script>
     <!-- End Google Tag Manager -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    
     <!-- Primarni SEO Tagovi -->
     <title>Wolt i Glovo Dostavljač Beograd | Deliverix</title>
     <meta name="description" content="Želiš posao sa fleksibilnim radnim vremenom i zaradom do 150.000 RSD? Prijavi se za rad na Wolt i Glovo platformama preko Deliverix-a. Besplatno!" />
@@ -66,123 +63,57 @@
     <meta property="twitter:description" content="Započni posao već danas! Fleksibilno radno vreme, besplatna oprema, podrška 24/7 i brza isplata svake nedelje." />
     <meta property="twitter:image" content="https://deliverix.rs/og-image.jpg" />
 
-    <!-- Favicons -->
-    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-
-    <meta name="theme-color" content="#0B47D8" />
+    <!-- Favicon i Tema -->
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#0ea5e9" />
 
     <!-- Google Structured Data / Rich Snippets (JobPosting) -->
     <script type="application/ld+json">
-        {
-          "@context": "https://schema.org",
-          "@type": "JobPosting",
-          "title": "Wolt i Glovo Dostavljač",
-          "description": "Tražiš posao dostavljača hrane u Beogradu, Novom Sadu ili drugim gradovima Srbije? Postani Deliverix partner za Wolt i Glovo dostavu. Odlična zarada do 150.000 RSD, fleksibilno radno vreme, brza isplata svake nedelje i obezbeđen najam e-bicikala, skutera i automobila. Prijavi se za samo 60 sekundi i počni sa radom već danas!",
-          "datePosted": "2026-07-10",
-          "validThrough": "2027-07-10",
-          "employmentType": "FULL_TIME",
-          "hiringOrganization": {
-            "@type": "Organization",
-            "name": "Deliverix Srbija",
-            "sameAs": "https://deliverix.rs/",
-            "logo": "https://deliverix.rs/logo.png"
-          },
-          "jobLocation": {
-            "@type": "Place",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Beograd",
-              "addressRegion": "Srbija",
-              "addressCountry": "RS"
-            }
-          },
-          "baseSalary": {
-            "@type": "MonetaryAmount",
-            "currency": "RSD",
-            "value": {
-              "@type": "QuantitativeValue",
-              "minValue": 80000,
-              "maxValue": 150000,
-              "unitText": "MONTH"
-            }
-          }
+    {
+      "@context": "https://schema.org",
+      "@type": "JobPosting",
+      "title": "Wolt i Glovo Dostavljač",
+      "description": "Tražiš posao dostavljača hrane u Beogradu, Novom Sadu ili drugim gradovima Srbije? Postani Deliverix partner za Wolt i Glovo dostavu. Odlična zarada do 150.000 RSD, fleksibilno radno vreme, brza isplata svake nedelje i obezbeđen najam e-bicikala, skutera i automobila. Prijavi se za samo 60 sekundi i počni sa radom već danas!",
+      "datePosted": "2026-07-10",
+      "validThrough": "2027-07-10",
+      "employmentType": "FULL_TIME",
+      "hiringOrganization": {
+        "@type": "Organization",
+        "name": "Deliverix Srbija",
+        "sameAs": "https://deliverix.rs/",
+        "logo": "https://deliverix.rs/logo.png"
+      },
+      "jobLocation": {
+        "@type": "Place",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Beograd",
+          "addressRegion": "Srbija",
+          "addressCountry": "RS"
         }
+      },
+      "baseSalary": {
+        "@type": "MonetaryAmount",
+        "currency": "RSD",
+        "value": {
+          "@type": "QuantitativeValue",
+          "minValue": 80000,
+          "maxValue": 150000,
+          "unitText": "MONTH"
+        }
+      }
+    }
     </script>
-</head>
+  </head>
   <body>
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P387C4XR"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
     <div id="root"></div>
-    <noscript>
-      <!-- SEO Pre-render Skeleton (Ova sekcija služi za brže učitavanje i pretraživače poput Google-a, a React je zamenjuje dinamičkim interfejsom) -->
-      <div style="padding: 20px; font-family: system-ui, -apple-system, sans-serif; max-width: 800px; margin: 0 auto; color: #333; line-height: 1.6;">
-        <!-- H1 Naslov (Rešava "Add a H1 heading to this page" grešku) -->
-        <h1 style="font-size: 32px; font-weight: 900; color: #111; margin-bottom: 10px; line-height: 1.2;">Postani Wolt i Glovo Dostavljač u Beogradu i Srbiji</h1>
-        
-        <!-- H2 Podnaslov (Rešava "Use good headings on the page" grešku) -->
-        <h2 style="font-size: 20px; font-weight: 700; color: #0ea5e9; margin-top: 0; margin-bottom: 20px;">Besplatna obuka, podrška pri zapošljavanju i redovne isplate</h2>
-        
-        <p style="font-size: 16px; margin-bottom: 20px;">
-          Tražiš posao sa fleksibilnim radnim vremenom i odličnom zaradom? Portal <span style="font-weight: 700;">Deliverix.rs</span> je tvoj besplatni vodič i regrutacioni partner za rad na vodećim platformama za dostavu hrane u Srbiji. Spajamo te sa najpouzdanijim i registrovanim partnerskim agencijama flote za <span style="font-weight: 700;">Wolt</span> i <span style="font-weight: 700;">Glovo</span>. Zarada do 150.000 RSD uz nedeljne isplate i besplatnu obuku.
-        </p>
 
-        <!-- Interni linkovi (Rešava "very few internal links" grešku) -->
-        <nav style="margin-bottom: 30px; display: flex; flex-wrap: wrap; gap: 10px; font-weight: 600; font-size: 14px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
-          <a href="#kako-funkcionise" style="color: #0ea5e9; text-decoration: none;">Kako funkcionise proces?</a>
-          <span style="color: #ccc;">|</span>
-          <a href="#sta-je-potrebno" style="color: #0ea5e9; text-decoration: none;">Uslovi za rad i oprema</a>
-          <span style="color: #ccc;">|</span>
-          <a href="#zarada-i-isplata" style="color: #0ea5e9; text-decoration: none;">Zarada i isplate</a>
-          <span style="color: #ccc;">|</span>
-          <a href="#recenzije" style="color: #0ea5e9; text-decoration: none;">Utisci dostavljaca</a>
-          <span style="color: #ccc;">|</span>
-          <a href="#najcesca-pitanja" style="color: #0ea5e9; text-decoration: none;">Najcesca pitanja (FAQ)</a>
-          <span style="color: #ccc;">|</span>
-          <a href="#prijavi-se" style="color: #0ea5e9; text-decoration: none;">Prijavi se za posao</a>
-          <span style="color: #ccc;">|</span>
-          <a href="/sitemap.xml" style="color: #0ea5e9; text-decoration: none;">Sitemap (Mapa sajta)</a>
-          <span style="color: #ccc;">|</span>
-          <a href="/robots.txt" style="color: #0ea5e9; text-decoration: none;">Robots.txt pravila</a>
-          <span style="color: #ccc;">|</span>
-          <a href="/privacy-policy" style="color: #0ea5e9; text-decoration: none;">Politika privatnosti</a>
-          <span style="color: #ccc;">|</span>
-          <a href="/terms-of-service" style="color: #0ea5e9; text-decoration: none;">Uslovi koriscenja</a>
-        </nav>
-
-        <!-- H3 sekcija -->
-        <h3 style="font-size: 18px; font-weight: 700; color: #111; margin-bottom: 10px;">Zašto izabrati Deliverix partnersku podršku?</h3>
-        <ul style="padding-left: 20px; margin-bottom: 25px;">
-          <li><strong>100% Besplatna usluga:</strong> Bez ikakvih skrivenih troškova, članarina ili uzimanja procenta od strane Deliverix-a za uspešno posredovanje.</li>
-          <li><strong>Najpovoljniji uslovi flote:</strong> Povezujemo te sa pouzdanim agencijama flote koje nude najniže provizije i garantuju isplate na vreme.</li>
-          <li><strong>Sveobuhvatna podrška 24/7:</strong> Pružamo ti savete, smernice i odgovaramo na sva tvoja pitanja pre nego što kreneš na svoju prvu dostavu.</li>
-          <li><strong>Besplatna obuka na terenu:</strong> Pomažemo ti oko brze aktivacije tvog naloga i dajemo kompletna uputstva za rad na terenu.</li>
-        </ul>
-
-        <!-- Treća sekcija -->
-        <h3 style="font-size: 18px; font-weight: 700; color: #111; margin-bottom: 10px;">Koliko možeš zaraditi kao Wolt ili Glovo dostavljač?</h3>
-        <p style="font-size: 15px; margin-bottom: 20px;">
-          Zarada dostavljača u Beogradu, Novom Sadu i drugim većim gradovima u Srbiji zavisi isključivo od tvog zalaganja i broja radnih sati koje samostalno biraš. Sa fleksibilnim radnim vremenom, prosečna zarada se kreće od 80.000 RSD pa sve do 150.000 RSD mesečno za pun kapacitet angažovanja. Isplate su redovne, svakih 15 dana ili na nedeljnom nivou, u zavisnosti od odabranog partnera flote. Takođe, dobijaš mogućnost ostvarivanja bonusa za obavljen veći broj dostava tokom špica, lošeg vremena ili vikenda.
-        </p>
-
-        <!-- Četvrta sekcija -->
-        <h3 style="font-size: 18px; font-weight: 700; color: #111; margin-bottom: 10px;">Koji su uslovi za rad i šta ti je potrebno od opreme?</h3>
-        <p style="font-size: 15px; margin-bottom: 20px;">
-          Da bi započeo rad kao dostavljač hrane, potrebno je da ispunjavaš nekoliko osnovnih uslova: da imaš najmanje 18 godina, sopstveno prevozno sredstvo (bicikl, električni bicikl, skuter ili automobil) i pametni telefon (Android ili iPhone) sa stabilnom internet konekcijom za korišćenje aplikacija za navigaciju i rad. Ukoliko nemaš sopstveni automobil ili skuter, naši partneri flote nude najam e-bicikala i skutera po izuzetno povoljnim cenama. Oprema poput termo torbe i brendirane odeće se dobija prilikom aktivacije profila.
-        </p>
-
-        <!-- Peta sekcija -->
-        <h3 style="font-size: 18px; font-weight: 700; color: #111; margin-bottom: 10px;">Kako se prijaviti za posao dostavljača?</h3>
-        <p style="font-size: 15px;">
-          Proces prijave preko Deliverix portala je izuzetno brz i jednostavan. Sve što treba da uradiš jeste da popuniš online formular na našem sajtu koji traje manje od 60 sekundi. Nakon uspešne prijave, naš tim ili predstavnik partner flote će te kontaktirati u najkraćem roku (obično unutar nekoliko sati) kako bismo obavili kratak razgovor, odgovaramo na sva tvoja pitanja i uputili te u sledeće korake. Preuzmi svoju opremu, aktiviraj nalog i počni sa radom već istog dana!
-        </p>
-      </div>
-    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

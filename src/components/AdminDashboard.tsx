@@ -49,13 +49,35 @@ import { Candidate, CandidateStatus, DashboardStats } from '../types';
 import { DeliverixLogo } from './DeliverixLogo';
 import { SeoTabForm, HeroTabForm, HomepageSectionsTabForm, FaqTabForm } from './AdminSeoSubtabs';
 
+function assertPersistentImageUrl(url: string) {
+  if (!url) {
+    throw new Error("Putanja slike je prazna.");
+  }
+  if (url.startsWith('blob:') || url.startsWith('data:') || url.startsWith('file:')) {
+    throw new Error(`Detektovana je nevažeća privremena putanja slike: ${url}`);
+  }
+}
+
+function base64ToFile(base64Str: string, filename: string): File {
+  const arr = base64Str.split(',');
+  const mime = arr[0].match(/:(.*?);/)?.[1] || 'image/jpeg';
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, { type: mime });
+}
+
 interface AdminDashboardProps {
   appUrl: string;
   onLogoChange?: (style: 'flow' | 'neon' | 'urban' | 'custom', url: string, blendMode?: 'normal' | 'multiply') => void;
   onLogout?: () => void;
+  onSaveSettings?: (settings: any) => void;
 }
 
-export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: AdminDashboardProps) {
+export default function AdminDashboard({ appUrl, onLogoChange, onLogout, onSaveSettings }: AdminDashboardProps) {
   const [passcode, setPasscode] = useState('');
   const [username, setUsername] = useState('admin');
   const [newUsername, setNewUsername] = useState('');
@@ -173,9 +195,17 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
   });
 
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
   const [isUploadingHeroImage, setIsUploadingHeroImage] = useState(false);
   const [isUploadingHeroSlide, setIsUploadingHeroSlide] = useState(false);
   const [isUploadingBlogImage, setIsUploadingBlogImage] = useState(false);
+
+  const [pendingLogo, setPendingLogo] = useState<{ file: File; previewUrl: string; base64: string } | null>(null);
+  const [pendingFavicon, setPendingFavicon] = useState<{ file: File; previewUrl: string; base64: string } | null>(null);
+  const [pendingHeroImage, setPendingHeroImage] = useState<{ file: File; previewUrl: string; base64: string } | null>(null);
+  const [pendingSlideFiles, setPendingSlideFiles] = useState<Record<string, File>>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [savedSiteSettings, setSavedSiteSettings] = useState<any>(null);
 
   // Blog postovi
   const [blogPosts, setBlogPosts] = useState<any[]>([]);
@@ -626,7 +656,34 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
       });
       const data = await res.json();
       if (data.success && data.settings) {
-        setSiteSettings({
+        setPendingSlideFiles({}); // Reset pending slide files on load
+
+        const rawSlides = data.settings.hero_slider_slides || (data.settings.hero_slider_images || []).map((img: string, idx: number) => ({
+          image: img,
+          badge_title: idx === 0 ? "Brzi Start" : idx === 1 ? "Redovna Isplata" : `Prednost #${idx + 1}`,
+          badge_text: idx === 0 ? "Započni posao lakše" : idx === 1 ? "Fleksibilan rad i dodatna zarada" : "Sami birate tempo",
+          description: idx === 0 ? "Aktivacija naloga i oprema u roku od 24h" : idx === 1 ? "Sigurna zarada na svake dve nedelje" : (data.settings.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+          seo_alt: `${data.settings.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${idx + 1}`
+        }));
+
+        const migratedSlides = (rawSlides || []).map((slide: any, idx: number) => {
+          const slideId = slide.id || `slide_${Date.now()}_${idx}_${Math.random().toString(36).substr(2, 5)}`;
+          if (slide && !('description' in slide)) {
+            return {
+              ...slide,
+              id: slideId,
+              badge_text: "Započni posao lakše",
+              description: slide.badge_text || '',
+            };
+          }
+          return {
+            ...slide,
+            id: slideId
+          };
+        });
+
+        const loadedSettings = {
+          ...data.settings,
           meta_title: data.settings.meta_title || '',
           meta_description: data.settings.meta_description || '',
           ga_measurement_id: data.settings.ga_measurement_id || '',
@@ -639,12 +696,7 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
           hero_right_mode: data.settings.hero_right_mode || 'image',
           hero_image_url: data.settings.hero_image_url || '/assets/images/delivery_courier_hero_1783427588712.webp',
           hero_slider_images: data.settings.hero_slider_images || [],
-          hero_slider_slides: data.settings.hero_slider_slides || (data.settings.hero_slider_images || []).map((img: string, idx: number) => ({
-            image: img,
-            badge_title: idx === 0 ? "Brzi Start" : idx === 1 ? "Redovna Isplata" : `Prednost #${idx + 1}`,
-            badge_text: idx === 0 ? "Aktivacija naloga i oprema u roku od 24h" : idx === 1 ? "Sigurna zarada na svake dve nedelje" : (data.settings.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
-            seo_alt: `${data.settings.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${idx + 1}`
-          })),
+          hero_slider_slides: migratedSlides,
           hero_badge_title: data.settings.hero_badge_title || 'Dostupno odmah',
           hero_badge_text: data.settings.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!',
           hero_image_alt: data.settings.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija',
@@ -680,7 +732,9 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
           button_glovo_title: data.settings.button_glovo_title || '',
           button_glovo_badge: data.settings.button_glovo_badge || '',
           button_glovo_desc: data.settings.button_glovo_desc || ''
-        });
+        };
+        setSiteSettings(loadedSettings);
+        setSavedSiteSettings(loadedSettings);
       }
     } catch (err) {
       console.error('Greška pri preuzimanju SEO:', err);
@@ -821,6 +875,22 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
     setLinkCopied(false);
   }, [genSource, genRef, appUrl]);
 
+  const isDirty = !!pendingLogo || !!pendingFavicon || !!pendingHeroImage || Object.keys(pendingSlideFiles).length > 0 || (savedSiteSettings !== null && JSON.stringify(siteSettings) !== JSON.stringify(savedSiteSettings));
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isDirty) {
+        e.preventDefault();
+        e.returnValue = 'Imate nesačuvane izmene. Da li ste sigurni da želite da napustite stranicu?';
+        return e.returnValue;
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [isDirty]);
+
   const copyGeneratedLink = () => {
     navigator.clipboard.writeText(generatedLink);
     setLinkCopied(true);
@@ -912,26 +982,237 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
 
   const handleSaveSeoSettings = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSaving) return; // Prevent double submission
+    setIsSaving(true);
     try {
+      let updatedSettings = { ...siteSettings };
+
+      if (pendingLogo) {
+        setIsUploadingLogo(true);
+        try {
+          const response = await fetch('/api/marketing/upload-logo', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-passcode': passcode
+            },
+            body: JSON.stringify({ logoData: pendingLogo.base64 })
+          });
+          const data = await response.json();
+          if (response.ok && data.success) {
+            updatedSettings.logo_url = data.logoUrl;
+          } else {
+            alert(data.error || 'Greška pri otpremanju slike logotipa.');
+            setIsUploadingLogo(false);
+            setIsSaving(false);
+            return;
+          }
+        } catch (err) {
+          console.error('Greška pri uploadu logotipa:', err);
+          alert('Greška pri povezivanju sa serverom za logo.');
+          setIsUploadingLogo(false);
+          setIsSaving(false);
+          return;
+        } finally {
+          setIsUploadingLogo(false);
+        }
+      }
+
+      if (pendingFavicon) {
+        setIsUploadingFavicon(true);
+        try {
+          const response = await fetch('/api/marketing/upload-favicon', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-passcode': passcode
+            },
+            body: JSON.stringify({ faviconData: pendingFavicon.base64 })
+          });
+          const data = await response.json();
+          if (response.ok && data.success) {
+            updatedSettings = {
+              ...updatedSettings,
+              ...data.settings,
+              favicon_url: data.faviconUrl || updatedSettings.favicon_url
+            };
+          } else {
+            alert(data.error || 'Greška pri otpremanju favicona.');
+            setIsUploadingFavicon(false);
+            setIsSaving(false);
+            return;
+          }
+        } catch (err) {
+          console.error('Greška pri uploadu favicona:', err);
+          alert('Greška pri povezivanju sa serverom za favicon.');
+          setIsUploadingFavicon(false);
+          setIsSaving(false);
+          return;
+        } finally {
+          setIsUploadingFavicon(false);
+        }
+      }
+
+      if (pendingHeroImage) {
+        setIsUploadingHeroImage(true);
+        try {
+          const response = await fetch('/api/marketing/upload-hero-image', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-admin-passcode': passcode
+            },
+            body: JSON.stringify({ imageData: pendingHeroImage.base64 })
+          });
+          const data = await response.json();
+          if (response.ok && data.success) {
+            updatedSettings.hero_image_url = data.imageUrl;
+          } else {
+            alert(data.error || 'Greška pri otpremanju hero slike.');
+            setIsUploadingHeroImage(false);
+            setIsSaving(false);
+            return;
+          }
+        } catch (err) {
+          console.error('Greška pri uploadu hero slike:', err);
+          alert('Greška pri povezivanju sa serverom za hero sliku.');
+          setIsUploadingHeroImage(false);
+          setIsSaving(false);
+          return;
+        } finally {
+          setIsUploadingHeroImage(false);
+        }
+      }
+
+      if (updatedSettings.hero_slider_slides && updatedSettings.hero_slider_slides.length > 0) {
+        const slides = [...updatedSettings.hero_slider_slides];
+        
+        for (let i = 0; i < slides.length; i++) {
+          const slide = slides[i];
+          let base64Data = '';
+
+          // 1. If we have a pending file for this slide, extract its base64 data
+          const slideFile = pendingSlideFiles[slide.id];
+          if (slideFile) {
+            base64Data = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onloadend = () => resolve(reader.result as string);
+              reader.onerror = reject;
+              reader.readAsDataURL(slideFile);
+            });
+          } 
+          // 2. If there's no pending file but the image is an inline base64 string, we upload it directly
+          else if (slide.image && slide.image.startsWith('data:')) {
+            base64Data = slide.image;
+          }
+
+          if (base64Data) {
+            setIsUploadingHeroSlide(true);
+            try {
+              const response = await fetch('/api/marketing/upload-hero-image', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'x-admin-passcode': passcode
+                },
+                body: JSON.stringify({ imageData: base64Data })
+              });
+              const data = await response.json();
+              if (response.ok && data.success) {
+                assertPersistentImageUrl(data.imageUrl);
+
+                const cleanSlide = { ...slide };
+                cleanSlide.image = data.imageUrl;
+                slides[i] = cleanSlide;
+
+                if (slide.image.startsWith('blob:')) {
+                  URL.revokeObjectURL(slide.image);
+                }
+              } else {
+                alert(data.error || `Greška pri otpremanju slike za slajd ${i + 1}.`);
+                setIsUploadingHeroSlide(false);
+                setIsSaving(false);
+                return;
+              }
+            } catch (err) {
+              console.error(`Greška pri uploadu slike za slajd ${i + 1}:`, err);
+              alert(`Greška pri povezivanju sa serverom za slajd ${i + 1}.`);
+              setIsUploadingHeroSlide(false);
+              setIsSaving(false);
+              return;
+            } finally {
+              setIsUploadingHeroSlide(false);
+            }
+          }
+        }
+        
+        updatedSettings.hero_slider_slides = slides;
+        updatedSettings.hero_slider_images = slides.map(s => s.image);
+      }
+
+      // Assert that all slide images have valid persistent URLs
+      if (updatedSettings.hero_slider_slides) {
+        for (const slide of updatedSettings.hero_slider_slides) {
+          try {
+            assertPersistentImageUrl(slide.image);
+          } catch (urlErr: any) {
+            alert(urlErr.message || "Putanja jedne od slika u slajderu nije validna.");
+            setIsSaving(false);
+            return;
+          }
+        }
+      }
+
       const response = await fetch('/api/marketing/seo', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           'x-admin-passcode': passcode 
         },
-        body: JSON.stringify(siteSettings)
+        body: JSON.stringify(updatedSettings)
       });
       const data = await response.json();
       if (response.ok && data.success) {
+        if (onSaveSettings) {
+          onSaveSettings(updatedSettings);
+        }
+
+        // Revoke previews if any
+        if (pendingLogo && pendingLogo.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(pendingLogo.previewUrl);
+        }
+        if (pendingFavicon && pendingFavicon.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(pendingFavicon.previewUrl);
+        }
+        if (pendingHeroImage && pendingHeroImage.previewUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(pendingHeroImage.previewUrl);
+        }
+        if (siteSettings.hero_slider_slides) {
+          siteSettings.hero_slider_slides.forEach((slide: any) => {
+            if (slide.image && slide.image.startsWith('blob:')) {
+              URL.revokeObjectURL(slide.image);
+            }
+          });
+        }
+
+        setPendingLogo(null);
+        setPendingFavicon(null);
+        setPendingHeroImage(null);
+        setPendingSlideFiles({});
+
+        await fetchSeoSettings();
+
         alert('Podešavanja su uspešno sačuvana!');
         if (onLogoChange) {
-          onLogoChange((siteSettings.logo_style as any) || 'custom', siteSettings.logo_url || '/assets/images/logo_custom.webp', (siteSettings.logo_blend_mode as any) || 'normal');
+          onLogoChange((updatedSettings.logo_style as any) || 'custom', updatedSettings.logo_url || '/assets/images/logo_custom.webp', (updatedSettings.logo_blend_mode as any) || 'normal');
         }
       } else {
         alert(data.error || 'Greška pri čuvanju podešavanja.');
       }
     } catch (err) {
       alert('Sistemska greška pri čuvanju podešavanja.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -979,41 +1260,47 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setIsUploadingLogo(true);
+    const localUrl = URL.createObjectURL(file);
     const reader = new FileReader();
     reader.onloadend = async () => {
       let base64String = reader.result as string;
       try {
-        // Automatska kompresija i promena veličine slike na klijentskoj strani
         base64String = await resizeImage(base64String, 600);
-
-        const response = await fetch('/api/marketing/upload-logo', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-admin-passcode': passcode
-          },
-          body: JSON.stringify({ logoData: base64String })
+        setPendingLogo({
+          file,
+          previewUrl: localUrl,
+          base64: base64String
         });
-        const data = await response.json();
-        if (response.ok && data.success) {
-          setSiteSettings(prev => ({ ...prev, logo_url: data.logoUrl }));
-          if (onLogoChange) {
-            onLogoChange('custom', data.logoUrl, (siteSettings.logo_blend_mode as any) || 'normal');
-          }
-        } else {
-          alert(data.error || 'Greška pri otpremanju slike.');
-        }
       } catch (err) {
-        console.error('Greška pri uploadu:', err);
-        alert('Došlo je do greške prilikom povezivanja sa serverom.');
-      } finally {
-        setIsUploadingLogo(false);
+        console.error('Greška pri obradi slike:', err);
+        setPendingLogo({
+          file,
+          previewUrl: localUrl,
+          base64: reader.result as string
+        });
       }
     };
     reader.onerror = () => {
       alert('Greška pri čitanju fajla.');
-      setIsUploadingLogo(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleFaviconUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const localUrl = URL.createObjectURL(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPendingFavicon({
+        file,
+        previewUrl: localUrl,
+        base64: reader.result as string
+      });
+    };
+    reader.onerror = () => {
+      alert('Greška pri čitanju fajla.');
     };
     reader.readAsDataURL(file);
   };
@@ -1022,13 +1309,19 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const localUrl = URL.createObjectURL(file);
     setIsUploadingHeroImage(true);
     const reader = new FileReader();
     reader.onloadend = async () => {
       let base64String = reader.result as string;
       try {
         base64String = await resizeImage(base64String, 1600, 'image/jpeg', 0.85);
-        setSiteSettings(prev => ({ ...prev, hero_image_url: base64String }));
+        setPendingHeroImage({
+          file,
+          previewUrl: localUrl,
+          base64: base64String
+        });
+        setSiteSettings(prev => ({ ...prev, hero_image_url: localUrl }));
       } catch (err) {
         console.error('Greška pri uploadu hero slike:', err);
         alert('Došlo je do greške prilikom obrade slike.');
@@ -1053,21 +1346,34 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
       let base64String = reader.result as string;
       try {
         base64String = await resizeImage(base64String, 1600, 'image/jpeg', 0.85);
-         setSiteSettings(prev => {
+        const resizedFile = base64ToFile(base64String, file.name);
+        const localUrl = URL.createObjectURL(resizedFile);
+        const slideId = `slide_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
+
+        setPendingSlideFiles(prev => ({
+          ...prev,
+          [slideId]: resizedFile
+        }));
+
+        setSiteSettings(prev => {
           const currentSlides = prev.hero_slider_slides && prev.hero_slider_slides.length > 0
             ? [...prev.hero_slider_slides]
             : (prev.hero_slider_images || []).map((img, i) => ({
+                id: `slide_existing_${i}`,
                 image: img,
                 badge_title: i === 0 ? "Brzi Start" : i === 1 ? "Redovna Isplata" : `Prednost #${i + 1}`,
-                badge_text: i === 0 ? "Aktivacija naloga i oprema u roku od 24h" : i === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+                badge_text: i === 0 ? "Započni posao lakše" : i === 1 ? "Fleksibilan rad i dodatna zarada" : "Sami birate tempo",
+                description: i === 0 ? "Aktivacija naloga i oprema u roku od 24h" : i === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
                 seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${i + 1}`
               }));
 
           const nextIndex = currentSlides.length;
           const newSlide = {
-            image: base64String,
-            badge_title: nextIndex === 0 ? "Brzi Start" : nextIndex === 1 ? "Redovna Isplata" : `Prednost #${nextIndex + 1}`,
-            badge_text: nextIndex === 0 ? "Aktivacija naloga i oprema u roku od 24h" : nextIndex === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+            id: slideId,
+            image: localUrl,
+            badge_title: "",
+            badge_text: "",
+            description: "",
             seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${nextIndex + 1}`
           };
 
@@ -1119,6 +1425,19 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
 
   const handleRemoveHeroSlide = (index: number) => {
     setSiteSettings(prev => {
+      const targetSlide = prev.hero_slider_slides?.[index];
+      if (targetSlide) {
+        if (targetSlide.image && targetSlide.image.startsWith('blob:')) {
+          URL.revokeObjectURL(targetSlide.image);
+        }
+        if (targetSlide.id) {
+          setPendingSlideFiles(pf => {
+            const next = { ...pf };
+            delete next[targetSlide.id];
+            return next;
+          });
+        }
+      }
       const remainingImages = (prev.hero_slider_images || []).filter((_, i) => i !== index);
       const remainingSlides = (prev.hero_slider_slides || []).filter((_, i) => i !== index);
       return {
@@ -1129,14 +1448,73 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
     });
   };
 
-  const handleUpdateSlideText = (idx: number, field: 'badge_title' | 'badge_text' | 'seo_alt', value: string) => {
+  const handleReplaceSlideImage = async (idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingHeroSlide(true);
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      let base64String = reader.result as string;
+      try {
+        base64String = await resizeImage(base64String, 1600, 'image/jpeg', 0.85);
+        const resizedFile = base64ToFile(base64String, file.name);
+        const localUrl = URL.createObjectURL(resizedFile);
+
+        setSiteSettings(prev => {
+          const currentSlides = prev.hero_slider_slides ? [...prev.hero_slider_slides] : [];
+          if (!currentSlides[idx]) return prev;
+
+          const oldSlide = currentSlides[idx];
+          if (oldSlide.image && oldSlide.image.startsWith('blob:')) {
+            URL.revokeObjectURL(oldSlide.image);
+          }
+
+          const slideId = oldSlide.id || `slide_${Date.now()}_${idx}_${Math.random().toString(36).substr(2, 5)}`;
+
+          setPendingSlideFiles(prevPending => ({
+            ...prevPending,
+            [slideId]: resizedFile
+          }));
+
+          const updatedSlide = {
+            ...oldSlide,
+            id: slideId,
+            image: localUrl
+          };
+
+          const updatedSlides = [...currentSlides];
+          updatedSlides[idx] = updatedSlide;
+
+          return {
+            ...prev,
+            hero_slider_images: updatedSlides.map(s => s.image),
+            hero_slider_slides: updatedSlides
+          };
+        });
+      } catch (err) {
+        console.error('Greška pri zameni slike:', err);
+        alert('Došlo je do greške prilikom obrade slike.');
+      } finally {
+        setIsUploadingHeroSlide(false);
+      }
+    };
+    reader.onerror = () => {
+      alert('Greška pri čitanju fajla.');
+      setIsUploadingHeroSlide(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUpdateSlideText = (idx: number, field: 'badge_title' | 'badge_text' | 'description' | 'seo_alt', value: string) => {
     setSiteSettings(prev => {
       const currentSlides = prev.hero_slider_slides && prev.hero_slider_slides.length > 0
         ? [...prev.hero_slider_slides]
         : (prev.hero_slider_images || []).map((img, i) => ({
             image: img,
             badge_title: i === 0 ? "Brzi Start" : i === 1 ? "Redovna Isplata" : `Prednost #${i + 1}`,
-            badge_text: i === 0 ? "Aktivacija naloga i oprema u roku od 24h" : i === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+            badge_text: i === 0 ? "Započni posao lakše" : i === 1 ? "Fleksibilan rad i dodatna zarada" : "Sami birate tempo",
+            description: i === 0 ? "Aktivacija naloga i oprema u roku od 24h" : i === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
             seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${i + 1}`
           }));
 
@@ -1144,7 +1522,8 @@ export default function AdminDashboard({ appUrl, onLogoChange, onLogout }: Admin
         currentSlides[idx] = {
           image: prev.hero_slider_images?.[idx] || '',
           badge_title: idx === 0 ? "Brzi Start" : idx === 1 ? "Redovna Isplata" : `Prednost #${idx + 1}`,
-          badge_text: idx === 0 ? "Aktivacija naloga i oprema u roku od 24h" : idx === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
+          badge_text: idx === 0 ? "Započni posao lakše" : idx === 1 ? "Fleksibilan rad i dodatna zarada" : "Sami birate tempo",
+          description: idx === 0 ? "Aktivacija naloga i oprema u roku od 24h" : idx === 1 ? "Sigurna zarada na svake dve nedelje" : (prev.hero_badge_text || 'Pomoć oko zaposlenja je 100% besplatna!'),
           seo_alt: `${prev.hero_image_alt || 'Dostavljač hrane Wolt Glovo'} - slajd ${idx + 1}`
         };
       }
@@ -2662,6 +3041,11 @@ Postani Dostavljač Podrška`;
             onSave={handleSaveSeoSettings}
             isUploadingLogo={isUploadingLogo}
             handleLogoUpload={handleLogoUpload}
+            isUploadingFavicon={isUploadingFavicon}
+            handleFaviconUpload={handleFaviconUpload}
+            pendingLogo={pendingLogo}
+            pendingFavicon={pendingFavicon}
+            isSaving={isSaving}
           />
 
           {/* Google SERP Preview Card */}
@@ -2698,7 +3082,9 @@ Postani Dostavljač Podrška`;
           handleHeroImageUpload={handleHeroImageUpload}
           handleHeroSlideUpload={handleHeroSlideUpload}
           handleRemoveHeroSlide={handleRemoveHeroSlide}
+          handleReplaceSlideImage={handleReplaceSlideImage}
           handleUpdateSlideText={handleUpdateSlideText}
+          isSaving={isSaving}
         />
       )}
 
@@ -2707,6 +3093,7 @@ Postani Dostavljač Podrška`;
           siteSettings={siteSettings}
           setSiteSettings={setSiteSettings}
           onSave={handleSaveSeoSettings}
+          isSaving={isSaving}
         />
       )}
 
@@ -2715,6 +3102,7 @@ Postani Dostavljač Podrška`;
           siteSettings={siteSettings}
           setSiteSettings={setSiteSettings}
           onSave={handleSaveSeoSettings}
+          isSaving={isSaving}
         />
       )}
 

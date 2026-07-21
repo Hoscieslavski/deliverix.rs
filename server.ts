@@ -2,6 +2,21 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import sharp from 'sharp';
+import { pathToFileURL } from 'url';
+
+let viteInstance: any = null;
+
+function safeSerialize(data: any): string {
+  const json = JSON.stringify(data);
+  return json
+    .replace(/&/g, '\\u0026')
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029')
+    .replace(/<\/script>/gi, '\\u003c\\/script\\u003e');
+}
+
 import { initializeApp } from 'firebase/app';
 import { 
   getFirestore, 
@@ -93,12 +108,17 @@ const uploadsDir = path.join(process.cwd(), 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
-app.use('/uploads', express.static(uploadsDir, {
+
+const staticUploadsOptions = {
   maxAge: '30d',
-  setHeaders: (res) => {
+  setHeaders: (res: any) => {
     res.setHeader('Cache-Control', 'public, max-age=2592000');
   }
-}));
+};
+
+app.use('/uploads', express.static(path.join(process.cwd(), 'dist', 'uploads'), staticUploadsOptions));
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads'), staticUploadsOptions));
+app.use('/uploads', express.static(uploadsDir, staticUploadsOptions));
 
 // Specijalno preusmeravanje / fallback za logotipe kako bi se sprečio 404 (stale first paint / missing assets)
 app.get('/assets/images/logo_custom.webp', (req, res) => {
@@ -1164,7 +1184,7 @@ app.get('/api/marketing/seo', async (req, res) => {
       hero_title: "Dostava koja se prilagođava tvojim pravilima",
       hero_platform_title: "Wolt i Glovo platforme u Srbiji",
       hero_right_mode: "image",
-      hero_image_url: "/assets/images/delivery_courier_hero_1783427588712.jpg",
+      hero_image_url: "/assets/images/delivery_courier_hero_1783427588712.webp",
       hero_badge_title: "Dostupno odmah",
       hero_badge_text: "Pomoć oko zaposlenja je 100% besplatna!",
       hero_image_alt: "Dostavljač hrane - Wolt Glovo Srbija",
@@ -1651,7 +1671,7 @@ app.post('/api/admin/send-candidate-email', superAdminAuthMiddleware, async (req
 // G2. Upload logotipa (Zaštićena ruta - Marketing/Super Admin)
 app.post('/api/marketing/upload-logo', marketingAuthMiddleware, async (req, res) => {
   try {
-    const { logoData, type } = req.body;
+    const { logoData } = req.body;
     if (!logoData) {
       return res.status(400).json({ error: 'Nije poslata slika.' });
     }
@@ -1665,15 +1685,12 @@ app.post('/api/marketing/upload-logo', marketingAuthMiddleware, async (req, res)
     const base64Data = matches[2];
     const buffer = Buffer.from(base64Data, 'base64');
 
-    // Limitiranje veličine na 600KB
-    if (buffer.length > 600 * 1024) {
-      return res.status(400).json({ error: 'Slika je prevelika. Maksimalna veličina logotipa je 600KB.' });
+    // Limitiranje veličine na 1MB for source logo
+    if (buffer.length > 1024 * 1024) {
+      return res.status(400).json({ error: 'Slika je prevelika. Maksimalna veličina je 1MB.' });
     }
 
-    const filename = 'logo_custom.webp';
-    const stableUrl = '/assets/images/logo_custom.webp';
-
-    // 1. Provera stvarnog formata slike pomoću sharp
+    // Provera stvarnog formata slike pomoću sharp
     let metadata;
     try {
       metadata = await sharp(buffer).metadata();
@@ -1683,155 +1700,165 @@ app.post('/api/marketing/upload-logo', marketingAuthMiddleware, async (req, res)
     }
 
     const realFormat = metadata.format;
-    if (realFormat !== 'webp' && realFormat !== 'png' && realFormat !== 'jpeg') {
-      return res.status(400).json({ error: 'Dozvoljeni formati su samo WebP, PNG i JPEG/JPG.' });
+    if (realFormat !== 'webp' && realFormat !== 'png' && realFormat !== 'jpeg' && realFormat !== 'svg') {
+      return res.status(400).json({ error: 'Dozvoljeni formati su WebP, PNG, SVG i JPEG/JPG.' });
     }
+
+    const timestamp = Date.now();
+    const filename = `logo-${timestamp}.webp`;
 
     let finalBuffer: Buffer;
-
-    if (realFormat === 'webp') {
-      const width = metadata.width || 0;
-      const height = metadata.height || 0;
-
-      if (width <= 300 && height <= 300) {
-        // Direktno čuvanje bez ikakve obrade, rekompresije ili promena
-        finalBuffer = buffer;
-      } else {
-        try {
-          finalBuffer = await sharp(buffer)
-            .resize({
-              width: 300,
-              height: 300,
-              fit: 'inside',
-              withoutEnlargement: true
-            })
-            .webp({ quality: 85 })
-            .toBuffer();
-        } catch (err) {
-          console.error('Greška pri resize-u WebP slike:', err);
-          return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
-        }
-      }
-    } else if (realFormat === 'png') {
-      try {
-        finalBuffer = await sharp(buffer)
-          .resize({
-            width: 300,
-            height: 300,
-            fit: 'inside',
-            withoutEnlargement: true
-          })
-          .webp({ quality: 85 })
-          .toBuffer();
-      } catch (err) {
-        console.error('Greška pri obradi PNG slike:', err);
-        return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
-      }
-    } else {
-      // JPG/JPEG
-      try {
-        finalBuffer = await sharp(buffer)
-          .resize({
-            width: 300,
-            height: 300,
-            fit: 'inside',
-            withoutEnlargement: true
-          })
-          .webp({ quality: 85 })
-          .toBuffer();
-      } catch (err) {
-        console.error('Greška pri obradi JPEG slike:', err);
-        return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
-      }
-    }
-
-    // Validacija finalnog WebP Buffera
     try {
-      const finalMetadata = await sharp(finalBuffer).metadata();
-      if (finalMetadata.format !== 'webp') {
-        throw new Error('Generisani fajl nije u WebP formatu.');
-      }
+      finalBuffer = await sharp(buffer)
+        .resize({
+          width: 300,
+          height: 300,
+          fit: 'inside',
+          withoutEnlargement: true
+        })
+        .webp({ quality: 85 })
+        .toBuffer();
     } catch (err) {
-      console.error('Greška pri validaciji generisanog WebP fajla:', err);
+      console.error('Greška pri obradi slike:', err);
       return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
     }
 
-    const publicImgDir = path.join(process.cwd(), 'public', 'assets', 'images');
-    if (!fs.existsSync(publicImgDir)) {
-      fs.mkdirSync(publicImgDir, { recursive: true });
+    const publicBrandingDir = path.join(process.cwd(), 'public', 'uploads', 'branding');
+    const distBrandingDir = path.join(process.cwd(), 'dist', 'uploads', 'branding');
+
+    if (!fs.existsSync(publicBrandingDir)) {
+      fs.mkdirSync(publicBrandingDir, { recursive: true });
+    }
+    if (fs.existsSync(path.join(process.cwd(), 'dist')) && !fs.existsSync(distBrandingDir)) {
+      fs.mkdirSync(distBrandingDir, { recursive: true });
     }
 
-    const publicFilePath = path.join(publicImgDir, filename);
-
-    // Sačuvaj trenutno stanje za rollback
-    let originalPublicBuffer: Buffer | null = null;
-    if (fs.existsSync(publicFilePath)) {
-      originalPublicBuffer = fs.readFileSync(publicFilePath);
-    }
-
-    // Bezbedno (atomsko) pisanje u public folder
-    try {
-      const publicTmpPath = publicFilePath + '.tmp';
-      fs.writeFileSync(publicTmpPath, finalBuffer);
-      fs.renameSync(publicTmpPath, publicFilePath);
-    } catch (publicErr) {
-      console.error('Greška pri upisu u public folder:', publicErr);
-      return res.status(500).json({ error: 'Greška pri čuvanju logotipa na serveru.' });
-    }
-
-    // Bezbedno (atomsko) pisanje u dist folder
-    const distImgDir = path.join(process.cwd(), 'dist', 'assets', 'images');
-    let distFilePath: string | null = null;
-    let originalDistBuffer: Buffer | null = null;
+    const publicFilePath = path.join(publicBrandingDir, filename);
+    fs.writeFileSync(publicFilePath, finalBuffer);
 
     if (fs.existsSync(path.join(process.cwd(), 'dist'))) {
-      if (!fs.existsSync(distImgDir)) {
-        fs.mkdirSync(distImgDir, { recursive: true });
-      }
-      distFilePath = path.join(distImgDir, filename);
-      if (fs.existsSync(distFilePath)) {
-        originalDistBuffer = fs.readFileSync(distFilePath);
-      }
-
-      try {
-        const distTmpPath = distFilePath + '.tmp';
-        fs.writeFileSync(distTmpPath, finalBuffer);
-        fs.renameSync(distTmpPath, distFilePath);
-      } catch (distErr) {
-        console.error('Greška pri upisu u dist folder:', distErr);
-        
-        // Rollback public fajla
-        try {
-          if (originalPublicBuffer) {
-            const rollbackTmpPath = publicFilePath + '.tmp';
-            fs.writeFileSync(rollbackTmpPath, originalPublicBuffer);
-            fs.renameSync(rollbackTmpPath, publicFilePath);
-          } else if (fs.existsSync(publicFilePath)) {
-            fs.unlinkSync(publicFilePath);
-          }
-        } catch (rollbackErr) {
-          console.error('Greška tokom rollback-a public fajla:', rollbackErr);
-        }
-
-        return res.status(500).json({ error: 'Greška pri sinhronizaciji sa dist folderom.' });
-      }
+      const distFilePath = path.join(distBrandingDir, filename);
+      fs.writeFileSync(distFilePath, finalBuffer);
     }
 
-    // 3. Ažuriranje Firestore-a direktno na stabilnu putanju kako bi se sprečile greške
+    // Delete older custom uploaded logo files to keep directory clean
+    try {
+      const deleteOldLogos = (dir: string) => {
+        if (fs.existsSync(dir)) {
+          const files = fs.readdirSync(dir);
+          files.forEach(file => {
+            if (file.startsWith('logo-') && file.endsWith('.webp') && file !== filename) {
+              try {
+                fs.unlinkSync(path.join(dir, file));
+              } catch (e) {
+                console.error(`Greška pri brisanju starog logotipa ${file}:`, e);
+              }
+            }
+          });
+        }
+      };
+      deleteOldLogos(publicBrandingDir);
+      deleteOldLogos(distBrandingDir);
+    } catch (cleanErr) {
+      console.error('Greška pri čišćenju starih logotipa:', cleanErr);
+    }
+
+    // Ažuriranje Firestore-a
     const settingsRef = doc(db, 'site_configs', 'settings');
+    const logoUrl = `/uploads/branding/${filename}`;
     const updateObj: any = {
-      logo_url: '/assets/images/logo_custom.webp',
+      logo_url: logoUrl,
       logo_style: 'custom'
     };
     await updateDoc(settingsRef, updateObj);
 
     const currentPasscode = req.headers['x-admin-passcode'] as string;
-    await addAuditLog(currentPasscode, 'Upload logotipa', `Otpremljen je novi logotip i sačuvan na stabilnoj putanji.`);
+    await addAuditLog(currentPasscode, 'Upload logotipa', `Otpremljen je novi logotip na putanji: ${logoUrl}`);
 
-    res.json({ success: true, logoUrl: stableUrl });
+    res.json({ success: true, logoUrl: logoUrl });
   } catch (error) {
     console.error('Greška pri uploadu logotipa:', error);
     res.status(500).json({ error: 'Greška pri čuvanju logotipa na serveru.' });
+  }
+});
+
+// G2.5. Upload hero/slider slike (Zaštićena ruta - Marketing/Super Admin)
+app.post('/api/marketing/upload-hero-image', marketingAuthMiddleware, async (req, res) => {
+  try {
+    const { imageData } = req.body;
+    if (!imageData) {
+      return res.status(400).json({ error: 'Nije poslata slika.' });
+    }
+
+    const matches = imageData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: 'Neispravan format slike.' });
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    // Limitiranje veličine na 10MB za hero sliku
+    if (buffer.length > 10 * 1024 * 1024) {
+      return res.status(400).json({ error: 'Slika je prevelika. Maksimalna veličina je 10MB.' });
+    }
+
+    let metadata;
+    try {
+      metadata = await sharp(buffer).metadata();
+    } catch (e) {
+      console.error('Greška pri čitanju metapodataka slike:', e);
+      return res.status(400).json({ error: 'Format slike nije podržan ili je fajl oštećen.' });
+    }
+
+    const realFormat = metadata.format;
+    if (realFormat !== 'webp' && realFormat !== 'png' && realFormat !== 'jpeg' && realFormat !== 'jpg') {
+      return res.status(400).json({ error: 'Dozvoljeni formati su WebP, PNG i JPEG/JPG.' });
+    }
+
+    const timestamp = Date.now();
+    const randomSuffix = Math.floor(Math.random() * 10000);
+    const filename = `hero-${timestamp}-${randomSuffix}.webp`;
+
+    let finalBuffer: Buffer;
+    try {
+      finalBuffer = await sharp(buffer)
+        .resize({
+          width: 1600,
+          fit: 'inside',
+          withoutEnlargement: true
+        })
+        .webp({ quality: 85 })
+        .toBuffer();
+    } catch (err) {
+      console.error('Greška pri obradi slike:', err);
+      return res.status(500).json({ error: 'Greška pri konverziji i optimizaciji slike.' });
+    }
+
+    const publicBrandingDir = path.join(process.cwd(), 'public', 'uploads', 'branding');
+    const distBrandingDir = path.join(process.cwd(), 'dist', 'uploads', 'branding');
+
+    if (!fs.existsSync(publicBrandingDir)) {
+      fs.mkdirSync(publicBrandingDir, { recursive: true });
+    }
+    if (fs.existsSync(path.join(process.cwd(), 'dist')) && !fs.existsSync(distBrandingDir)) {
+      fs.mkdirSync(distBrandingDir, { recursive: true });
+    }
+
+    const publicFilePath = path.join(publicBrandingDir, filename);
+    fs.writeFileSync(publicFilePath, finalBuffer);
+
+    if (fs.existsSync(path.join(process.cwd(), 'dist'))) {
+      const distFilePath = path.join(distBrandingDir, filename);
+      fs.writeFileSync(distFilePath, finalBuffer);
+    }
+
+    const imageUrl = `/uploads/branding/${filename}`;
+    res.json({ success: true, imageUrl: imageUrl });
+  } catch (error) {
+    console.error('Greška pri uploadu hero slike:', error);
+    res.status(500).json({ error: 'Greška pri čuvanju hero slike na serveru.' });
   }
 });
 
@@ -1895,6 +1922,267 @@ app.get('/api/marketing/analytics', marketingAuthMiddleware, async (req, res) =>
   } catch (error) {
     console.error('Greška pri računanju marketing analitike:', error);
     res.status(500).json({ error: 'Greška pri učitavanju marketing analitike.' });
+  }
+});
+
+// Pomoćna funkcija za bezbedno generisanje standardnog ICO fajla iz PNG bafera u memoriji
+function convertPngToIco(pngBuffer: Buffer): Buffer {
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0); // Rezervisano
+  header.writeUInt16LE(1, 2); // Tip 1 = ICO
+  header.writeUInt16LE(1, 4); // Broj slika u paketu = 1
+
+  const entry = Buffer.alloc(16);
+  entry.writeUInt8(32, 0); // Širina = 32px
+  entry.writeUInt8(32, 1); // Visina = 32px
+  entry.writeUInt8(0, 2);  // Boje
+  entry.writeUInt8(0, 3);  // Rezervisano
+  entry.writeUInt16LE(1, 4); // Color planes
+  entry.writeUInt16LE(32, 6); // Bits per pixel
+  entry.writeUInt32LE(pngBuffer.length, 8); // Veličina PNG podataka
+  entry.writeUInt32LE(22, 12); // Ofset PNG podataka (6 bajtova header + 16 bajtova entry)
+
+  return Buffer.concat([header, entry, pngBuffer]);
+}
+
+// G3. Upload favicon-a i generisanje svih podržanih veličina u pozadini (Zaštićena ruta)
+app.post('/api/marketing/upload-favicon', marketingAuthMiddleware, async (req, res) => {
+  try {
+    const { faviconData } = req.body;
+    if (!faviconData) {
+      return res.status(400).json({ error: 'Nije poslata slika za favicon.' });
+    }
+
+    const matches = faviconData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) {
+      return res.status(400).json({ error: 'Neispravan format slike.' });
+    }
+
+    const mimeType = matches[1];
+    const base64Data = matches[2];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    // Limitiranje veličine na 1MB
+    if (buffer.length > 1024 * 1024) {
+      return res.status(400).json({ error: 'Slika je prevelika. Maksimalna veličina favicon-a je 1MB.' });
+    }
+
+    // Provera stvarnog formata slike pomoću sharp
+    let metadata;
+    try {
+      metadata = await sharp(buffer).metadata();
+    } catch (e) {
+      console.error('Greška pri čitanju metapodataka favicon slike:', e);
+      return res.status(400).json({ error: 'Format slike nije podržan ili je fajl oštećen.' });
+    }
+
+    const realFormat = metadata.format;
+    if (realFormat !== 'png' && realFormat !== 'webp' && realFormat !== 'jpeg' && realFormat !== 'svg') {
+      return res.status(400).json({ error: 'Dozvoljeni formati su PNG, WebP, SVG i JPEG/JPG.' });
+    }
+
+    const timestamp = Date.now();
+    
+    // Generisanje svih standardnih formata i veličina
+    let png32: Buffer;
+    let png96: Buffer;
+    let png180: Buffer;
+    let png192: Buffer;
+    let png512: Buffer;
+
+    try {
+      png32 = await sharp(buffer).resize(32, 32, { fit: 'fill' }).png().toBuffer();
+      png96 = await sharp(buffer).resize(96, 96, { fit: 'fill' }).png().toBuffer();
+      png180 = await sharp(buffer).resize(180, 180, { fit: 'fill' }).png().toBuffer();
+      png192 = await sharp(buffer).resize(192, 192, { fit: 'fill' }).png().toBuffer();
+      png512 = await sharp(buffer).resize(512, 512, { fit: 'fill' }).png().toBuffer();
+    } catch (resizeErr) {
+      console.error('Greška pri generisanju favicon rezolucija:', resizeErr);
+      return res.status(500).json({ error: 'Greška pri generisanju i optimizaciji favicon ikonica.' });
+    }
+
+    // Generisanje standardnog .ico formata
+    const ico32 = convertPngToIco(png32);
+
+    const publicBrandingDir = path.join(process.cwd(), 'public', 'uploads', 'branding');
+    const distBrandingDir = path.join(process.cwd(), 'dist', 'uploads', 'branding');
+
+    if (!fs.existsSync(publicBrandingDir)) {
+      fs.mkdirSync(publicBrandingDir, { recursive: true });
+    }
+    if (fs.existsSync(path.join(process.cwd(), 'dist')) && !fs.existsSync(distBrandingDir)) {
+      fs.mkdirSync(distBrandingDir, { recursive: true });
+    }
+
+    // Definisanje naziva fajlova
+    const f32Name = `favicon-32x32-${timestamp}.png`;
+    const f96Name = `favicon-96x96-${timestamp}.png`;
+    const f180Name = `apple-touch-icon-${timestamp}.png`;
+    const f192Name = `android-chrome-192x192-${timestamp}.png`;
+    const f512Name = `android-chrome-512x512-${timestamp}.png`;
+    const fIcoName = `favicon-${timestamp}.ico`;
+
+    const filesToWrite = [
+      { name: f32Name, buffer: png32 },
+      { name: f96Name, buffer: png96 },
+      { name: f180Name, buffer: png180 },
+      { name: f192Name, buffer: png192 },
+      { name: f512Name, buffer: png512 },
+      { name: fIcoName, buffer: ico32 }
+    ];
+
+    // Pisanje svih fajlova u public i dist foldere
+    filesToWrite.forEach(f => {
+      fs.writeFileSync(path.join(publicBrandingDir, f.name), f.buffer);
+      if (fs.existsSync(path.join(process.cwd(), 'dist'))) {
+        fs.writeFileSync(path.join(distBrandingDir, f.name), f.buffer);
+      }
+    });
+
+    // Brisanje svih prethodnih favicon fajlova
+    try {
+      const cleanOldFavicons = (dir: string) => {
+        if (fs.existsSync(dir)) {
+          const files = fs.readdirSync(dir);
+          const activeNames = filesToWrite.map(f => f.name);
+          files.forEach(file => {
+            const isFaviconPart = file.startsWith('favicon-') || file.startsWith('apple-touch-icon-') || file.startsWith('android-chrome-');
+            if (isFaviconPart && !activeNames.includes(file)) {
+              try {
+                fs.unlinkSync(path.join(dir, file));
+              } catch (e) {
+                console.error(`Greška pri brisanju starog favicon-a ${file}:`, e);
+              }
+            }
+          });
+        }
+      };
+      cleanOldFavicons(publicBrandingDir);
+      cleanOldFavicons(distBrandingDir);
+    } catch (cleanErr) {
+      console.error('Greška pri čišćenju starih favicon fajlova:', cleanErr);
+    }
+
+    // Ažuriranje Firestore-a
+    const settingsRef = doc(db, 'site_configs', 'settings');
+    const updateObj = {
+      favicon_url: `/uploads/branding/${f32Name}`,
+      favicon_96_url: `/uploads/branding/${f96Name}`,
+      apple_touch_icon_url: `/uploads/branding/${f180Name}`,
+      manifest_192_url: `/uploads/branding/${f192Name}`,
+      manifest_512_url: `/uploads/branding/${f512Name}`,
+      favicon_ico_url: `/uploads/branding/${fIcoName}`,
+      favicon_version: String(timestamp)
+    };
+    await updateDoc(settingsRef, updateObj);
+
+    const currentPasscode = req.headers['x-admin-passcode'] as string;
+    await addAuditLog(currentPasscode, 'Upload favicon-a', `Otpremljena je nova favicon ikonica sa svim rezolucijama (verzija: ${timestamp}).`);
+
+    res.json({ success: true, faviconUrl: `/uploads/branding/${f32Name}`, settings: updateObj });
+  } catch (error) {
+    console.error('Greška pri uploadu favicon-a:', error);
+    res.status(500).json({ error: 'Greška pri čuvanju favicon-a na serveru.' });
+  }
+});
+
+// Dinamička ruta za generisanje /site.webmanifest u zavisnosti od unetog favicon-a
+app.get('/site.webmanifest', async (req, res) => {
+  try {
+    const settingsRef = doc(db, 'site_configs', 'settings');
+    const settingsSnap = await getDoc(settingsRef);
+    let manifest192 = '/android-chrome-192x192.png';
+    let manifest512 = '/android-chrome-512x512.png';
+    let title = 'Deliverix';
+
+    if (settingsSnap.exists()) {
+      const data = settingsSnap.data();
+      if (data.manifest_192_url) manifest192 = data.manifest_192_url;
+      if (data.manifest_512_url) manifest512 = data.manifest_512_url;
+      if (data.meta_title) {
+        title = data.meta_title.split('|')[0].trim();
+      }
+    }
+
+    res.json({
+      name: "Deliverix Srbija",
+      short_name: title,
+      icons: [
+        {
+          src: manifest192,
+          sizes: "192x192",
+          type: "image/png"
+        },
+        {
+          src: manifest512,
+          sizes: "512x512",
+          type: "image/png"
+        }
+      ],
+      theme_color: "#0284c7",
+      background_color: "#ffffff",
+      display: "standalone"
+    });
+  } catch (err) {
+    console.error('Greška pri generisanju webmanifesta:', err);
+    res.json({
+      name: "Deliverix Srbija",
+      short_name: "Deliverix",
+      icons: [
+        {
+          src: "/android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png"
+        },
+        {
+          src: "/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png"
+        }
+      ],
+      theme_color: "#0284c7",
+      background_color: "#ffffff",
+      display: "standalone"
+    });
+  }
+});
+
+// Presretanje fizičkih /favicon.ico i /apple-touch-icon.png zahteva pre statičkog servera
+app.get('/favicon.ico', async (req, res, next) => {
+  try {
+    const settingsRef = doc(db, 'site_configs', 'settings');
+    const settingsSnap = await getDoc(settingsRef);
+    if (settingsSnap.exists()) {
+      const data = settingsSnap.data();
+      if (data.favicon_ico_url) {
+        const filePath = path.join(process.cwd(), 'public', data.favicon_ico_url);
+        if (fs.existsSync(filePath)) {
+          return res.sendFile(filePath);
+        }
+      }
+    }
+    next();
+  } catch (err) {
+    next();
+  }
+});
+
+app.get('/apple-touch-icon.png', async (req, res, next) => {
+  try {
+    const settingsRef = doc(db, 'site_configs', 'settings');
+    const settingsSnap = await getDoc(settingsRef);
+    if (settingsSnap.exists()) {
+      const data = settingsSnap.data();
+      if (data.apple_touch_icon_url) {
+        const filePath = path.join(process.cwd(), 'public', data.apple_touch_icon_url);
+        if (fs.existsSync(filePath)) {
+          return res.sendFile(filePath);
+        }
+      }
+    }
+    next();
+  } catch (err) {
+    next();
   }
 });
 
@@ -1979,6 +2267,10 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     const escapedTitle = escapeHtmlAttr(meta_title);
     const escapedDesc = escapeHtmlAttr(meta_description);
 
+    const absoluteLogoUrl = siteSettingsData?.logo_url
+      ? (siteSettingsData.logo_url.startsWith('http') ? siteSettingsData.logo_url : `https://deliverix.rs${siteSettingsData.logo_url}`)
+      : 'https://deliverix.rs/logo.png';
+
     // 2. Dinamičko generisanje i ubacivanje JSON-LD Schema Markup-a
     let schemas: string[] = [];
 
@@ -2045,7 +2337,7 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
         },
         "headline": blogPostData.title,
         "description": blogPostData.excerpt || meta_description,
-        "image": blogPostData.coverUrl || "https://deliverix.rs/logo.png",
+        "image": blogPostData.coverUrl || absoluteLogoUrl,
         "datePublished": blogPostData.createdAt || new Date().toISOString(),
         "dateModified": blogPostData.updatedAt || blogPostData.createdAt || new Date().toISOString(),
         "author": {
@@ -2057,7 +2349,7 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
           "name": "Deliverix",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://deliverix.rs/logo.png"
+            "url": absoluteLogoUrl
           }
         }
       }));
@@ -2083,17 +2375,35 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     const schemaHtml = schemas.map(s => `<script type="application/ld+json">${s}</script>`).join('\n');
     html = html.replace('</head>', `${schemaHtml}\n</head>`);
 
+    // Injekcija dinamičkih favicon-a i manifesta u <head>
+    if (siteSettingsData) {
+      const favIconUrl = siteSettingsData.favicon_url || '/favicon-32x32.png';
+      const favIcoUrl = siteSettingsData.favicon_ico_url || '/favicon.ico';
+      const appleTouchUrl = siteSettingsData.apple_touch_icon_url || '/apple-touch-icon.png';
+      const favVersion = siteSettingsData.favicon_version || '1';
+
+      // Ukloni stare hardkodovane tagove (da ne bi došlo do dupliranja)
+      html = html.replace(/<link\s+rel="icon"\s+href="\/favicon\.ico"[^>]*>/gi, '');
+      html = html.replace(/<link\s+rel="icon"\s+type="image\/png"\s+href="\/favicon-32x32\.png"[^>]*>/gi, '');
+      html = html.replace(/<link\s+rel="apple-touch-icon"\s+href="\/apple-touch-icon\.png"[^>]*>/gi, '');
+      html = html.replace(/<link\s+rel="manifest"\s+href="\/site\.webmanifest"[^>]*>/gi, '');
+
+      // Ubaci nove dinamičke tagove
+      const dynamicFaviconTags = `
+    <link rel="icon" href="${favIcoUrl}?v=${favVersion}" sizes="any" />
+    <link rel="icon" type="image/png" href="${favIconUrl}?v=${favVersion}" sizes="32x32" />
+    <link rel="apple-touch-icon" href="${appleTouchUrl}?v=${favVersion}" />
+    <link rel="manifest" href="/site.webmanifest?v=${favVersion}" />
+      `;
+      html = html.replace('</head>', `${dynamicFaviconTags}\n</head>`);
+    }
+
     // 3. Ubacivanje Canonical taga (Maksimalna SEO higijena)
     const canonicalUrl = `https://deliverix.rs${urlPath === '/' ? '' : urlPath}`;
     const canonicalTag = `<link rel="canonical" href="${canonicalUrl}" />`;
     html = html.replace('</head>', `${canonicalTag}\n</head>`);
 
-    // 3.5 Ubacivanje inicijalnih podešavanja za React hidrataciju i eliminaciju Content Flasha
-    if (siteSettingsData) {
-      const escapedSettings = JSON.stringify(siteSettingsData).replace(/</g, '\\u003c');
-      const settingsScript = `<script>window.__INITIAL_SITE_SETTINGS__ = ${escapedSettings};</script>`;
-      html = html.replace('</head>', `${settingsScript}\n</head>`);
-    }
+
 
     // 4. Zamena standardnih meta tagova
     html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapedTitle}</title>`);
@@ -2121,6 +2431,60 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
       html = html.replace('<body>', `<body>\n${blogArticleHtml}`);
     }
 
+    // Bezbedna serijalizacija početnih podataka za klijenta (Faza B)
+    let currentView: 'landing' | 'admin' | 'candidate' | 'blog' | 'privacy' | 'terms' = 'landing';
+    if (urlPath.startsWith('/admin')) currentView = 'admin';
+    else if (urlPath.startsWith('/portal')) currentView = 'candidate';
+    else if (urlPath.startsWith('/blog')) currentView = 'blog';
+    else if (urlPath.startsWith('/privacy')) currentView = 'privacy';
+    else if (urlPath.startsWith('/terms')) currentView = 'terms';
+
+    const initialData = {
+      route: urlPath,
+      currentView: currentView,
+      siteSettings: siteSettingsData || null,
+      blogPost: blogPostData || null,
+      statusCode: 200,
+      ssr: false
+    };
+
+    const serializedData = safeSerialize(initialData);
+
+    const inlineScript = `
+  <script id="__DELIVERIX_DATA__">
+    window.__DELIVERIX_INITIAL_DATA__ = ${serializedData};
+  </script>
+`;
+    html = html.replace('</head>', `${inlineScript}\n</head>`);
+
+    // Priprema React SSR - Aktiviramo isključivo za landing stranu (Faza C)
+    const ssrActive = urlPath === '/';
+    if (ssrActive) {
+      try {
+        let ssrHtml = '';
+        if (process.env.NODE_ENV !== 'production') {
+          if (viteInstance) {
+            const { render } = await viteInstance.ssrLoadModule('/src/entry-server.tsx');
+            const rendered = render({ ...initialData, ssr: true });
+            ssrHtml = rendered.html;
+          }
+        } else {
+          const serverEntryPath = path.join(process.cwd(), 'dist/server/entry-server.js');
+          if (fs.existsSync(serverEntryPath)) {
+            const { render } = await import(pathToFileURL(serverEntryPath).href);
+            const rendered = render({ ...initialData, ssr: true });
+            ssrHtml = rendered.html;
+          }
+        }
+        if (ssrHtml) {
+          html = html.replace('<div id="root"></div>', `<div id="root" data-ssr="true">${ssrHtml}</div>`);
+          html = html.replace('</head>', `<script>window.__DELIVERIX_SSR__ = true;</script>\n</head>`);
+        }
+      } catch (ssrErr) {
+        console.error('Greška pri serverskom renderovanju (React SSR):', ssrErr);
+      }
+    }
+
     res.setHeader('Content-Type', 'text/html');
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     res.send(html);
@@ -2136,6 +2500,7 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: 'spa',
     });
+    viteInstance = vite;
     
     // Presretanje HTML zahteva u razvoju radi dinamičkog SEO renderovanja
     app.use(async (req, res, next) => {
@@ -2163,8 +2528,15 @@ async function startServer() {
 
     app.use(vite.middlewares);
   } else {
-    const distPath = path.join(process.cwd(), 'dist');
+    const distClientPath = path.join(process.cwd(), 'dist/client');
+    const distPath = fs.existsSync(distClientPath) ? distClientPath : path.join(process.cwd(), 'dist');
+    
+    app.get('/', async (req, res) => {
+      await serveIndexWithSEO(req, res, path.join(distPath, 'index.html'));
+    });
+
     app.use(express.static(distPath, {
+      index: false,
       maxAge: '1y',
       immutable: true,
       setHeaders: (res, filepath) => {

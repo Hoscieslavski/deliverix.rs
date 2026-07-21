@@ -14,24 +14,13 @@ import {
   Share2,
   Bike
 } from 'lucide-react';
-
-interface BlogPost {
-  id: string;
-  title: string;
-  slug: string;
-  summary: string;
-  content: string;
-  cover_image: string;
-  author: string;
-  tags: string[];
-  read_time: string;
-  created_at: string;
-  views: number;
-}
+import { BlogPost, SiteSettings } from '../types';
 
 interface BlogPageProps {
   onBackToLanding: () => void;
   initialPostSlug?: string | null;
+  siteSettings?: SiteSettings | null;
+  onSelectPost?: (slug: string | null) => void;
 }
 
 function SafeBlogImage({ src, alt, className }: { src: string; alt: string; className?: string }) {
@@ -66,8 +55,11 @@ function SafeBlogImage({ src, alt, className }: { src: string; alt: string; clas
   );
 }
 
-export default function BlogPage({ onBackToLanding, initialPostSlug = null }: BlogPageProps) {
+export default function BlogPage({ onBackToLanding, initialPostSlug = null, siteSettings, onSelectPost }: BlogPageProps) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
+  const absoluteLogoUrl = siteSettings?.logo_url
+    ? (siteSettings.logo_url.startsWith('http') ? siteSettings.logo_url : `https://deliverix.rs${siteSettings.logo_url}`)
+    : 'https://deliverix.rs/logo.png';
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -144,6 +136,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
   const handleSelectPost = (post: BlogPost) => {
     setSelectedPost(post);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    onSelectPost?.(post.slug || post.id);
 
     // Pozovi API za čitanje posta (on takođe inkrementuje preglede na backendu)
     fetch(`/api/blog-posts/${post.slug || post.id}`)
@@ -282,7 +275,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
               "name": "Deliverix Srbija",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://deliverix.rs/logo.png"
+                "url": absoluteLogoUrl
               }
             }
           })}
@@ -308,7 +301,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
               "name": "Deliverix Srbija",
               "logo": {
                 "@type": "ImageObject",
-                "url": "https://deliverix.rs/logo.png"
+                "url": absoluteLogoUrl
               }
             },
             "mainEntityOfPage": {
@@ -326,6 +319,7 @@ export default function BlogPage({ onBackToLanding, initialPostSlug = null }: Bl
           onClick={() => {
             if (selectedPost) {
               setSelectedPost(null);
+              onSelectPost?.(null);
             } else {
               onBackToLanding();
             }
