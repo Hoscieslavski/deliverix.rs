@@ -6,13 +6,21 @@
     <link rel="preload" href="/fonts/Inter-SemiBold.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/Inter-Bold.woff2" as="font" type="font/woff2" crossorigin />
 
-    <!-- Defer Google Tag Manager to first user interaction (Faza 6) -->
+    <!-- Defer Google Tag Manager to first user interaction or 3s after load (Faza 6) -->
     <script>
       (function() {
         var gtmLoaded = false;
+        var fallbackTimer = null;
+
         function loadGTM() {
           if (gtmLoaded) return;
           gtmLoaded = true;
+
+          // Clear fallback timer if active
+          if (fallbackTimer) {
+            clearTimeout(fallbackTimer);
+            fallbackTimer = null;
+          }
 
           // Remove interaction event listeners
           window.removeEventListener('scroll', loadGTM);
@@ -35,6 +43,11 @@
         window.addEventListener('touchstart', loadGTM, { passive: true });
         window.addEventListener('mousemove', loadGTM, { passive: true });
         window.addEventListener('keydown', loadGTM, { passive: true });
+
+        // Fallback: load GTM 3 seconds after window load if no user interaction occurred
+        window.addEventListener('load', function() {
+          fallbackTimer = setTimeout(loadGTM, 3000);
+        });
       })();
     </script>
     <!-- End Google Tag Manager -->
