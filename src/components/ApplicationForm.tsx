@@ -58,6 +58,38 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
   const [success, setSuccess] = useState(false);
   const [submittedCity, setSubmittedCity] = useState('');
 
+  // Slanje GA4 'begin_application' događaja samo jednom u toku sesije kada se otvori forma/modal
+  useEffect(() => {
+    try {
+      const hasSent = sessionStorage.getItem('ga_begin_application_sent');
+      if (!hasSent) {
+        sessionStorage.setItem('ga_begin_application_sent', 'true');
+        if (typeof window !== 'undefined') {
+          (window as any).dataLayer = (window as any).dataLayer || [];
+          if (typeof (window as any).gtag !== 'function') {
+            (window as any).gtag = function() {
+              (window as any).dataLayer.push(arguments);
+            };
+          }
+          (window as any).gtag('event', 'begin_application');
+        }
+      }
+    } catch (e) {
+      if (!(window as any).__ga_begin_application_sent) {
+        (window as any).__ga_begin_application_sent = true;
+        if (typeof window !== 'undefined') {
+          (window as any).dataLayer = (window as any).dataLayer || [];
+          if (typeof (window as any).gtag !== 'function') {
+            (window as any).gtag = function() {
+              (window as any).dataLayer.push(arguments);
+            };
+          }
+          (window as any).gtag('event', 'begin_application');
+        }
+      }
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -104,6 +136,20 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
       if (response.ok) {
         setSubmittedCity(konacanGrad);
         setSuccess(true);
+
+        // GA4 događaj za uspešno poslatur prijavu
+        if (typeof window !== 'undefined') {
+          (window as any).dataLayer = (window as any).dataLayer || [];
+          if (typeof (window as any).gtag !== 'function') {
+            (window as any).gtag = function() {
+              (window as any).dataLayer.push(arguments);
+            };
+          }
+          (window as any).gtag('event', 'generate_lead', {
+            method: 'application_form'
+          });
+        }
+
         const isActive = ACTIVE_CITIES.includes(konacanGrad);
         setTimeout(() => {
           onSuccess();
