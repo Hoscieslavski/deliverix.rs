@@ -247,6 +247,102 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
     }
   }, [siteSettings?.favicon_url, siteSettings?.favicon_ico_url, siteSettings?.apple_touch_icon_url, siteSettings?.favicon_version]);
 
+  // Zaseban useEffect za dinamičko učitavanje Google Analytics-a (GA4/GTM) bez obzira na SSR ili CSR
+  useEffect(() => {
+    const gaId = siteSettings?.ga_measurement_id;
+    if (!gaId || gaId === 'G-XXXXXXXXXX') {
+      return;
+    }
+
+    let analyticsTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    const loadAnalytics = () => {
+      if ((window as any).__dynamic_analytics_loaded) return;
+      (window as any).__dynamic_analytics_loaded = true;
+
+      window.removeEventListener('scroll', loadAnalytics);
+      window.removeEventListener('click', loadAnalytics);
+      window.removeEventListener('touchstart', loadAnalytics);
+      window.removeEventListener('mousemove', loadAnalytics);
+      window.removeEventListener('keydown', loadAnalytics);
+      if (analyticsTimeout) {
+        clearTimeout(analyticsTimeout);
+        analyticsTimeout = null;
+      }
+
+      if (gaId.startsWith('G-')) {
+        // Standardni Google Analytics (gtag.js)
+        if (!document.getElementById('google-analytics-script')) {
+          const script1 = document.createElement('script');
+          script1.id = 'google-analytics-script';
+          script1.async = true;
+          script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+          document.head.appendChild(script1);
+
+          const script2 = document.createElement('script');
+          script2.id = 'google-analytics-init';
+          script2.innerHTML = `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${gaId}');
+          `;
+          document.head.appendChild(script2);
+        }
+      } else if (gaId.startsWith('GTM-')) {
+        // Google Tag Manager (gtm.js)
+        if (!document.getElementById('google-gtm-script')) {
+          const script1 = document.createElement('script');
+          script1.id = 'google-gtm-script';
+          script1.innerHTML = `
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','${gaId}');
+          `;
+          document.head.appendChild(script1);
+
+          // NoScript iFrame za GTM u body
+          if (!document.getElementById('google-gtm-noscript')) {
+            const noscript = document.createElement('noscript');
+            noscript.id = 'google-gtm-noscript';
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.googletagmanager.com/ns.html?id=${gaId}`;
+            iframe.height = '0';
+            iframe.width = '0';
+            iframe.style.display = 'none';
+            iframe.style.visibility = 'hidden';
+            noscript.appendChild(iframe);
+            document.body.insertBefore(noscript, document.body.firstChild);
+          }
+        }
+      }
+    };
+
+    if ((window as any).__dynamic_analytics_loaded || document.getElementById('google-analytics-script')) {
+      return;
+    }
+
+    analyticsTimeout = setTimeout(loadAnalytics, 5000);
+    window.addEventListener('scroll', loadAnalytics, { passive: true });
+    window.addEventListener('click', loadAnalytics, { passive: true });
+    window.addEventListener('touchstart', loadAnalytics, { passive: true });
+    window.addEventListener('mousemove', loadAnalytics, { passive: true });
+    window.addEventListener('keydown', loadAnalytics, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', loadAnalytics);
+      window.removeEventListener('click', loadAnalytics);
+      window.removeEventListener('touchstart', loadAnalytics);
+      window.removeEventListener('mousemove', loadAnalytics);
+      window.removeEventListener('keydown', loadAnalytics);
+      if (analyticsTimeout) {
+        clearTimeout(analyticsTimeout);
+      }
+    };
+  }, [siteSettings?.ga_measurement_id]);
+
   // Učitavanje logotipa i SEO podešavanja sa servera u pozadini (asinhrono i neblokirajuće)
   useEffect(() => {
     // Sprečavanje duplog fetch-a ako su podaci već učitani preko SSR
@@ -265,78 +361,6 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
           }
           if (data.settings.logo_blend_mode) {
             setLogoBlendMode(data.settings.logo_blend_mode);
-          }
-
-          // Dinamičko učitavanje Google Analytics-a / Google Tag Manager-a na osnovu konfigurisanog ID-ja (Odloženo - Faza 5)
-          const gaId = data.settings.ga_measurement_id;
-          if (gaId && gaId !== 'G-XXXXXXXXXX') {
-            const loadAnalytics = () => {
-              if ((window as any).__dynamic_analytics_loaded) return;
-              (window as any).__dynamic_analytics_loaded = true;
-
-              window.removeEventListener('scroll', loadAnalytics);
-              window.removeEventListener('click', loadAnalytics);
-              window.removeEventListener('touchstart', loadAnalytics);
-              window.removeEventListener('mousemove', loadAnalytics);
-              window.removeEventListener('keydown', loadAnalytics);
-              clearTimeout(analyticsTimeout);
-
-              if (gaId.startsWith('G-')) {
-                // Standardni Google Analytics (gtag.js)
-                if (!document.getElementById('google-analytics-script')) {
-                  const script1 = document.createElement('script');
-                  script1.id = 'google-analytics-script';
-                  script1.async = true;
-                  script1.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
-                  document.head.appendChild(script1);
-
-                  const script2 = document.createElement('script');
-                  script2.id = 'google-analytics-init';
-                  script2.innerHTML = `
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-                    gtag('config', '${gaId}');
-                  `;
-                  document.head.appendChild(script2);
-                }
-              } else if (gaId.startsWith('GTM-')) {
-                // Google Tag Manager (gtm.js)
-                if (!document.getElementById('google-gtm-script')) {
-                  const script1 = document.createElement('script');
-                  script1.id = 'google-gtm-script';
-                  script1.innerHTML = `
-                    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-                    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-                    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-                    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-                    })(window,document,'script','dataLayer','${gaId}');
-                  `;
-                  document.head.appendChild(script1);
-
-                  // NoScript iFrame za GTM u body
-                  if (!document.getElementById('google-gtm-noscript')) {
-                    const noscript = document.createElement('noscript');
-                    noscript.id = 'google-gtm-noscript';
-                    const iframe = document.createElement('iframe');
-                    iframe.src = `https://www.googletagmanager.com/ns.html?id=${gaId}`;
-                    iframe.height = '0';
-                    iframe.width = '0';
-                    iframe.style.display = 'none';
-                    iframe.style.visibility = 'hidden';
-                    noscript.appendChild(iframe);
-                    document.body.insertBefore(noscript, document.body.firstChild);
-                  }
-                }
-              }
-            };
-
-            const analyticsTimeout = setTimeout(loadAnalytics, 5000);
-            window.addEventListener('scroll', loadAnalytics, { passive: true });
-            window.addEventListener('click', loadAnalytics, { passive: true });
-            window.addEventListener('touchstart', loadAnalytics, { passive: true });
-            window.addEventListener('mousemove', loadAnalytics, { passive: true });
-            window.addEventListener('keydown', loadAnalytics, { passive: true });
           }
         }
       })
