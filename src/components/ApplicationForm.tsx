@@ -60,6 +60,7 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
 
   // Slanje GA4 'begin_application' događaja samo jednom u toku sesije kada se otvori forma/modal
   useEffect(() => {
+    console.log('ApplicationForm mounted');
     try {
       const hasSent = sessionStorage.getItem('ga_begin_application_sent');
       if (!hasSent) {
@@ -71,7 +72,9 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
               (window as any).dataLayer.push(arguments);
             };
           }
+          console.log('Sending begin_application');
           (window as any).gtag('event', 'begin_application');
+          console.log('begin_application sent');
         }
       }
     } catch (e) {
@@ -84,7 +87,9 @@ export default function ApplicationForm({ onSuccess, onClose, referralCode = '',
               (window as any).dataLayer.push(arguments);
             };
           }
+          console.log('Sending begin_application');
           (window as any).gtag('event', 'begin_application');
+          console.log('begin_application sent');
         }
       }
     }
