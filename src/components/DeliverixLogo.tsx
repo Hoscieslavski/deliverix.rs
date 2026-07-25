@@ -15,11 +15,15 @@ export function DeliverixLogo({ customLogoUrl, logoBlendMode = 'normal', classNa
     setHasError(false);
   }, [customLogoUrl]);
 
-  if (customLogoUrl && !hasError) {
+  const effectiveLogoUrl = (customLogoUrl && typeof customLogoUrl === 'string' && customLogoUrl.trim() !== '') 
+    ? customLogoUrl 
+    : '/assets/images/logo_custom.webp';
+
+  if (effectiveLogoUrl && !hasError) {
     const blendClass = logoBlendMode === 'multiply' ? 'mix-blend-multiply' : '';
     return (
       <img 
-        src={customLogoUrl} 
+        src={effectiveLogoUrl} 
         alt="Deliverix Logo" 
         className={`${className} object-contain ${blendClass}`} 
         referrerPolicy="no-referrer"

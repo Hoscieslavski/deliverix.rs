@@ -70,9 +70,10 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
   const [activePlatformTab, setActivePlatformTab] = useState<'wolt' | 'glovo'>('wolt');
   const [siteSettings, setSiteSettings] = useState<any>(initialSettings);
 
-  const absoluteLogoUrl = siteSettings?.logo_url
-    ? (siteSettings.logo_url.startsWith('http') ? siteSettings.logo_url : `https://deliverix.rs${siteSettings.logo_url}`)
-    : 'https://deliverix.rs/logo.png';
+  const rawLogo = (siteSettings?.logo_url && typeof siteSettings.logo_url === 'string' && siteSettings.logo_url.trim() !== '')
+    ? siteSettings.logo_url
+    : '/assets/images/logo_custom.webp';
+  const absoluteLogoUrl = rawLogo.startsWith('http') ? rawLogo : `https://deliverix.rs${rawLogo}`;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -167,7 +168,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
     setOpenFaq(openFaq === idx ? null : idx);
   };
 
-  const slides = siteSettings?.hero_slider_slides && siteSettings.hero_slider_slides.length > 0
+  const rawSlides = siteSettings?.hero_slider_slides && siteSettings.hero_slider_slides.length > 0
     ? siteSettings.hero_slider_slides
     : (siteSettings?.hero_slider_images && siteSettings.hero_slider_images.length > 0
         ? siteSettings.hero_slider_images.map((img: string, idx: number) => ({
@@ -178,6 +179,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           }))
         : DEFAULT_SITE_SETTINGS.hero_slider_slides
       );
+
+  const slides = rawSlides.map((slide: any) => ({
+    ...slide,
+    image: (slide && slide.image && typeof slide.image === 'string' && slide.image.trim() !== '')
+      ? slide.image
+      : '/assets/images/delivery_courier_hero_1783427588712.webp'
+  }));
 
   const activeSlide = siteSettings?.hero_right_mode === 'slider' && slides.length > 0
     ? slides[currentSlide % slides.length]
@@ -704,7 +712,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                       {slides.map((slide: any, idx: number) => (
                         <motion.img
                            key={idx}
-                           src={slide.image}
+                           src={slide.image || siteSettings?.hero_image_url || '/assets/images/delivery_courier_hero_1783427588712.webp'}
                            alt={slide.seo_alt || siteSettings?.hero_image_alt || `Dostavljač hrane - slajd ${idx + 1}`}
                            className="absolute inset-0 w-full h-full object-cover rounded-[1.75rem]"
                           initial={{ opacity: 0, scale: 1.05 }}
@@ -743,7 +751,7 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
                   ) : (
                     /* Standardna pojedinačna slika u WebP formatu */
                     <img
-                      src={siteSettings?.hero_image_url || '/assets/images/delivery_courier_hero_1783427588712.webp'}
+                      src={(siteSettings?.hero_image_url && typeof siteSettings.hero_image_url === 'string' && siteSettings.hero_image_url.trim() !== '') ? siteSettings.hero_image_url : '/assets/images/delivery_courier_hero_1783427588712.webp'}
                       alt={siteSettings?.hero_image_alt || 'Dostavljač hrane - Wolt Glovo Srbija'}
                       className="w-full h-full object-cover rounded-[1.75rem]"
                       referrerPolicy="no-referrer"
