@@ -477,11 +477,13 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
       <script type="application/ld+json" id="schema-employment-agency">
         {JSON.stringify({
           "@context": "https://schema.org",
-          "@type": "EmploymentAgency",
+          "@type": ["EmploymentAgency", "LocalBusiness", "Organization"],
+          "@id": "https://deliverix.rs/#organization",
           "name": "Deliverix Srbija",
           "image": absoluteLogoUrl,
           "url": "https://deliverix.rs/",
-          "telephone": siteSettings?.support_phone || "+381600000000",
+          "telephone": siteSettings?.support_phone || "+381 60 123 4567",
+          "email": "podrska@deliverix.rs",
           "logo": absoluteLogoUrl,
           "description": "Besplatni regrutacioni partner i vodič za rad na Wolt i Glovo dostavnim platformama u Beogradu i celoj Srbiji.",
           "address": {
@@ -489,6 +491,11 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
             "addressLocality": "Beograd",
             "addressCountry": "RS"
           },
+          "areaServed": {
+            "@type": "Country",
+            "name": "Srbija"
+          },
+          "priceRange": "$$",
           "sameAs": [
             "https://www.facebook.com/deliverix",
             "https://www.instagram.com/deliverix"
