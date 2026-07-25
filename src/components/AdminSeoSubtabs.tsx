@@ -2,10 +2,28 @@ import React from 'react';
 import { 
   Globe, Sparkles, Compass, HelpCircle, 
   Plus, Trash2, Upload, Loader2, Check, Bike, Car, Smartphone, FileText, Clock, MapPin, ShieldCheck, HeartHandshake, Phone,
-  ArrowUp, ArrowDown
+  ArrowUp, ArrowDown, GripVertical
 } from 'lucide-react';
 import ScooterIcon from './ScooterIcon';
 import { DeliverixLogo } from './DeliverixLogo';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 interface SeoTabFormProps {
   siteSettings: any;
@@ -250,6 +268,144 @@ export function SeoTabForm({
   );
 }
 
+interface SortableHeroSlideCardProps {
+  key?: React.Key;
+  slide: any;
+  idx: number;
+  handleReplaceSlideImage: (idx: number, e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleRemoveHeroSlide: (idx: number) => void;
+  handleUpdateSlideText: (idx: number, field: any, value: string) => void;
+}
+
+function SortableHeroSlideCard({
+  slide,
+  idx,
+  handleReplaceSlideImage,
+  handleRemoveHeroSlide,
+  handleUpdateSlideText,
+}: SortableHeroSlideCardProps) {
+  const slideId = slide.id || `slide_id_${idx}`;
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: slideId });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`bg-white p-4 rounded-xl border ${
+        isDragging
+          ? 'border-deliverix-500 shadow-xl opacity-80 z-30 relative scale-[1.01]'
+          : 'border-gray-150 shadow-xs hover:border-gray-200'
+      } transition-all duration-150 flex flex-col md:flex-row gap-4 items-start`}
+    >
+      {/* Drag handle & Slide number */}
+      <div className="flex md:flex-col items-center justify-between md:justify-start gap-2 shrink-0 w-full md:w-auto border-b md:border-b-0 pb-2 md:pb-0 border-gray-100">
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          aria-label={`Promeni redosled slajda ${idx + 1}`}
+          className="p-2 text-gray-400 hover:text-deliverix-600 hover:bg-deliverix-50 rounded-lg cursor-grab active:cursor-grabbing transition touch-none flex items-center gap-1.5"
+          title="Prevuci za promenu redosleda"
+        >
+          <GripVertical className="w-5 h-5" />
+          <span className="text-[10px] font-extrabold text-gray-400 md:hidden uppercase tracking-wider">Prevucite</span>
+        </button>
+        <span className="text-[11px] font-black text-deliverix-700 bg-deliverix-50 px-2 py-0.5 rounded-md uppercase tracking-wider border border-deliverix-100">
+          Slajd #{idx + 1}
+        </span>
+      </div>
+
+      {/* Slide Image Preview & Actions */}
+      <div className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video w-full md:w-40 bg-gray-50 shrink-0 group">
+        <img 
+          src={slide.image} 
+          alt={`Slajd ${idx + 1}`} 
+          className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+        />
+        
+        {/* Zameni sliku hover overlay */}
+        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[10px] font-bold cursor-pointer transition-opacity duration-200 z-10">
+          <Upload className="w-4 h-4 mb-1 text-white animate-pulse" />
+          Zameni sliku
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={e => handleReplaceSlideImage(idx, e)}
+          />
+        </label>
+
+        <button
+          type="button"
+          onClick={() => handleRemoveHeroSlide(idx)}
+          className="absolute top-1.5 right-1.5 p-1 bg-rose-500 hover:bg-rose-600 text-white rounded-md transition cursor-pointer z-20 shadow-sm"
+          title="Obriši slajd"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* Slide Text Fields */}
+      <div className="flex-1 space-y-2 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="space-y-1">
+            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Mali naslov</label>
+            <input
+              type="text"
+              className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs font-bold focus:ring-1 focus:ring-deliverix-500 focus:outline-none"
+              value={slide.badge_title || ''}
+              onChange={e => handleUpdateSlideText(idx, 'badge_title', e.target.value)}
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Badge tekst</label>
+            <input
+              type="text"
+              className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-deliverix-500 focus:outline-none"
+              value={slide.badge_text || ''}
+              onChange={e => handleUpdateSlideText(idx, 'badge_text', e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-2">
+          <div className="space-y-1">
+            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Glavni tekst</label>
+            <input
+              type="text"
+              className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-deliverix-500 focus:outline-none"
+              value={slide.description || ''}
+              onChange={e => handleUpdateSlideText(idx, 'description', e.target.value)}
+            />
+          </div>
+        </div>
+        <div className="space-y-1">
+          <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">SEO ALT Oznaka slike za ovaj slajd</label>
+          <input
+            type="text"
+            placeholder="npr. Dostavljač Wolt na električnom biciklu Beograd"
+            className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs focus:ring-1 focus:ring-deliverix-500 focus:outline-none"
+            value={slide.seo_alt || ''}
+            onChange={e => handleUpdateSlideText(idx, 'seo_alt', e.target.value)}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface HeroTabFormProps {
   siteSettings: any;
   setSiteSettings: React.Dispatch<React.SetStateAction<any>>;
@@ -277,6 +433,58 @@ export function HeroTabForm({
   handleUpdateSlideText,
   isSaving = false
 }: HeroTabFormProps) {
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  React.useEffect(() => {
+    if (siteSettings.hero_slider_slides && siteSettings.hero_slider_slides.length > 0) {
+      let needsIdFix = false;
+      const fixedSlides = siteSettings.hero_slider_slides.map((s: any, i: number) => {
+        if (!s.id) {
+          needsIdFix = true;
+          return { ...s, id: `slide_${Date.now()}_${i}_${Math.random().toString(36).substring(2, 6)}` };
+        }
+        return s;
+      });
+      if (needsIdFix) {
+        setSiteSettings((prev: any) => ({ ...prev, hero_slider_slides: fixedSlides }));
+      }
+    }
+  }, [siteSettings.hero_slider_slides]);
+
+  const slides = siteSettings.hero_slider_slides || [];
+
+  const handleDragEndHero = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = slides.findIndex((s: any, i: number) => (s.id || `slide_id_${i}`) === active.id);
+    const newIndex = slides.findIndex((s: any, i: number) => (s.id || `slide_id_${i}`) === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const reorderedSlides = arrayMove(slides, oldIndex, newIndex);
+      const reorderedImages = reorderedSlides.map((s: any) => s.image || '');
+      setSiteSettings({
+        ...siteSettings,
+        hero_slider_slides: reorderedSlides,
+        hero_slider_images: reorderedImages,
+      });
+    }
+  };
   const bullets = siteSettings.hero_bullets && siteSettings.hero_bullets.length > 0
     ? siteSettings.hero_bullets
     : [
@@ -558,95 +766,43 @@ export function HeroTabForm({
           {siteSettings.hero_right_mode === 'slider' && (
             <div className="space-y-4 p-4 bg-gray-50/50 rounded-xl border border-gray-100 animate-fade-in">
               <div className="flex justify-between items-center">
-                <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">Slike i tekstovi u slajderu</h5>
+                <div>
+                  <h5 className="text-[11px] font-black text-gray-500 uppercase tracking-wider">Slike i tekstovi u slajderu</h5>
+                  <p className="text-[10px] text-gray-400 font-medium">Prevucite karticu pomoću ručice za promenu redosleda slajdova</p>
+                </div>
                 <span className="text-[10px] bg-deliverix-50 text-deliverix-700 font-extrabold px-2 py-0.5 rounded-full">
                   Broj slika: {siteSettings.hero_slider_images?.length || 0}
                 </span>
               </div>
 
-              {(!siteSettings.hero_slider_images || siteSettings.hero_slider_images.length === 0) ? (
+              {(!slides || slides.length === 0) ? (
                 <div className="text-center py-6 bg-white rounded-xl border border-dashed border-gray-200">
                   <p className="text-xs text-gray-400">Slajder je prazan. Dodajte prvu sliku ispod.</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {(siteSettings.hero_slider_slides || []).map((slide: any, idx: number) => (
-                    <div key={idx} className="bg-white p-4 rounded-xl border border-gray-150 shadow-xs space-y-4 md:space-y-0 md:flex md:gap-4 items-start">
-                      <div className="relative rounded-lg overflow-hidden border border-gray-200 aspect-video w-full md:w-40 bg-gray-50 shrink-0 group">
-                        <img 
-                          src={slide.image} 
-                          alt={`Slajd ${idx + 1}`} 
-                          className="w-full h-full object-cover"
-                          referrerPolicy="no-referrer"
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEndHero}
+                >
+                  <SortableContext
+                    items={slides.map((s: any, i: number) => s.id || `slide_id_${i}`)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="space-y-4">
+                      {slides.map((slide: any, idx: number) => (
+                        <SortableHeroSlideCard
+                          key={slide.id || `slide_id_${idx}`}
+                          slide={slide}
+                          idx={idx}
+                          handleReplaceSlideImage={handleReplaceSlideImage}
+                          handleRemoveHeroSlide={handleRemoveHeroSlide}
+                          handleUpdateSlideText={handleUpdateSlideText}
                         />
-                        
-                        {/* Zameni sliku hover overlay */}
-                        <label className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center text-white text-[10px] font-bold cursor-pointer transition-opacity duration-200">
-                          <Upload className="w-4 h-4 mb-1 text-white animate-pulse" />
-                          Zameni sliku
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={e => handleReplaceSlideImage(idx, e)}
-                          />
-                        </label>
-
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveHeroSlide(idx)}
-                          className="absolute top-1.5 right-1.5 p-1 bg-rose-500 hover:bg-rose-600 text-white rounded-md transition cursor-pointer z-10"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-
-                      <div className="flex-1 space-y-2">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Mali naslov</label>
-                            <input
-                              type="text"
-                              className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs font-bold"
-                              value={slide.badge_title || ''}
-                              onChange={e => handleUpdateSlideText(idx, 'badge_title', e.target.value)}
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Badge tekst</label>
-                            <input
-                              type="text"
-                              className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
-                              value={slide.badge_text || ''}
-                              onChange={e => handleUpdateSlideText(idx, 'badge_text', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-1 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">Glavni tekst</label>
-                            <input
-                              type="text"
-                              className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
-                              value={slide.description || ''}
-                              onChange={e => handleUpdateSlideText(idx, 'description', e.target.value)}
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-extrabold text-gray-400 uppercase tracking-wider">SEO ALT Oznaka slike za ovaj slajd</label>
-                          <input
-                            type="text"
-                            placeholder="npr. Dostavljač Wolt na električnom biciklu Beograd"
-                            className="w-full px-2 py-1.5 bg-gray-50 border border-gray-200 rounded text-xs"
-                            value={slide.seo_alt || ''}
-                            onChange={e => handleUpdateSlideText(idx, 'seo_alt', e.target.value)}
-                          />
-                        </div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </SortableContext>
+                </DndContext>
               )}
 
               <div className="space-y-1.5 pt-2">
@@ -2248,6 +2404,126 @@ export function HomepageSectionsTabForm({
   );
 }
 
+interface SortableFaqCardProps {
+  key?: React.Key;
+  faq: any;
+  idx: number;
+  handleUpdateFaq: (index: number, field: string, val: any) => void;
+  handleRemoveFaq: (index: number) => void;
+}
+
+function SortableFaqCard({
+  faq,
+  idx,
+  handleUpdateFaq,
+  handleRemoveFaq,
+}: SortableFaqCardProps) {
+  const faqId = faq.id || `faq_id_${idx}`;
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: faqId });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  const questionText = faq.q !== undefined ? faq.q : (faq.question || '');
+  const answerText = faq.a !== undefined ? faq.a : (faq.answer || '');
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`p-4 bg-gray-50/50 rounded-xl border ${
+        isDragging
+          ? 'border-deliverix-500 shadow-xl opacity-80 z-30 relative scale-[1.01]'
+          : 'border-gray-150 hover:border-gray-200'
+      } space-y-3 relative group transition-all duration-150`}
+    >
+      <div className="flex justify-between items-center gap-2">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            {...attributes}
+            {...listeners}
+            aria-label={`Promeni redosled FAQ pitanja ${idx + 1}`}
+            className="p-1.5 text-gray-400 hover:text-deliverix-600 hover:bg-deliverix-50 rounded-lg cursor-grab active:cursor-grabbing transition touch-none flex items-center gap-1"
+            title="Prevuci za promenu redosleda"
+          >
+            <GripVertical className="w-4 h-4" />
+            <span className="text-[10px] font-extrabold text-gray-400 sm:hidden uppercase tracking-wider">Prevucite</span>
+          </button>
+          <span className="text-xs font-black text-deliverix-600 uppercase">
+            Pitanje #{idx + 1}
+          </span>
+          {faq.enabled !== undefined && (
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 cursor-pointer ml-2">
+              <input
+                type="checkbox"
+                checked={faq.enabled !== false}
+                onChange={e => handleUpdateFaq(idx, 'enabled', e.target.checked)}
+                className="rounded text-deliverix-500 focus:ring-deliverix-500"
+              />
+              <span className="text-[10px] font-bold uppercase">{faq.enabled !== false ? 'Aktivno' : 'Neaktivno'}</span>
+            </label>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => handleRemoveFaq(idx)}
+          className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-150 transition cursor-pointer"
+          title="Obriši pitanje"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-gray-400 uppercase">Tekst pitanja</label>
+        <input
+          type="text"
+          required
+          placeholder="npr. Da li je potrebna vaša oprema?"
+          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-800 focus:ring-1 focus:ring-deliverix-500 focus:outline-none"
+          value={questionText}
+          onChange={e => {
+            if (faq.q !== undefined) {
+              handleUpdateFaq(idx, 'q', e.target.value);
+            } else {
+              handleUpdateFaq(idx, 'question', e.target.value);
+            }
+          }}
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-gray-400 uppercase">Odgovor na pitanje</label>
+        <textarea
+          rows={2}
+          required
+          placeholder="Upišite detaljan odgovor..."
+          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-700 leading-relaxed focus:ring-1 focus:ring-deliverix-500 focus:outline-none"
+          value={answerText}
+          onChange={e => {
+            if (faq.a !== undefined) {
+              handleUpdateFaq(idx, 'a', e.target.value);
+            } else {
+              handleUpdateFaq(idx, 'answer', e.target.value);
+            }
+          }}
+        />
+      </div>
+    </div>
+  );
+}
+
 interface FaqTabFormProps {
   siteSettings: any;
   setSiteSettings: React.Dispatch<React.SetStateAction<any>>;
@@ -2255,123 +2531,126 @@ interface FaqTabFormProps {
   isSaving?: boolean;
 }
 
+const defaultFaqsList = [
+  {
+    q: 'Da li je Deliverix besplatan?',
+    a: 'Da! Deliverix platforma je 100% besplatna za sve kandidate. Pomoć oko prijave, savetovanje, obuka i spajanje sa proverenim partnerskim agencijama vas ne košta apsolutno ništa. Nemamo nikakve skrivene troškove niti uzimamo procenat od vaše zarade.'
+  },
+  {
+    q: 'Da li Deliverix zapošljava?',
+    a: 'Deliverix je nezavisna platforma za podršku, informisanje i regrutaciju, a ne direktni poslodavac. Mi vas besplatno povezujemo sa zvaničnim i pouzdanim partnerskim agencijama (flotama) koje su licencirane za rad sa Wolt i Glovo platformama u Srbiji.'
+  },
+  {
+    q: 'Da li ste vi Wolt ili Glovo?',
+    a: 'Ne, mi nismo Wolt niti Glovo. Deliverix je nezavisna platforma koja pomaže budućim dostavljačima da brzo i jednostavno prođu kroz proceduru prijave i započnu rad kod proverenih partnerskih agencija (flota) za Wolt, Glovo i druge dostavne platforme.'
+  },
+  {
+    q: 'Koliko mogu da zaradim kao dostavljač?',
+    a: 'Zarada direktno zavisi od broja radnih sati, izabranog prevoznog sredstva i ostvarenih bonusa. Aktivni dostavljači koji rade puno radno vreme mogu ostvariti zaradu od 100.000 do preko 150.000 RSD mesečno. Takođe, sav bakšiš koji dobijete od kupaca ostaje 100% vama.'
+  },
+  {
+    q: 'Koliko traje proces prijave?',
+    a: 'Sama prijava na našem sajtu traje manje od 2 minuta. Nakon što popunite formular, naš mentorski tim će vas kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) kako bismo odgovorili na vaša pitanja i dogovorili sledeće korake.'
+  },
+  {
+    q: 'Kada mogu da počnem sa radom?',
+    a: 'Nakon razgovora sa našim mentorom i spajanja sa agencijom, proces aktivacije naloga i preuzimanja opreme obično traje između 24 i 48 sati. To znači da već za dan ili dva možete biti na ulicama i praviti svoje prve isporuke.'
+  },
+  {
+    q: 'Da li mogu da radim samo vikendom ili nekoliko sati dnevno?',
+    a: 'Apsolutno! Fleksibilnost je najveća prednost ovog posla. Sami birate kada se uključujete na aplikaciju i koliko radite. Možete raditi samo vikendom, nekoliko sati posle podne kao dodatni posao, ili puno radno vreme – izbor je isključivo vaš.'
+  },
+  {
+    q: 'Šta ako nemam sopstveno vozilo za dostavu?',
+    a: 'To uopšte nije problem. Preko naših partnerskih agencija obezbeđujemo mogućnost povoljnog najma električnih bickala (e-bike), skutera ili automobila po povlašćenim uslovima sa uključenim servisima, tako da možete početi odmah.'
+  },
+  {
+    q: 'Kako i kada funkcionišu isplate?',
+    a: 'Isplate se vrše redovno i na vreme, svake dve nedelje (na svakih 15 dana) direktno na vaš tekući račun. Uz svaku isplatu dobijate detaljan i transparentan obračun odrađenih dostava, bonusa i bakšiša.'
+  },
+  {
+    q: 'U kojim gradovima u Srbiji mogu da radim?',
+    a: 'Primarni fokus nam je na Beograd i Novi Sad gde je potražnja za dostavljačima najveća, ali prijave prihvatamo i za sve ostale veće gradove u Srbiji u kojima su dostupne Wolt i Glovo dostavne usluge.'
+  }
+];
+
 export function FaqTabForm({
   siteSettings,
   setSiteSettings,
   onSave,
   isSaving = false
  }: FaqTabFormProps) {
-  // Automatski inicijalizuj prazna ili nedefinisana polja sa podrazumevanim vrednostima sa sajta
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
   React.useEffect(() => {
     if (!siteSettings.faqs || siteSettings.faqs.length === 0) {
       setSiteSettings((prev: any) => ({
         ...prev,
-        faqs: [
-          {
-            q: 'Da li je Deliverix besplatan?',
-            a: 'Da! Deliverix platforma je 100% besplatna za sve kandidate. Pomoć oko prijave, savetovanje, obuka i spajanje sa proverenim partnerskim agencijama vas ne košta apsolutno ništa. Nemamo nikakve skrivene troškove niti uzimamo procenat od vaše zarade.'
-          },
-          {
-            q: 'Da li Deliverix zapošljava?',
-            a: 'Deliverix je nezavisna platforma za podršku, informisanje i regrutaciju, a ne direktni poslodavac. Mi vas besplatno povezujemo sa zvaničnim i pouzdanim partnerskim agencijama (flotama) koje su licencirane za rad sa Wolt i Glovo platformama u Srbiji.'
-          },
-          {
-            q: 'Da li ste vi Wolt ili Glovo?',
-            a: 'Ne, mi nismo Wolt niti Glovo. Deliverix je nezavisna platforma koja pomaže budućim dostavljačima da brzo i jednostavno prođu kroz proceduru prijave i započnu rad kod proverenih partnerskih agencija (flota) za Wolt, Glovo i druge dostavne platforme.'
-          },
-          {
-            q: 'Koliko mogu da zaradim kao dostavljač?',
-            a: 'Zarada direktno zavisi od broja radnih sati, izabranog prevoznog sredstva i ostvarenih bonusa. Aktivni dostavljači koji rade puno radno vreme mogu ostvariti zaradu od 100.000 do preko 150.000 RSD mesečno. Takođe, sav bakšiš koji dobijete od kupaca ostaje 100% vama.'
-          },
-          {
-            q: 'Koliko traje proces prijave?',
-            a: 'Sama prijava na našem sajtu traje manje od 2 minuta. Nakon što popunite formular, naš mentorski tim će vas kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) kako bismo odgovorili na vaša pitanja i dogovorili sledeće korake.'
-          },
-          {
-            q: 'Kada mogu da počnem sa radom?',
-            a: 'Nakon razgovora sa našim mentorom i spajanja sa agencijom, proces aktivacije naloga i preuzimanja opreme obično traje između 24 i 48 sati. To znači da već za dan ili dva možete biti na ulicama i praviti svoje prve isporuke.'
-          },
-          {
-            q: 'Da li mogu da radim samo vikendom ili nekoliko sati dnevno?',
-            a: 'Apsolutno! Fleksibilnost je najveća prednost ovog posla. Sami birate kada se uključujete na aplikaciju i koliko radite. Možete raditi samo vikendom, nekoliko sati posle podne kao dodatni posao, ili puno radno vreme – izbor je isključivo vaš.'
-          },
-          {
-            q: 'Šta ako nemam sopstveno vozilo za dostavu?',
-            a: 'To uopšte nije problem. Preko naših partnerskih agencija obezbeđujemo mogućnost povoljnog najma električnih bickala (e-bike), skutera ili automobila po povlašćenim uslovima sa uključenim servisima, tako da možete početi odmah.'
-          },
-          {
-            q: 'Kako i kada funkcionišu isplate?',
-            a: 'Isplate se vrše redovno i na vreme, svake dve nedelje (na svakih 15 dana) direktno na vaš tekući račun. Uz svaku isplatu dobijate detaljan i transparentan obračun odrađenih dostava, bonusa i bakšiša.'
-          },
-          {
-            q: 'U kojim gradovima u Srbiji mogu da radim?',
-            a: 'Primarni fokus nam je na Beograd i Novi Sad gde je potražnja za dostavljačima najveća, ali prijave prihvatamo i za sve ostale veće gradove u Srbiji u kojima su dostupne Wolt i Glovo dostavne usluge.'
-          }
-        ]
+        faqs: defaultFaqsList.map((f, i) => ({ id: `faq_${Date.now()}_${i}`, ...f }))
       }));
+    } else {
+      let needsIdFix = false;
+      const fixedFaqs = siteSettings.faqs.map((f: any, i: number) => {
+        if (!f.id) {
+          needsIdFix = true;
+          return { ...f, id: `faq_${Date.now()}_${i}_${Math.random().toString(36).substring(2, 6)}` };
+        }
+        return f;
+      });
+      if (needsIdFix) {
+        setSiteSettings((prev: any) => ({ ...prev, faqs: fixedFaqs }));
+      }
     }
   }, []);
 
   const faqs = (siteSettings.faqs && siteSettings.faqs.length > 0)
     ? siteSettings.faqs
-    : [
-        {
-          q: 'Da li je Deliverix besplatan?',
-          a: 'Da! Deliverix platforma je 100% besplatna za sve kandidate. Pomoć oko prijave, savetovanje, obuka i spajanje sa proverenim partnerskim agencijama vas ne košta apsolutno ništa. Nemamo nikakve skrivene troškove niti uzimamo procenat od vaše zarade.'
-        },
-        {
-          q: 'Da li Deliverix zapošljava?',
-          a: 'Deliverix je nezavisna platforma za podršku, informisanje i regrutaciju, a ne direktni poslodavac. Mi vas besplatno povezujemo sa zvaničnim i pouzdanim partnerskim agencijama (flotama) koje su licencirane za rad sa Wolt i Glovo platformama u Srbiji.'
-        },
-        {
-          q: 'Da li ste vi Wolt ili Glovo?',
-          a: 'Ne, mi nismo Wolt niti Glovo. Deliverix je nezavisna platforma koja pomaže budućim dostavljačima da brzo i jednostavno prođu kroz proceduru prijave i započnu rad kod proverenih partnerskih agencija (flota) za Wolt, Glovo i druge dostavne platforme.'
-        },
-        {
-          q: 'Koliko mogu da zaradim kao dostavljač?',
-          a: 'Zarada direktno zavisi od broja radnih sati, izabranog prevoznog sredstva i ostvarenih bonusa. Aktivni dostavljači koji rade puno radno vreme mogu ostvariti zaradu od 100.000 do preko 150.000 RSD mesečno. Takođe, sav bakšiš koji dobijete od kupaca ostaje 100% vama.'
-        },
-        {
-          q: 'Koliko traje proces prijave?',
-          a: 'Sama prijava na našem sajtu traje manje od 2 minuta. Nakon što popunite formular, naš mentorski tim će vas kontaktirati u najkraćem roku (najčešće u roku od nekoliko sati) kako bismo odgovorili na vaša pitanja i dogovorili sledeće korake.'
-        },
-        {
-          q: 'Kada mogu da počnem sa radom?',
-          a: 'Nakon razgovora sa našim mentorom i spajanja sa agencijom, proces aktivacije naloga i preuzimanja opreme obično traje između 24 i 48 sati. To znači da već za dan ili dva možete biti na ulicama i praviti svoje prve isporuke.'
-        },
-        {
-          q: 'Da li mogu da radim samo vikendom ili nekoliko sati dnevno?',
-          a: 'Apsolutno! Fleksibilnost je najveća prednost ovog posla. Sami birate kada se uključujete na aplikaciju i koliko radite. Možete raditi samo vikendom, nekoliko sati posle podne kao dodatni posao, ili puno radno vreme – izbor je isključivo vaš.'
-        },
-        {
-          q: 'Šta ako nemam sopstveno vozilo za dostavu?',
-          a: 'To uopšte nije problem. Preko naših partnerskih agencija obezbeđujemo mogućnost povoljnog najma električnih bickala (e-bike), skutera ili automobila po povlašćenim uslovima sa uključenim servisima, tako da možete početi odmah.'
-        },
-        {
-          q: 'Kako i kada funkcionišu isplate?',
-          a: 'Isplate se vrše redovno i na vreme, svake dve nedelje (na svakih 15 dana) direktno na vaš tekući račun. Uz svaku isplatu dobijate detaljan i transparentan obračun odrađenih dostava, bonusa i bakšiša.'
-        },
-        {
-          q: 'U kojim gradovima u Srbiji mogu da radim?',
-          a: 'Primarni fokus nam je na Beograd i Novi Sad gde je potražnja za dostavljačima najveća, ali prijave prihvatamo i za sve ostale veće gradove u Srbiji u kojima su dostupne Wolt i Glovo dostavne usluge.'
-        }
-      ];
+    : defaultFaqsList;
 
-  const handleUpdateFaq = (index: number, field: 'q' | 'a', val: string) => {
+  const handleUpdateFaq = (index: number, field: string, val: any) => {
     const updated = [...faqs];
     if (!updated[index]) {
-      updated[index] = { q: '', a: '' };
+      updated[index] = { id: `faq_${Date.now()}_${index}`, q: '', a: '' };
     }
     updated[index] = { ...updated[index], [field]: val };
     setSiteSettings({ ...siteSettings, faqs: updated });
   };
 
   const handleAddFaq = () => {
-    setSiteSettings({ ...siteSettings, faqs: [...faqs, { q: '', a: '' }] });
+    const newId = `faq_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+    setSiteSettings({ ...siteSettings, faqs: [...faqs, { id: newId, q: '', a: '' }] });
   };
 
   const handleRemoveFaq = (index: number) => {
     setSiteSettings({ ...siteSettings, faqs: faqs.filter((_: any, i: number) => i !== index) });
+  };
+
+  const handleDragEndFaqs = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = faqs.findIndex((f: any, i: number) => (f.id || `faq_id_${i}`) === active.id);
+    const newIndex = faqs.findIndex((f: any, i: number) => (f.id || `faq_id_${i}`) === over.id);
+
+    if (oldIndex !== -1 && newIndex !== -1) {
+      const reorderedFaqs = arrayMove(faqs, oldIndex, newIndex);
+      setSiteSettings({ ...siteSettings, faqs: reorderedFaqs });
+    }
   };
 
   return (
@@ -2380,7 +2659,7 @@ export function FaqTabForm({
         <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-2">
           <div>
             <h3 className="text-lg font-black text-gray-900">Uređivanje Čestih Pitanja (FAQ)</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Dodajte ili menjajte pitanja i odgovore na sajtu kako biste smanjili upite podršci.</p>
+            <p className="text-xs text-gray-400 mt-0.5">Dodajte ili menjajte pitanja i odgovore na sajtu. Prevucite karticu za promenu redosleda.</p>
           </div>
           <button
             type="button"
@@ -2412,47 +2691,28 @@ export function FaqTabForm({
           </div>
         </div>
 
-        <div className="space-y-4">
-          {faqs.map((faq: any, idx: number) => (
-            <div key={idx} className="p-4 bg-gray-50/50 rounded-xl border border-gray-150 space-y-3 relative group">
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-black text-deliverix-600 uppercase">Pitanje #{idx + 1}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveFaq(idx)}
-                  className="p-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg border border-rose-150 transition cursor-pointer"
-                  title="Obriši pitanje"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-gray-400 uppercase">Tekst pitanja</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="npr. Da li je potrebna vaša oprema?"
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold text-gray-800"
-                  value={faq.q || ''}
-                  onChange={e => handleUpdateFaq(idx, 'q', e.target.value)}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEndFaqs}
+        >
+          <SortableContext
+            items={faqs.map((f: any, i: number) => f.id || `faq_id_${i}`)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="space-y-4">
+              {faqs.map((faq: any, idx: number) => (
+                <SortableFaqCard
+                  key={faq.id || `faq_id_${idx}`}
+                  faq={faq}
+                  idx={idx}
+                  handleUpdateFaq={handleUpdateFaq}
+                  handleRemoveFaq={handleRemoveFaq}
                 />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-gray-400 uppercase">Odgovor na pitanje</label>
-                <textarea
-                  rows={2}
-                  required
-                  placeholder="Upišite detaljan odgovor..."
-                  className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs text-gray-700 leading-relaxed"
-                  value={faq.a || ''}
-                  onChange={e => handleUpdateFaq(idx, 'a', e.target.value)}
-                />
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+        </DndContext>
 
         <div className="pt-3 border-t border-gray-100 flex justify-end">
           <button
