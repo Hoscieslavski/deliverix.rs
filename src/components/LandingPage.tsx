@@ -554,11 +554,6 @@ export default function LandingPage({ onOpenApply, onNavigateToBlog, siteSetting
           {/* Tekst Hero Sekcije (Leva strana) */}
           <div className="min-[900px]:col-span-7 space-y-5 text-left flex flex-col items-start">
             <div className="flex flex-col items-start gap-1.5 w-full">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-deliverix-50 text-deliverix-900 rounded-full text-xs font-bold uppercase tracking-wider border border-deliverix-100">
-                <Sparkles className="w-3.5 h-3.5 text-deliverix-accent" />
-                <span>{siteSettings?.hero_badge_title || "Wolt i Glovo prijava za dostavljače"}</span>
-              </div>
-              
               <h1 className="text-[25px] sm:text-4xl lg:text-5.5xl font-black text-gray-900 tracking-tight leading-[1.12] text-left">
                 {siteSettings?.hero_h1 || "Pronađi posao dostavljača uz Deliverix"}
               </h1>
