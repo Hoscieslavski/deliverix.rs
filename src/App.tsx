@@ -594,9 +594,11 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
           {/* Navigacija i Akcije */}
           <nav className="flex items-center gap-2 sm:gap-4">
             <div className="hidden lg:flex items-center gap-6">
-              <button
+              <a
                 id="nav-what-is-btn"
-                onClick={() => {
+                href="/#section-sta-je-deliverix"
+                onClick={(e) => {
+                  e.preventDefault();
                   setCurrentView('landing');
                   setTimeout(() => {
                     document.getElementById('section-sta-je-deliverix')?.scrollIntoView({ behavior: 'smooth' });
@@ -606,11 +608,13 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
               >
                 Šta je Deliverix?
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
-              </button>
+              </a>
               
-              <button
+              <a
                 id="nav-kome-btn"
-                onClick={() => {
+                href="/#section-kome-je-namenjen"
+                onClick={(e) => {
+                  e.preventDefault();
                   setCurrentView('landing');
                   setTimeout(() => {
                     document.getElementById('section-kome-je-namenjen')?.scrollIntoView({ behavior: 'smooth' });
@@ -620,12 +624,14 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
               >
                 Kome je namenjen?
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
-              </button>
+              </a>
 
               {siteSettings?.steps_enabled !== false && (
-                <button
+                <a
                   id="nav-how-it-works-btn"
-                  onClick={() => {
+                  href="/#kako-funkcionise"
+                  onClick={(e) => {
+                    e.preventDefault();
                     setCurrentView('landing');
                     setTimeout(() => {
                       document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
@@ -635,12 +641,14 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
                 >
                   Kako funkcioniše
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
-                </button>
+                </a>
               )}
 
-              <button
+              <a
                 id="nav-zasto-btn"
-                onClick={() => {
+                href="/#zasto-se-prijaviti"
+                onClick={(e) => {
+                  e.preventDefault();
                   setCurrentView('landing');
                   setTimeout(() => {
                     document.getElementById('zasto-se-prijaviti')?.scrollIntoView({ behavior: 'smooth' });
@@ -650,12 +658,14 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
               >
                 Zašto mi?
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
-              </button>
+              </a>
 
               {siteSettings?.faq_enabled !== false && (
-                <button
+                <a
                   id="nav-faq-btn"
-                  onClick={() => {
+                  href="/#faq"
+                  onClick={(e) => {
+                    e.preventDefault();
                     setCurrentView('landing');
                     setTimeout(() => {
                       document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
@@ -665,18 +675,23 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
                 >
                   FAQ
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-deliverix-500 transition-all group-hover:w-full"></span>
-                </button>
+                </a>
               )}
 
               {siteSettings?.blog_enabled !== false && (
-                <button
+                <a
                   id="nav-blog-btn"
-                  onClick={() => setCurrentView('blog')}
+                  href="/blog"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentView('blog');
+                    window.history.pushState({}, '', '/blog');
+                  }}
                   className={`text-sm font-semibold transition-colors relative group py-2 cursor-pointer ${currentView === 'blog' ? 'text-deliverix-500 font-black' : 'text-gray-600 hover:text-deliverix-500'}`}
                 >
                   Blog
                   <span className={`absolute bottom-0 left-0 h-0.5 bg-deliverix-500 transition-all ${currentView === 'blog' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                </button>
+                </a>
               )}
             </div>
 
@@ -1081,40 +1096,103 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
             
             {/* Desna strana: Navigacioni linkovi */}
             <div className="flex flex-wrap justify-center md:justify-end gap-x-4 gap-y-2 text-xs font-bold text-gray-500">
-              <button onClick={() => {
-                document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-deliverix-500 cursor-pointer">Kako radi</button>
-              <button onClick={() => {
-                document.getElementById('sta-je-potrebno')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-deliverix-500 cursor-pointer">Uslovi</button>
-              <button onClick={() => {
-                document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
-              }} className="hover:text-deliverix-500 cursor-pointer">FAQ</button>
+              <a 
+                href="/#kako-funkcionise"
+                onClick={(e) => {
+                  if (currentView === 'landing') {
+                    e.preventDefault();
+                    document.getElementById('kako-funkcionise')?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    setCurrentView('landing');
+                  }
+                }} 
+                className="hover:text-deliverix-500 cursor-pointer"
+              >
+                Kako radi
+              </a>
+              <a 
+                href="/#sta-je-potrebno"
+                onClick={(e) => {
+                  if (currentView === 'landing') {
+                    e.preventDefault();
+                    document.getElementById('sta-je-potrebno')?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    setCurrentView('landing');
+                  }
+                }} 
+                className="hover:text-deliverix-500 cursor-pointer"
+              >
+                Uslovi
+              </a>
+              <a 
+                href="/#faq"
+                onClick={(e) => {
+                  if (currentView === 'landing') {
+                    e.preventDefault();
+                    document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    setCurrentView('landing');
+                  }
+                }} 
+                className="hover:text-deliverix-500 cursor-pointer"
+              >
+                FAQ
+              </a>
+              <a 
+                href="/blog"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentView('blog');
+                  window.history.pushState({}, '', '/blog');
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }} 
+                className="hover:text-deliverix-500 cursor-pointer"
+              >
+                Blog
+              </a>
               {currentView === 'landing' ? (
                 <div className="flex flex-wrap items-center justify-center md:justify-end gap-3">
-                  <button 
+                  <a 
                     id="footer-portal-link"
-                    onClick={() => setCurrentView('candidate')} 
+                    href="/portal"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentView('candidate');
+                      window.history.pushState({}, '', '/portal');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }} 
                     className="hover:text-deliverix-600 cursor-pointer text-deliverix-500 flex items-center gap-1 font-black"
                   >
                     <Lock className="w-3.5 h-3.5" /> Kandidat Portal
-                  </button>
-                  <button 
+                  </a>
+                  <a 
                     id="footer-admin-link"
-                    onClick={() => setCurrentView('admin')} 
+                    href="/admin"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setCurrentView('admin');
+                      window.history.pushState({}, '', '/admin');
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }} 
                     className="hover:text-deliverix-500 cursor-pointer text-gray-500 flex items-center gap-1 font-bold"
                   >
                     <Lock className="w-3.5 h-3.5" /> Admin Panel
-                  </button>
+                  </a>
                 </div>
               ) : (
-                <button 
+                <a 
                   id="footer-back-link"
-                  onClick={() => setCurrentView('landing')} 
+                  href="/"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentView('landing');
+                    window.history.pushState({}, '', '/');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }} 
                   className="hover:text-deliverix-500 cursor-pointer flex items-center gap-1 font-black"
                 >
                   Nazad na sajt
-                </button>
+                </a>
               )}
             </div>
           </div>
@@ -1123,25 +1201,31 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
             <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs text-gray-500">
               <span>© {new Date().getFullYear()} {siteSettings?.footer_company_name || 'Deliverix Srbija'}. Sva prava zadržana.</span>
               <span className="hidden sm:inline text-gray-300">•</span>
-              <button 
-                onClick={() => {
+              <a 
+                href="/terms-of-service"
+                onClick={(e) => {
+                  e.preventDefault();
                   setCurrentView('terms');
+                  window.history.pushState({}, '', '/terms-of-service');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }} 
                 className="hover:text-deliverix-500 font-semibold cursor-pointer transition"
               >
                 {siteSettings?.footer_terms_text || 'Uslovi korišćenja'}
-              </button>
+              </a>
               <span className="hidden sm:inline text-gray-300">•</span>
-              <button 
-                onClick={() => {
+              <a 
+                href="/privacy-policy"
+                onClick={(e) => {
+                  e.preventDefault();
                   setCurrentView('privacy');
+                  window.history.pushState({}, '', '/privacy-policy');
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }} 
                 className="hover:text-deliverix-500 font-semibold cursor-pointer transition"
               >
                 {siteSettings?.footer_privacy_text || 'Politika privatnosti'}
-              </button>
+              </a>
             </div>
             <p className="text-[10px] text-gray-500 max-w-md text-center sm:text-right">
               {siteSettings?.footer_legal_disclaimer || "Izjava o odgovornosti: Mi nismo zvanični predstavnici niti deo kompanija Wolt, Glovo ili drugih dostavnih platformi. Mi smo nezavisni informativni portal koji pomaže kandidatima da se lakše povežu sa registrovanim partnerskim agencijama za dostavu u Republici Srbiji."}
