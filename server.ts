@@ -1066,9 +1066,9 @@ app.delete('/api/blog-posts/:id', marketingAuthMiddleware, async (req, res) => {
   }
 });
 
-// Javni robots.txt za pretraživače poput Google-a
+// Javni robots.txt za pretraživače i AI crawlere
 app.get('/robots.txt', (req, res) => {
-  res.type('text/plain');
+  res.type('text/plain; charset=utf-8');
   const protocol = req.headers['x-forwarded-proto'] === 'https' ? 'https' : 'http';
   const host = req.get('host') || 'www.deliverix.rs';
   res.send(`User-agent: *
@@ -1076,35 +1076,18 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-# Blokiranje AI botova od skrejpovanja sadržaja za trening modela
-User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /
-
-User-agent: Google-Extended
-Disallow: /
-
-User-agent: Anthropic-AI
-Disallow: /
-
-User-agent: Claude-Web
-Disallow: /
-
-User-agent: ClaudeBot
-Disallow: /
-
-User-agent: cohere-ai
-Disallow: /
-
-User-agent: CCBot
-Disallow: /
-
-User-agent: OAI-SearchBot
-Disallow: /
-
 Sitemap: ${protocol}://${host}/sitemap.xml`);
+});
+
+// Javni llms.txt fajl za AI pretrazivace i velike jezicke modele
+app.get('/llms.txt', (req, res) => {
+  const llmsPath = path.join(process.cwd(), 'public/llms.txt');
+  if (fs.existsSync(llmsPath)) {
+    res.type('text/plain; charset=utf-8');
+    res.sendFile(llmsPath);
+  } else {
+    res.status(404).send('Not Found');
+  }
 });
 
 // Google Search Console HTML verifikacioni fajl
@@ -2355,8 +2338,8 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
       }));
     }
 
-    // C. FAQ Schema (Za početnu stranu ako postoje pitanja)
-    if (!isBlogPost && siteSettingsData && siteSettingsData.faqs && Array.isArray(siteSettingsData.faqs) && siteSettingsData.faqs.length > 0) {
+    // C. FAQ Schema (Za ostale stranice ako zatreba, jer LandingPage.tsx na početnoj već renderuje id="schema-faq")
+    if (urlPath !== '/' && !isBlogPost && siteSettingsData && siteSettingsData.faqs && Array.isArray(siteSettingsData.faqs) && siteSettingsData.faqs.length > 0) {
       schemas.push(JSON.stringify({
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -2398,8 +2381,10 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
       html = html.replace('</head>', `${dynamicFaviconTags}\n</head>`);
     }
 
-    // 3. Ubacivanje Canonical taga (Maksimalna SEO higijena)
-    const canonicalUrl = `https://deliverix.rs${urlPath === '/' ? '' : urlPath}`;
+    // 3. Ubacivanje Canonical taga - Striktno JEDAN canonical tag bez dupliranja
+    html = html.replace(/<link\s+rel="canonical"[^>]*\/?>/gi, '');
+    const cleanUrlPath = urlPath === '/' ? '' : (urlPath.endsWith('/') ? urlPath.slice(0, -1) : urlPath);
+    const canonicalUrl = `https://deliverix.rs${cleanUrlPath}`;
     const canonicalTag = `<link rel="canonical" href="${canonicalUrl}" />`;
     html = html.replace('</head>', `${canonicalTag}\n</head>`);
 
