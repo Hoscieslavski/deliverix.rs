@@ -117,9 +117,15 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
   const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(() => {
     const initial = initialData?.siteSettings || (typeof window !== 'undefined' ? ((window as any).__DELIVERIX_INITIAL_DATA__)?.siteSettings : null);
     if (initial) {
-      return { ...DEFAULT_SITE_SETTINGS, ...initial };
+      const merged = { ...DEFAULT_SITE_SETTINGS, ...initial };
+      if (!merged.logo_url || typeof merged.logo_url !== 'string' || merged.logo_url.trim() === '') {
+        merged.logo_url = '/assets/images/logo_custom.webp';
+      }
+      if (!merged.hero_image_url || typeof merged.hero_image_url !== 'string' || merged.hero_image_url.trim() === '') {
+        merged.hero_image_url = '/assets/images/delivery_courier_hero_1783427588712.webp';
+      }
+      return merged;
     }
-    // Return null so we render the skeleton on first paint when __DELIVERIX_INITIAL_DATA__ is not present
     return null;
   });
   const [cookieConsent, setCookieConsent] = useState<'accepted' | 'rejected' | null>(null);
@@ -146,7 +152,7 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
 
   const [customLogoUrl, setCustomLogoUrl] = useState<string>(() => {
     const initial = initialData?.siteSettings || (typeof window !== 'undefined' ? ((window as any).__DELIVERIX_INITIAL_DATA__)?.siteSettings : null);
-    if (initial?.logo_url !== undefined) return initial.logo_url;
+    if (initial?.logo_url && typeof initial.logo_url === 'string' && initial.logo_url.trim() !== '') return initial.logo_url;
     return '/assets/images/logo_custom.webp';
   });
 
@@ -349,19 +355,35 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
     if (siteSettingsLoaded) {
       return;
     }
+    const applySettingsData = (settings: any) => {
+      if (!settings) return;
+      setSiteSettings((prev: any) => {
+        const merged = { ...DEFAULT_SITE_SETTINGS, ...prev, ...settings };
+        if (!merged.logo_url || typeof merged.logo_url !== 'string' || merged.logo_url.trim() === '') {
+          merged.logo_url = '/assets/images/logo_custom.webp';
+        }
+        if (!merged.hero_image_url || typeof merged.hero_image_url !== 'string' || merged.hero_image_url.trim() === '') {
+          merged.hero_image_url = '/assets/images/delivery_courier_hero_1783427588712.webp';
+        }
+        return merged;
+      });
+      if (settings.logo_style) {
+        setLogoStyle(settings.logo_style);
+      }
+      if (settings.logo_url && typeof settings.logo_url === 'string' && settings.logo_url.trim() !== '') {
+        setCustomLogoUrl(settings.logo_url);
+      } else {
+        setCustomLogoUrl('/assets/images/logo_custom.webp');
+      }
+      if (settings.logo_blend_mode) {
+        setLogoBlendMode(settings.logo_blend_mode);
+      }
+    };
+
     getSeoSettings()
       .then(data => {
         if (data.success && data.settings) {
-          setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
-          if (data.settings.logo_style) {
-            setLogoStyle(data.settings.logo_style);
-          }
-          if (data.settings.logo_url !== undefined) {
-            setCustomLogoUrl(data.settings.logo_url);
-          }
-          if (data.settings.logo_blend_mode) {
-            setLogoBlendMode(data.settings.logo_blend_mode);
-          }
+          applySettingsData(data.settings);
         }
       })
       .catch(err => console.error('Greška pri učitavanju globalnih podešavanja logotipa/SEO:', err));
@@ -375,21 +397,12 @@ export default function App({ initialData }: { initialData?: DeliverixInitialDat
         .then(res => res.json())
         .then(data => {
           if (data.success && data.settings) {
-            setSiteSettings((prev: any) => ({ ...prev, ...data.settings }));
+            applySettingsData(data.settings);
             setSiteSettingsLoaded(true);
             try {
               localStorage.setItem('deliverix_cached_site_settings', JSON.stringify(data.settings));
             } catch (e) {
               console.error('Greška pri keširanju podešavanja:', e);
-            }
-            if (data.settings.logo_style) {
-              setLogoStyle(data.settings.logo_style);
-            }
-            if (data.settings.logo_url !== undefined) {
-              setCustomLogoUrl(data.settings.logo_url);
-            }
-            if (data.settings.logo_blend_mode) {
-              setLogoBlendMode(data.settings.logo_blend_mode);
             }
           }
         })
