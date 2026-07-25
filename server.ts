@@ -2250,9 +2250,12 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     const escapedTitle = escapeHtmlAttr(meta_title);
     const escapedDesc = escapeHtmlAttr(meta_description);
 
-    const absoluteLogoUrl = siteSettingsData?.logo_url
-      ? (siteSettingsData.logo_url.startsWith('http') ? siteSettingsData.logo_url : `https://deliverix.rs${siteSettingsData.logo_url}`)
-      : 'https://deliverix.rs/logo.png';
+    const rawServerLogo = (siteSettingsData?.logo_url && typeof siteSettingsData.logo_url === 'string' && siteSettingsData.logo_url.trim() !== '')
+      ? siteSettingsData.logo_url
+      : '/assets/images/logo_custom.webp';
+    const absoluteLogoUrl = rawServerLogo.startsWith('http')
+      ? rawServerLogo
+      : `https://deliverix.rs${rawServerLogo}`;
 
     // 2. Dinamičko generisanje i ubacivanje JSON-LD Schema Markup-a
     let schemas: string[] = [];
@@ -2356,7 +2359,7 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
 
     // Spoji sve šeme u HTML scripts
     const schemaHtml = schemas.map(s => `<script type="application/ld+json">${s}</script>`).join('\n');
-    html = html.replace('</head>', `${schemaHtml}\n</head>`);
+    html = html.replace('</head>', () => `${schemaHtml}\n</head>`);
 
     // Injekcija dinamičkih favicon-a i manifesta u <head>
     if (siteSettingsData) {
@@ -2378,7 +2381,7 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     <link rel="apple-touch-icon" href="${appleTouchUrl}?v=${favVersion}" />
     <link rel="manifest" href="/site.webmanifest?v=${favVersion}" />
       `;
-      html = html.replace('</head>', `${dynamicFaviconTags}\n</head>`);
+      html = html.replace('</head>', () => `${dynamicFaviconTags}\n</head>`);
     }
 
     // 3. Ubacivanje Canonical taga - Striktno JEDAN canonical tag bez dupliranja
@@ -2386,17 +2389,17 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     const cleanUrlPath = urlPath === '/' ? '' : (urlPath.endsWith('/') ? urlPath.slice(0, -1) : urlPath);
     const canonicalUrl = `https://deliverix.rs${cleanUrlPath}`;
     const canonicalTag = `<link rel="canonical" href="${canonicalUrl}" />`;
-    html = html.replace('</head>', `${canonicalTag}\n</head>`);
+    html = html.replace('</head>', () => `${canonicalTag}\n</head>`);
 
 
 
     // 4. Zamena standardnih meta tagova
-    html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapedTitle}</title>`);
-    html = html.replace(/<meta\s+name="description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta name="description" content="${escapedDesc}" />`);
-    html = html.replace(/<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="og:title" content="${escapedTitle}" />`);
-    html = html.replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="og:description" content="${escapedDesc}" />`);
-    html = html.replace(/<meta\s+property="twitter:title"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="twitter:title" content="${escapedTitle}" />`);
-    html = html.replace(/<meta\s+property="twitter:description"\s+content="[\s\S]*?"\s*\/?>/i, `<meta property="twitter:description" content="${escapedDesc}" />`);
+    html = html.replace(/<title>[\s\S]*?<\/title>/i, () => `<title>${escapedTitle}</title>`);
+    html = html.replace(/<meta\s+name="description"\s+content="[\s\S]*?"\s*\/?>/i, () => `<meta name="description" content="${escapedDesc}" />`);
+    html = html.replace(/<meta\s+property="og:title"\s+content="[\s\S]*?"\s*\/?>/i, () => `<meta property="og:title" content="${escapedTitle}" />`);
+    html = html.replace(/<meta\s+property="og:description"\s+content="[\s\S]*?"\s*\/?>/i, () => `<meta property="og:description" content="${escapedDesc}" />`);
+    html = html.replace(/<meta\s+property="twitter:title"\s+content="[\s\S]*?"\s*\/?>/i, () => `<meta property="twitter:title" content="${escapedTitle}" />`);
+    html = html.replace(/<meta\s+property="twitter:description"\s+content="[\s\S]*?"\s*\/?>/i, () => `<meta property="twitter:description" content="${escapedDesc}" />`);
 
     // 5. Hidratacija celokupnog koda blog posta za pretraživače (Dynamic Pre-rendering / No-JS fallback)
     // Ovo obezbeđuje da Google indeksira kompletan tekst svakog bloga i rešava "Low word count" problem!
@@ -2413,7 +2416,7 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
           </section>
         </article>
       `;
-      html = html.replace('<body>', `<body>\n${blogArticleHtml}`);
+      html = html.replace('<body>', () => `<body>\n${blogArticleHtml}`);
     }
 
     // Bezbedna serijalizacija početnih podataka za klijenta (Faza B)
@@ -2440,7 +2443,7 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
     window.__DELIVERIX_INITIAL_DATA__ = ${serializedData};
   </script>
 `;
-    html = html.replace('</head>', `${inlineScript}\n</head>`);
+    html = html.replace('</head>', () => `${inlineScript}\n</head>`);
 
     // Priprema React SSR - Aktiviramo isključivo za landing stranu (Faza C)
     const ssrActive = urlPath === '/';
@@ -2462,8 +2465,8 @@ async function serveIndexWithSEO(req: any, res: any, indexPath: string, preloade
           }
         }
         if (ssrHtml) {
-          html = html.replace('<div id="root"></div>', `<div id="root" data-ssr="true">${ssrHtml}</div>`);
-          html = html.replace('</head>', `<script>window.__DELIVERIX_SSR__ = true;</script>\n</head>`);
+          html = html.replace('<div id="root"></div>', () => `<div id="root" data-ssr="true">${ssrHtml}</div>`);
+          html = html.replace('</head>', () => `<script>window.__DELIVERIX_SSR__ = true;</script>\n</head>`);
         }
       } catch (ssrErr) {
         console.error('Greška pri serverskom renderovanju (React SSR):', ssrErr);
